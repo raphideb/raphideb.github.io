@@ -1,0 +1,16 @@
+baseURL = 'https://raphideb.github.io/'
+languageCode = 'en-us'
+title = "raphi's corner on github.io"
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
+[module]
+  proxy = "direct"
+  [module.hugoVersion]
+    extended = true
+    min = "0.73.0"
+  [[module.imports]]
+    path = "github.com/google/docsy"
+    disable = false
