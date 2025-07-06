@@ -1,0 +1,13 @@
+{{ $url := "https://xkcd.com/info.0.json" }}
+{{ with try (resources.GetRemote $url) }}
+  {{ with .Err }}
+    {{ errorf "%s" . }}
+  {{ else with .Value }}
+    {{ $data := .Content | transform.Unmarshal }}
+    <img src="{{ $data.img }}" alt="{{ $data.alt }}" title="{{ $data.alt }}">
+  {{ else }}
+    {{ errorf "Unable to get remote resource %q" $url }}
+  {{ end }}
+{{ else }}
+  {{ errorf "Unable to get remote resource %q" $url }}
+{{ end }}

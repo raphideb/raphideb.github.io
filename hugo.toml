@@ -1,0 +1,40 @@
+baseURL = "https://raphideb.github.io/"
+languageCode = "en-us"
+title = "raphi's corner"
+theme = "hugo-geekdoc"
+
+enableMissingTranslationPlaceholders = true
+
+pluralizeListTitles = false
+
+# Geekdoc required configuration
+pygmentsUseClasses = true
+pygmentsCodeFences = true
+disablePathToLower = true
+
+# Required if you want to render robots.txt template
+enableRobotsTXT = true
+
+# Needed for mermaid shortcodes
+[markup]
+  [markup.goldmark.renderer]
+    # Needed for mermaid shortcode or when nesting shortcodes (e.g. img within
+    # columns or tabs)
+    unsafe = true
+  [markup.tableOfContents]
+    startLevel = 1
+    endLevel = 9
+
+[taxonomies]
+   tag = "tags"
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
+[params]
+breadcrumb_disable = false
+navbar_logo = true
+sidebar_menu_compact = true
+geekdocToC = 3
+geekdocHidden = false
