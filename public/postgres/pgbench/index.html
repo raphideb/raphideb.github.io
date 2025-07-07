@@ -59,7 +59,7 @@
       "url" : "http://localhost:1313/postgres/pgbench/",
       "headline": "pgbench",
       "description": " The PostgreSQL benchmark utility The PostgreSQL benchmark utility Installation Initial Setup Tables Installation in dedicated database Run the benchmark Sample output Create your own benchmark Write the script Run your script Compare TPC-B vs TPC-DS like execution TPC-B like TPC-DS like Conclusion Including a benchmark utility with a database product demonstrates a strong commitment to performance and transparency. For PostgreSQL, the built-in tool is pgbench, which allows users to test various aspects of the database system. Not only that, it can also run benchmarks on any set of tables with any script that you created yourself, making it the perfect tool to benchmark a specific application workload. The official documentation is here: https:\/\/www.postgresql.org\/docs\/current\/pgbench.html",
-      "wordCount" : "3212",
+      "wordCount" : "3184",
       "inLanguage": "en",
       "isFamilyFriendly": "true",
       "mainEntityOfPage": {
@@ -566,7 +566,7 @@
     
   
   
-    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/' href='/'><span itemprop='name'>raphi's corner</span></a><meta itemprop='position' content='1' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/postgres/' href='/postgres/'><span itemprop='name'>Postgres</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>pgbench</span><meta itemprop='position' content='3' /></li>
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/' href='/'><span itemprop='name'>Welcome</span></a><meta itemprop='position' content='1' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/postgres/' href='/postgres/'><span itemprop='name'>Postgres</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>pgbench</span><meta itemprop='position' content='3' /></li>
   
 
   
@@ -775,9 +775,7 @@
     </a>
 </div>
 <p>While it is possible to create your own tables and fill them with data, I am going to use the tables which I already created previously with &ldquo;pgbench -i&rdquo;. Due to the underlying data, this script is by no means a true TPC-DS benchmark, which usually consists of multiple tables in a star schema. But it should you give an idea how to write a true TPC-DS benchmark your self.</p>
-<p><strong>Pro-tipp</strong>: the perplexity.ai prompt I used to generate this script was:</p>
-<pre tabindex="0"><code>Can you create a TPC-DS like script based on the tables created with pgbench -i -s 100?
-</code></pre><p>Copy/paste the following lines into a file, let&rsquo;s call it &ldquo;dwhbench.sql&rdquo;:</p>
+<p>Copy/paste the following lines into a file, let&rsquo;s call it &ldquo;dwhbench.sql&rdquo;:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">BEGIN</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 1. Total account balance per branch (roll-up by branch)

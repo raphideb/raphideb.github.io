@@ -117,11 +117,6 @@ In general, while the default TPC-B benchmark primarily tests CPU/memory perform
 ### Write the script
 While it is possible to create your own tables and fill them with data, I am going to use the tables which I already created previously with "pgbench -i". Due to the underlying data, this script is by no means a true TPC-DS benchmark, which usually consists of multiple tables in a star schema. But it should you give an idea how to write a true TPC-DS benchmark your self.
 
-**Pro-tipp**: the perplexity.ai prompt I used to generate this script was:
-```
-Can you create a TPC-DS like script based on the tables created with pgbench -i -s 100?
-```
-
 Copy/paste the following lines into a file, let's call it "dwhbench.sql":
 ```sql
 BEGIN;
