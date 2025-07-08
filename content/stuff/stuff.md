@@ -1,4 +1,5 @@
 ---
 title: "other stuff"
+type: "posts"
 ---
-some text
+nothing to see here yet.

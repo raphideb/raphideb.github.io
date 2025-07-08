@@ -1,12 +1,16 @@
 ---
 title: "pgbench"
+type: "posts"
 ---
 ## The PostgreSQL benchmark utility
 
-<img class="floatimg" src="/postgres/pgbench.jpg" alt="elephant" width="50%" height="50%"/>
-<p>
+<table><tr><td>
+<img class="floatimg" src="/postgres/pgbench.jpg" alt="elephant" width="100%" height="100%"/>
+</td><td width="40%">
+<h2>Table of content</h2>
+
 {{< toc html >}}
-</p>
+</td></tr></table>
 <div style="clear: both;"></div>
 <p>Including a benchmark utility with a database product demonstrates a strong commitment to performance and transparency. For PostgreSQL, the built-in tool is pgbench, which allows users to test various aspects of the database system. Not only that, it can also run benchmarks on any set of tables with any script that you created yourself, making it the perfect tool to benchmark a specific application workload.
 
@@ -109,13 +113,15 @@ initial connection time = 9.239 ms
 tps = 5307.477304 (without initial connection time)
 ```
 
+By comparing the tps you'll know if the changes you made were positive or not, a higher tps number usually means that you are on the right track.
+
 ## Create your own benchmark
-In this example, I am creating a benchmark that more closely resembles TPC-DS, which is designed for decision support systems. While it is by no means a true TPC-DS benchmark which consists of multiple databases and star schemasTPC-DS workloads typically involve large-scale updates, inserts, and complex queries that operate on many rows — characteristic of typical data warehouse environments.
+In this example, I am creating a benchmark that more closely resembles TPC-DS, which is designed for decision support systems. TPC-DS workloads typically involve large-scale updates, inserts, and complex queries that operate on many rows — characteristic of typical data warehouse environments.
 
 In general, while the default TPC-B benchmark primarily tests CPU/memory performance and random access I/O through many small transactions, a TPC-DS-like benchmark tends to generate more sequential I/O due to larger table scans and aggregations, often hitting the shared buffer better.
 
 ### Write the script
-While it is possible to create your own tables and fill them with data, I am going to use the tables which I already created previously with "pgbench -i". Due to the underlying data, this script is by no means a true TPC-DS benchmark, which usually consists of multiple tables in a star schema. But it should you give an idea how to write a true TPC-DS benchmark your self.
+While it is possible to create your own tables and fill them with data, I am going to use the tables which I already created previously with "pgbench -i". Due to the underlying data, this script is by no means a true TPC-DS benchmark, which usually consists of multiple tables in a star schema. But it should give you an idea how to write a benchmark your self.
 
 Copy/paste the following lines into a file, let's call it "dwhbench.sql":
 ```sql
@@ -189,7 +195,7 @@ VALUES (
 
 COMMIT;
 ```
-You can modify the script to your liking if needed or install the pgbench tables with a higher scale factor than 100 (-s 1000). 
+You can modify the script to your liking or install the pgbench tables with a higher scale factor than 100 (-s 1000) if you need more load. 
 
 ### Run your script
 Now execute the script with pgbench:

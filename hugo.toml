@@ -38,4 +38,5 @@ navbar_logo = true
 sidebar_menu_compact = true
 geekdocToC = 3
 geekdocHidden = false
-geekdocFileTreeSortBy = "linktitle"
+geekdocFileTreeSortBy = "link"
+geekdocPageLastmod = true

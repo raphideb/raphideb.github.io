@@ -15,7 +15,7 @@
   <meta name="description" content=" Purpose of this script The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages.
 With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database." />
 
-    <title>pgstat_snap | raphi&#39;s corner</title>
+    <title>Readme | raphi&#39;s corner</title>
 
     <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
 <link
@@ -36,19 +36,19 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
     
   <meta
     property="og:title"
-    content="pgstat_snap"
+    content="Readme"
   />
   <meta property="og:site_name" content="raphi's corner" />
   <meta property="og:description" content=" Purpose of this script The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages.
 With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://localhost:1313/postgres/pgstat_snap/" />
+<meta property="og:url" content="http://localhost:1313/postgres/README/" />
 
 <meta property="article:section" content="Postgres" />
 
 
   <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="pgstat_snap" />
+<meta name="twitter:title" content="Readme" />
   <meta name="twitter:description" content=" Purpose of this script The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages.
 With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database." />
 
@@ -58,16 +58,16 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
       "@context": "http://schema.org",
       "@type": "TechArticle",
       "articleSection": "Postgres",
-      "name": "pgstat_snap",
-      "url" : "http://localhost:1313/postgres/pgstat_snap/",
-      "headline": "pgstat_snap",
+      "name": "Readme",
+      "url" : "http://localhost:1313/postgres/README/",
+      "headline": "Readme",
       "description": " Purpose of this script The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages.\nWith the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database.",
       "wordCount" : "1622",
       "inLanguage": "en",
       "isFamilyFriendly": "true",
       "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": "http://localhost:1313/postgres/pgstat_snap/"
+          "@id": "http://localhost:1313/postgres/README/"
       },
       "copyrightHolder" : "raphi\u0027s corner",
       "copyrightYear" : "0001",
@@ -151,7 +151,7 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
   href="/custom.css"
   media="all"
 />
-  <link href="http://localhost:1313/postgres/pgstat_snap/" rel="canonical" type="text/html" />
+  <link href="http://localhost:1313/postgres/README/" rel="canonical" type="text/html" />
 
 <!-- Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc -->
 
@@ -359,10 +359,10 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
               
                 <span class="flex">
                   <a
-                    href="/oracle/ash/"
+                    href="/oracle/ASH_HowTo/"
                     class="gdoc-nav__entry"
                   >
-                    active session history
+                    ASH demystified
                   </a>
                 </span>
               
@@ -482,6 +482,42 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
               
                 <span class="flex">
                   <a
+                    href="/postgres/README/"
+                    class="gdoc-nav__entry is-active"
+                  >
+                    Readme
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
                     href="/postgres/pgbench/"
                     class="gdoc-nav__entry"
                   >
@@ -519,9 +555,9 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
                 <span class="flex">
                   <a
                     href="/postgres/pgstat_snap/"
-                    class="gdoc-nav__entry is-active"
+                    class="gdoc-nav__entry"
                   >
-                    pgstat_snap
+                    pgstat_snap extension
                   </a>
                 </span>
               
@@ -645,39 +681,80 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
 
         <div class="gdoc-page">
           
-  <article class="gdoc-post" id="main-content" tabindex="-1">
-    <header class="gdoc-post__header">
-      <h1 class="gdoc-post__title">pgstat_snap</h1>
-      <div class="flex flex-wrap align-center gdoc-post__meta gdoc-post__meta--head">
-        <span class="flex align-center no-wrap">
-  <svg class="gdoc-icon gdoc_date"><use xlink:href="#gdoc_date"></use></svg>
-  <span class="gdoc-post__tag">
+  
+
+
+  
+
+
+
+
+
+
+<div
+  class="gdoc-page__header flex flex-wrap
+  
+    justify-between
+  
+  hidden-mobile
+  "
+  itemprop="breadcrumb"
+>
+  
+    <div>
+      <svg class="gdoc-icon gdoc_path hidden-mobile"><use xlink:href="#gdoc_path"></use></svg>
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        
+        
+        
+        
+  
+  
+    
+    
+    
+    
+  
+  
+    
+    
+    
+    
+  
+  
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/' href='/'><span itemprop='name'>Welcome to my little place on the internet</span></a><meta itemprop='position' content='1' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/postgres/' href='/postgres/'><span itemprop='name'>Postgres</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>Readme</span><meta itemprop='position' content='3' /></li>
+  
+
+  
+
+  
+
+      </ol>
+    </div>
+  
+  
+</div>
+
+
+
+  <article
+    class="gdoc-markdown gdoc-markdown__align--left"
+    id="main-content" tabindex="-1"
+  >
+    <h1>Readme</h1>
+    <span class="flex align-center no-wrap">
+    <svg class="gdoc-icon gdoc_date"><use xlink:href="#gdoc_date"></use></svg>
     <time datetime="0001-01-01T00:00:00Z">
-      
-      Jan 1, 0001
+        
+        Jan 1, 0001
     </time>
-  </span>
 </span>
-
-<span class="flex align-center no-wrap">
-  <svg class="gdoc-icon gdoc_timer"><use xlink:href="#gdoc_timer"></use></svg>
-  <span class="gdoc-post__tag">8 minutes to read</span>
-</span>
-
-
-
-
-
-
-      </div>
-    </header>
-    <section class="gdoc-markdown">
-      <div class="flex align-center gdoc-page__anchorwrap">
+    <div class="flex align-center gdoc-page__anchorwrap">
     <h1 id="purpose-of-this-script"
     >
         Purpose of this script
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#purpose-of-this-script" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Purpose of this script" aria-label="Anchor to: Purpose of this script" href="#purpose-of-this-script">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#purpose-of-this-script" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Purpose of this script" aria-label="Anchor to: Purpose of this script" href="#purpose-of-this-script">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -688,7 +765,7 @@ With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_
     >
         Requirements
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#requirements" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Requirements" aria-label="Anchor to: Requirements" href="#requirements">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#requirements" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Requirements" aria-label="Anchor to: Requirements" href="#requirements">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -704,7 +781,7 @@ pg_stat_statements.track_utility = off
     >
         Installation
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#installation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Installation" aria-label="Anchor to: Installation" href="#installation">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#installation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Installation" aria-label="Anchor to: Installation" href="#installation">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -727,7 +804,7 @@ pgstat_snap.control
     >
         Usage
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#usage" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Usage" aria-label="Anchor to: Usage" href="#usage">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#usage" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Usage" aria-label="Anchor to: Usage" href="#usage">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -741,7 +818,7 @@ pgstat_snap.control
     >
         Reset
     </h2>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#reset" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Reset" aria-label="Anchor to: Reset" href="#reset">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#reset" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Reset" aria-label="Anchor to: Reset" href="#reset">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -755,7 +832,7 @@ pgstat_snap.control
     >
         How it works
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#how-it-works" class="gdoc-page__anchor clip flex align-center" title="Anchor to: How it works" aria-label="Anchor to: How it works" href="#how-it-works">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#how-it-works" class="gdoc-page__anchor clip flex align-center" title="Anchor to: How it works" aria-label="Anchor to: How it works" href="#how-it-works">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -768,7 +845,7 @@ pgstat_snap.control
     >
         Uninstall
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#uninstall" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Uninstall" aria-label="Anchor to: Uninstall" href="#uninstall">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#uninstall" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Uninstall" aria-label="Anchor to: Uninstall" href="#uninstall">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -779,7 +856,7 @@ pgstat_snap.control
     >
         Views description
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#views-description" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Views description" aria-label="Anchor to: Views description" href="#views-description">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#views-description" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Views description" aria-label="Anchor to: Views description" href="#views-description">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -788,7 +865,7 @@ pgstat_snap.control
     >
         pgstat_snap_diff
     </h2>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#pgstat_snap_diff" class="gdoc-page__anchor clip flex align-center" title="Anchor to: pgstat_snap_diff" aria-label="Anchor to: pgstat_snap_diff" href="#pgstat_snap_diff">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#pgstat_snap_diff" class="gdoc-page__anchor clip flex align-center" title="Anchor to: pgstat_snap_diff" aria-label="Anchor to: pgstat_snap_diff" href="#pgstat_snap_diff">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -864,7 +941,7 @@ pgstat_snap.control
     >
         Sample output
     </h3>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#sample-output" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Sample output" aria-label="Anchor to: Sample output" href="#sample-output">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#sample-output" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Sample output" aria-label="Anchor to: Sample output" href="#sample-output">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -1136,7 +1213,7 @@ pgstat_snap.control
     >
         pgstat_snap_diff_all
     </h2>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#pgstat_snap_diff_all" class="gdoc-page__anchor clip flex align-center" title="Anchor to: pgstat_snap_diff_all" aria-label="Anchor to: pgstat_snap_diff_all" href="#pgstat_snap_diff_all">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#pgstat_snap_diff_all" class="gdoc-page__anchor clip flex align-center" title="Anchor to: pgstat_snap_diff_all" aria-label="Anchor to: pgstat_snap_diff_all" href="#pgstat_snap_diff_all">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -1240,7 +1317,7 @@ pgstat_snap.control
     >
         Sample output
     </h3>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#sample-output-1" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Sample output" aria-label="Anchor to: Sample output" href="#sample-output-1">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#sample-output-1" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Sample output" aria-label="Anchor to: Sample output" href="#sample-output-1">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -1624,7 +1701,7 @@ pgstat_snap.control
     >
         Query Examples
     </h1>
-    <a data-clipboard-text="http://localhost:1313/postgres/pgstat_snap/#query-examples" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Query Examples" aria-label="Anchor to: Query Examples" href="#query-examples">
+    <a data-clipboard-text="http://localhost:1313/postgres/README/#query-examples" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Query Examples" aria-label="Anchor to: Query Examples" href="#query-examples">
         <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
     </a>
 </div>
@@ -1643,7 +1720,6 @@ pgstat_snap.control
 </code></pre><p>If needed you can access all columns for a particular query directly in the history tables:</p>
 <pre tabindex="0"><code>select * from pgstat_snap_stat_history where queryid=&#39;123455678909876&#39;;
 </code></pre>
-    </section>
   </article>
 
 
@@ -1809,30 +1885,6 @@ pgstat_snap.control
         
 
         
-
-        
-          
-        
-
-        
-        
-      
-    
-      
-      
-
-      
-        
-        
-        
-        
-
-        
-        
-
-        
-
-        
           
           
         
@@ -1844,45 +1896,6 @@ pgstat_snap.control
         
         
       
-    
-
-  
-
-        
-      
-    
-      
-      
-
-      
-        
-        
-        
-        
-
-        
-        
-
-        
-          
-        
-
-        
-
-        
-
-        
-        
-          
-  
-  
-
-  
-  
-    
-
-    
-
     
       
       
@@ -1901,6 +1914,91 @@ pgstat_snap.control
             
             
           
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
         
 
         
@@ -1929,11 +2027,11 @@ pgstat_snap.control
   
     <a
       class="gdoc-page__nav--prev flex align-center"
-      href="/postgres/pgbench/"
-      title="pgbench"
+      href="/oracle/ashtop/"
+      title="ashtop"
     >
       <i class="gdoc-icon">gdoc_arrow_left_alt</i>
-      pgbench
+      ashtop
     </a>
   
 </span>
@@ -1941,10 +2039,10 @@ pgstat_snap.control
   
     <a
       class="gdoc-page__nav--next flex align-center"
-      href="/stuff/stuff/"
-      title="other stuff"
+      href="/postgres/pgbench/"
+      title="pgbench"
     >
-      other stuff
+      pgbench
       <i class="gdoc-icon">gdoc_arrow_right_alt</i>
     </a>
   
