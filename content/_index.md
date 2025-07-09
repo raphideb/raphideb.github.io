@@ -6,9 +6,6 @@ hide_readingtime: true
 type: "docs"
 ---
 <br>
-<br>
-<br>
-<br>
 <img class="floatimg" src="/bar.jpg" alt="raphis bar" width="50%" height="50%"/>
 <br>
 <br>
