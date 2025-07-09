@@ -232,7 +232,7 @@ vi ashtop.sql
 A simple query looks like this, the structure is always the same:
 
 ```sql
-sys@CIS_1/T1> @ashtop username,sql_id session_type='FOREGROUND' sysdate-1/24 sysdate;
+@ashtop username,sql_id session_type='FOREGROUND' sysdate-1/24 sysdate;
 ```
 
 Example output:

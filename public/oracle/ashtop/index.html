@@ -26,12 +26,12 @@
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="oracle">
-    <meta property="article:modified_time" content="2025-07-09T23:01:51+02:00">
+    <meta property="article:modified_time" content="2025-07-09T23:05:17+02:00">
 
   <meta itemprop="name" content="ashtop">
   <meta itemprop="description" content="Usage and examples for Tanel Poder&#39;s ashtop, the fastest way to query ASH">
-  <meta itemprop="dateModified" content="2025-07-09T23:01:51+02:00">
-  <meta itemprop="wordCount" content="2094">
+  <meta itemprop="dateModified" content="2025-07-09T23:05:17+02:00">
+  <meta itemprop="wordCount" content="2093">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="ashtop">
   <meta name="twitter:description" content="Usage and examples for Tanel Poder&#39;s ashtop, the fastest way to query ASH">
@@ -240,7 +240,7 @@
 <p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 10 minute read &nbsp;</p>
 </header>
 	<h2 id="ashtop---the-swiss-army-knife-for-ash">ashtop - the Swiss Army Knife for ASH</h2>
-<img class="floatimg" src="/oracle/ashtop.jpg" alt="ashtop" width="30%" height="30%"/>
+<img class="floatimg" src="/oracle/ashtop.jpg" alt="ashtop" width="25%" height="25%"/>
 <p>
 Tanel Poder's script "ashtop.sql" greatly simplifies querying ASH and is essentially a fully parameterizable "grep" for ASH. The script comes in two variants:  
 <p>ashtop.sql  → for querying ASH: <code>gv$active_session_history</code><br>
@@ -708,7 +708,7 @@ dashtop.sql → for querying DASH: <code>dba_hist_active_sess_history</code></p>
 </span></span><span class="line"><span class="cl">   FROM ash_save220901 a<span class="o">)</span> a
 </span></span></code></pre></div><h2 id="using-ashtop">Using ashtop</h2>
 <p>A simple query looks like this, the structure is always the same:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">sys</span><span class="o">@</span><span class="n">CIS_1</span><span class="o">/</span><span class="n">T1</span><span class="o">&gt;</span><span class="w"> </span><span class="o">@</span><span class="n">ashtop</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="n">sql_id</span><span class="w"> </span><span class="n">session_type</span><span class="o">=</span><span class="s1">&#39;FOREGROUND&#39;</span><span class="w"> </span><span class="n">sysdate</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">24</span><span class="w"> </span><span class="n">sysdate</span><span class="p">;</span><span class="w">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="o">@</span><span class="n">ashtop</span><span class="w"> </span><span class="n">username</span><span class="p">,</span><span class="n">sql_id</span><span class="w"> </span><span class="n">session_type</span><span class="o">=</span><span class="s1">&#39;FOREGROUND&#39;</span><span class="w"> </span><span class="n">sysdate</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">24</span><span class="w"> </span><span class="n">sysdate</span><span class="p">;</span><span class="w">
 </span></span></span></code></pre></div><p>Example output:</p>
 <table>
   <thead>
