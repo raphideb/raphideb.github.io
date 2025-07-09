@@ -3,22 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/oracle/ash/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/oracle/ashtop/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/oracle/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/stuff/stuff/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/postgres/pgbench/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/postgres/pgstat_snap/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/postgres/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/stuff/</loc>
+    <lastmod>2025-07-08T23:30:37+02:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/</loc>
   </url>
