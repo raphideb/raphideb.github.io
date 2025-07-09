@@ -1,5 +1,4 @@
-#baseURL = "https://raphideb.github.io/"
-baseURL = "/"
+baseURL = "https://raphideb.github.io/"
 languageCode = "en-us"
 title = "raphi's corner"
 
@@ -36,8 +35,8 @@ sidebar_search_disable = false
 sidebar_menu_foldable = false
 showLightDarkModeMenu = true
 
-#[params]
-#prism_syntax_highlighting = true
+[params]
+github_repo = "https://github.com/raphideb/raphideb.github.io"
 
 # Highlighting config
 pygmentsCodeFences = true
@@ -65,7 +64,7 @@ enable = true
 [module]
 [module.hugoVersion]
 extended = true
-min = "0.110.0"
+min = "0.147.0"
 proxy = "direct"
 [[module.imports]]
 path = "github.com/google/docsy"

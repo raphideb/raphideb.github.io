@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Oracle on raphi&#39;s corner</title>
-    <link>//localhost:1313/oracle/</link>
+    <link>http://localhost:1313/oracle/</link>
     <description>Recent content in Oracle on raphi&#39;s corner</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <atom:link href="//localhost:1313/oracle/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/oracle/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>active session history</title>
-      <link>//localhost:1313/oracle/ash/</link>
+      <title>Active Session History</title>
+      <link>http://localhost:1313/oracle/ash/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/oracle/ash/</guid>
-      <description>&lt;h2 id=&#34;ash---active-session-history&#34;&gt;ASH - Active Session History&lt;/h2&gt;&#xA;&lt;img src=&#34;//localhost:1313/oracle/ash.jpg&#34; alt=&#34;active_session_history&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;p&gt;The view &lt;strong&gt;gv$active_session_history&lt;/strong&gt; (ASH) records in memory every second the wait events of all active sessions. It is the single most important source of information for deep performance analysis on a session or even query level, like what a session was doing in a particular moment in time, what queries it was executing or which other sessions were blocking it. For all the data it contains it is surprisingly easy to use. First I will explain how the ASH works and what fields it provides, then I show you a basic script and how to extend it with all sorts of queries to get the info that you need.&lt;/p&gt;</description>
+      <guid>http://localhost:1313/oracle/ash/</guid>
+      <description>&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/oracle/ash.jpg&#34; alt=&#34;active_session_history&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;p&gt;The view gv$active_session_history (ASH) records in memory every second the wait events of all active sessions. It is the single most important source of information for deep performance analysis on a session or even query level, like what a session was doing in a particular moment in time, what queries it was executing or which other sessions were blocking it. For all the data it contains it is surprisingly easy to use. First I will explain how the ASH works and what fields it provides, then I show you a basic script and how to extend it with all sorts of queries to get the info that you need.&#xA;&lt;p&gt;Since the memory for ASH is limited, the data is only available for a few days or even hours. It is also usually gone when the instance was restarted, therefore, every 10 seconds a snapshot of the ASH data is stored permanently on disk and can be accessed through the view dba_hist_active_sess_history (DASH). The live view (Top activity) of Enterprise Manager is based on ASH data, AWR reports are based on dba_hist_* views.&lt;/p&gt;</description>
     </item>
     <item>
       <title>ashtop</title>
-      <link>//localhost:1313/oracle/ashtop/</link>
+      <link>http://localhost:1313/oracle/ashtop/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>//localhost:1313/oracle/ashtop/</guid>
-      <description>&lt;h2 id=&#34;ashtop---the-swiss-army-knife-for-ash&#34;&gt;ashtop - the Swiss Army Knife for ASH&lt;/h2&gt;&#xA;&lt;img class=&#34;floatimg&#34; src=&#34;//localhost:1313/oracle/ashtop.jpg&#34; alt=&#34;ashtop&#34; width=&#34;20%&#34; height=&#34;20%&#34;/&gt;&#xA;&lt;p&gt;&#xA;Tanel Poder&#39;s script &#34;ashtop.sql&#34; greatly simplifies querying ASH and is essentially a fully parameterizable &#34;grep&#34; for ASH. The script comes in two variants:  &#xA;&lt;p&gt;ashtop.sql  → for querying ASH: &lt;code&gt;gv$active_session_history&lt;/code&gt;&lt;br&gt;&#xA;dashtop.sql → for querying DASH: &lt;code&gt;dba_hist_active_sess_history&lt;/code&gt;&lt;/p&gt;&#xA;&lt;p&gt;Both scripts are in the &amp;ldquo;ash&amp;rdquo; directory of Tanel&amp;rsquo;s github: &lt;a href=&#34;https://github.com/tanelpoder/tpt-oracle&#34;&gt;https://github.com/tanelpoder/tpt-oracle&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Pro tip:&lt;/strong&gt; do yourself a favour and download the whole repository. There are many, many more very useful scripts for all kinds of DBA tasks.&lt;/p&gt;</description>
+      <guid>http://localhost:1313/oracle/ashtop/</guid>
+      <description>&lt;h2 id=&#34;ashtop---the-swiss-army-knife-for-ash&#34;&gt;ashtop - the Swiss Army Knife for ASH&lt;/h2&gt;&#xA;&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/oracle/ashtop.jpg&#34; alt=&#34;ashtop&#34; width=&#34;20%&#34; height=&#34;20%&#34;/&gt;&#xA;&lt;p&gt;&#xA;Tanel Poder&#39;s script &#34;ashtop.sql&#34; greatly simplifies querying ASH and is essentially a fully parameterizable &#34;grep&#34; for ASH. The script comes in two variants:  &#xA;&lt;p&gt;ashtop.sql  → for querying ASH: &lt;code&gt;gv$active_session_history&lt;/code&gt;&lt;br&gt;&#xA;dashtop.sql → for querying DASH: &lt;code&gt;dba_hist_active_sess_history&lt;/code&gt;&lt;/p&gt;&#xA;&lt;p&gt;Both scripts are in the &amp;ldquo;ash&amp;rdquo; directory of Tanel&amp;rsquo;s github: &lt;a href=&#34;https://github.com/tanelpoder/tpt-oracle&#34;&gt;https://github.com/tanelpoder/tpt-oracle&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Pro tip:&lt;/strong&gt; do yourself a favour and download the whole repository. There are many, many more very useful scripts for all kinds of DBA tasks.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

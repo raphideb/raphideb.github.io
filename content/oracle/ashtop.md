@@ -25,7 +25,6 @@ To use ashtop efficiently, it is necessary to know the structure of ASH and how 
 </p>
 <div style="clear: both;"></div>
 
-
 ## Syntax
 The basic syntax is very simple:
 

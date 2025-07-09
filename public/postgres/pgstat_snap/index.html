@@ -18,23 +18,23 @@
 <link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
 
 <title>pgstat_snap | raphi&#39;s corner</title>
-<meta name="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_activity">
-<meta property="og:url" content="//localhost:1313/postgres/pgstat_snap/">
+<meta name="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
+<meta property="og:url" content="http://localhost:1313/postgres/pgstat_snap/">
   <meta property="og:site_name" content="raphi&#39;s corner">
   <meta property="og:title" content="pgstat_snap">
-  <meta property="og:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_activity">
+  <meta property="og:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="postgres">
-    <meta property="article:modified_time" content="2025-07-08T23:30:37+02:00">
+    <meta property="article:modified_time" content="2025-07-09T16:16:50+02:00">
 
   <meta itemprop="name" content="pgstat_snap">
-  <meta itemprop="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_activity">
-  <meta itemprop="dateModified" content="2025-07-08T23:30:37+02:00">
-  <meta itemprop="wordCount" content="1622">
+  <meta itemprop="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
+  <meta itemprop="dateModified" content="2025-07-09T16:16:50+02:00">
+  <meta itemprop="wordCount" content="1676">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="pgstat_snap">
-  <meta name="twitter:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_activity">
+  <meta name="twitter:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
 <link href="/scss/main.css" rel="stylesheet">
 <script
   src="https://code.jquery.com/jquery-3.7.1.min.js"
@@ -145,7 +145,7 @@
   <a href="/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-oracle"><span class="">Oracle</span></a>
   <ul class="ul-2 foldable">
     <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleash-li">
-  <a href="/oracle/ash/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleash"><span class="">active session history</span></a>
+  <a href="/oracle/ash/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleash"><span class="">Active Session History</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleashtop-li">
   <a href="/oracle/ashtop/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleashtop"><span class="">ashtop</span></a>
 </li>
@@ -167,24 +167,41 @@
           </aside>
           <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
             <div class="td-page-meta ms-2 pb-1 pt-2 mb-0">
-
+<a href="https://github.com/raphideb/raphideb.github.io/tree/main/content/postgres/pgstat_snap.md" class="td-page-meta--view td-page-meta__view" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines fa-fw"></i> View page source</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/edit/main/content/postgres/pgstat_snap.md" class="td-page-meta--edit td-page-meta__edit" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Edit this page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/new/main/content/postgres?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" class="td-page-meta--child td-page-meta__child" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Create child page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/issues/new?title=pgstat_snap" class="td-page-meta--issue td-page-meta__issue" target="_blank" rel="noopener"><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
+  
 </div>
 
             <div class="td-toc">
         <nav id="TableOfContents">
   <ul>
-    <li><a href="#reset">Reset</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#pgstat_snap_diff">pgstat_snap_diff</a>
+    <li><a href="#purpose-of-this-extension">Purpose of this extension</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#usage">Usage</a>
       <ul>
-        <li><a href="#sample-output">Sample output</a></li>
+        <li><a href="#collect-snapshots">Collect snapshots</a></li>
+        <li><a href="#reset">Reset</a></li>
+        <li><a href="#uninstall">Uninstall</a></li>
       </ul>
     </li>
-    <li><a href="#pgstat_snap_diff_all">pgstat_snap_diff_all</a>
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#views-description">Views description</a>
       <ul>
-        <li><a href="#sample-output-1">Sample output</a></li>
+        <li><a href="#pgstat_snap_diff">pgstat_snap_diff</a></li>
+        <li><a href="#pgstat_snap_diff_all">pgstat_snap_diff_all</a></li>
+      </ul>
+    </li>
+    <li><a href="#query-examples">Query Examples</a>
+      <ul>
+        <li><a href="#what-was-happening-ordered-by-time">What was happening, ordered by time:</a></li>
+        <li><a href="#what-was-every-query-doing">What was every query doing:</a></li>
+        <li><a href="#which-database-touched-the-most-rows">Which database touched the most rows:</a></li>
+        <li><a href="#which-query-dml-affected-the-most-rows">Which query DML affected the most rows:</a></li>
+        <li><a href="#what-wait-events-happened-which-werent-of-type-client">What wait events happened which weren&rsquo;t of type Client:</a></li>
+        <li><a href="#access-raw-data-directly">Access raw data directly</a></li>
       </ul>
     </li>
   </ul>
@@ -208,15 +225,32 @@
 </nav>
 <div class="td-content">
 	<h1>pgstat_snap</h1>
-	<div class="lead">Extension for PostgreSQL to create timestamped snapshots of pg_stat_activity</div>
+	<div class="lead">Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements</div>
 	<header class="article-meta">
 		
 <p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 8 minute read &nbsp;</p>
 </header>
-	<h1 id="purpose-of-this-script">Purpose of this script</h1>
+	<h2 id="purpose-of-this-extension">Purpose of this extension</h2>
 <p>The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages.</p>
 <p>With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database.</p>
-<h1 id="requirements">Requirements</h1>
+<p>If you haven&rsquo;t already, download the extension from my github repo: <a href="https://github.com/raphideb/pgstat_snap">https://github.com/raphideb/pgstat_snap</a></p>
+<p>The README.md is a shorter version of this post with just the essentials.</p>
+<h2 id="installation">Installation</h2>
+<p>To install the extension, download these files from my github repo:</p>
+<pre tabindex="0"><code>pgstat_snap--1.0.sql
+pgstat_snap.control
+</code></pre><p>And copy them to the extension directory of PostgreSQL</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo cp pgstat_snap* <span class="k">$(</span>pg_config --sharedir<span class="k">)</span>/extension/
+</span></span></code></pre></div><p>You can then install the extension in any database that has the pg_stat_statements extension enabled, superuser right are NOT needed:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="n">extension</span><span class="w"> </span><span class="n">pgstat_snap</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p>It can also be installed into a different schema but be sure to have it included in the search_path:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">create</span><span class="w"> </span><span class="n">extension</span><span class="w"> </span><span class="n">pgstat_snap</span><span class="w"> </span><span class="k">schema</span><span class="w"> </span><span class="n">my_schema</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p>This will create the following tables and views:</p>
+<pre tabindex="0"><code>  pgstat_snap_stat_history   -&gt; pg_stat_statements history (complete snapshot)
+  pgstat_snap_act_history    -&gt; pg_stat_activity history (complete snapshot)
+  pgstat_snap_diff_all       -&gt; view containing the sum and difference of each statement between snapshots
+  pgstat_snap_diff           -&gt; view containing only the difference of each statement between snapshots
+</code></pre><h2 id="requirements">Requirements</h2>
 <p>pg_stat_statements must be loaded and tracking activated in the postgres config:</p>
 <pre tabindex="0"><code>shared_preload_libraries = &#39;pg_stat_statements&#39;
 </code></pre><p>Recommended settings:</p>
@@ -224,43 +258,30 @@
 pg_stat_statements.track_utility = off
 </code></pre><p>The extension has to be created in the database in which pgstat_snap will be installed:</p>
 <pre tabindex="0"><code>create extension pg_stat_statements;
-</code></pre><h1 id="installation">Installation</h1>
-<p>To install the extension, download these files:</p>
-<pre tabindex="0"><code>pgstat_snap--1.0.sql
-pgstat_snap.control
-</code></pre><p>And copy them to the extension directory of PostgreSQL</p>
-<pre tabindex="0"><code>sudo cp pgstat_snap* $(pg_config --sharedir)/extension/
-</code></pre><p>You can then install the extension in any database that has the pg_stat_statements extension enabled, superuser right are NOT needed:</p>
-<pre tabindex="0"><code>create extension pgstat_snap;
-</code></pre><p>It can also be installed into a different schema but be sure to have it included in the search_path:</p>
-<pre tabindex="0"><code>create extension pgstat_snap schema my_schema;
-</code></pre><p>This will create the following tables and views:</p>
-<pre tabindex="0"><code>  pgstat_snap_stat_history   -&gt; pg_stat_statements history (complete snapshot)
-  pgstat_snap_act_history    -&gt; pg_stat_activity history (complete snapshot)
-  pgstat_snap_diff_all       -&gt; view containing the sum and difference of each statement between snapshots
-  pgstat_snap_diff           -&gt; view containing only the difference of each statement between snapshots
-</code></pre><h1 id="usage">Usage</h1>
+</code></pre><h2 id="usage">Usage</h2>
+<h3 id="collect-snapshots">Collect snapshots</h3>
 <p>Start gathering snapshots with, e.g. every 1 second 60 times:</p>
-<pre tabindex="0"><code>CALL pgstat_snap_collect(1, 60);
-</code></pre><p>Or gather a snapshot every 5 seconds for 10 minutes:</p>
-<pre tabindex="0"><code>CALL pgstat_snap_collect(5, 120);
-</code></pre><p><strong>IMPORTANT:</strong> on very busy clusters with many databases a lot of data can be collected, 500mb per minute or more. Don&rsquo;t let it run for a very long time with short intervals, unless you have the disk space for it.</p>
-<h2 id="reset">Reset</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CALL</span><span class="w"> </span><span class="n">pgstat_snap_collect</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Or gather a snapshot every 5 seconds for 10 minutes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CALL</span><span class="w"> </span><span class="n">pgstat_snap_collect</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">120</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p><strong>IMPORTANT:</strong> on very busy clusters with many databases a lot of data can be collected, 500mb per minute or more. Don&rsquo;t let it run for a very long time with short intervals, unless you have the disk space for it.</p>
+<p>After you collected the snapshots, check out the <a href="/postgres/pgstat_snap/#query-examples">Query Examples</a> for how to query the views.</p>
+<h3 id="reset">Reset</h3>
 <p>Because everything is timestamped, a reset is usually not needed between CALLs to create_snapshot. But you can to cleanup and keep the tables smaller. You can also reset pg_stats*.</p>
 <p>Reset all pgstat_snap tables with:</p>
-<pre tabindex="0"><code>  SELECT pgstat_snap_reset();   -&gt; reset only pgstat_snap.pgstat*history tables
-  SELECT pgstat_snap_reset(1);  -&gt; also select pg_stat_statements_reset()
-  SELECT pgstat_snap_reset(2);  -&gt; also select pg_stat_reset()
-</code></pre><h1 id="how-it-works">How it works</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">();</span><span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">reset</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">pgstat_snap</span><span class="p">.</span><span class="n">pgstat</span><span class="o">*</span><span class="n">history</span><span class="w"> </span><span class="n">tables</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">pg_stat_statements_reset</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">pg_stat_reset</span><span class="p">()</span><span class="w">
+</span></span></span></code></pre></div><h3 id="uninstall">Uninstall</h3>
+<p>To completely uninstall pgstat_snap, run:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">DROP</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="n">pgstat_snap</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h2 id="how-it-works">How it works</h2>
 <p>The first argument to create_snapshot is the interval in seconds, the second argument is how many snapshots should be collected. Every <em>interval</em> seconds, <em>select * from pg_stat_statements</em> will be inserted into <em>pgstat_snap_stat_history</em> and <em>select * from pgstat_act_statements</em> into <em>pgstat_snap_act_history</em>.</p>
 <p>For every row, a timestamp will be added. Only rows where the &ldquo;rows&rdquo; column has changed will be inserted into <em>pgstat_snap_stat_history</em> and always only one row per timestamp, dbid and queryid. Every insert is immediately committed to be able to live follow the tables/views.</p>
 <p>The views have a <em>_d</em> column which displays the difference between the current row and the last row where the query was recorded in the pgstat_snap_stat_history table. <em>NULL</em> values in <em>rows_d</em>, <em>calls_d</em> and so on mean, that no previous row for this query was found because it was executed the first time since create_snapshot was running.</p>
 <p>The views also contain the datname, wait events and the first 20 characters of the query, making it easier to identify queries of interest.</p>
-<h1 id="uninstall">Uninstall</h1>
-<p>To completely uninstall pgstat_snap, run:</p>
-<pre tabindex="0"><code>DROP EXTENSION pgstat_snap;
-</code></pre><h1 id="views-description">Views description</h1>
-<h2 id="pgstat_snap_diff">pgstat_snap_diff</h2>
+<h2 id="views-description">Views description</h2>
+<h3 id="pgstat_snap_diff">pgstat_snap_diff</h3>
 <p>This view only contains the difference between the previous and next execution of a queryid/dbid pair:</p>
 <table>
   <thead>
@@ -328,9 +349,9 @@ pgstat_snap.control
       </tr>
   </tbody>
 </table>
-<h3 id="sample-output">Sample output</h3>
-<pre tabindex="0"><code>select * from pgstat_snap_diff order by 1;
-</code></pre><table>
+<h4 id="sample-output">Sample output</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><table>
   <thead>
       <tr>
           <th>snapshot_time</th>
@@ -592,7 +613,7 @@ pgstat_snap.control
       </tr>
   </tbody>
 </table>
-<h2 id="pgstat_snap_diff_all">pgstat_snap_diff_all</h2>
+<h3 id="pgstat_snap_diff_all">pgstat_snap_diff_all</h3>
 <p>This view contains the difference between the previous and next execution of a queryid/dbid pair and the sum of the fields as recorded in pg_stat_statements at that time:</p>
 <table>
   <thead>
@@ -688,9 +709,9 @@ pgstat_snap.control
       </tr>
   </tbody>
 </table>
-<h3 id="sample-output-1">Sample output</h3>
-<pre tabindex="0"><code>select * from pgstat_snap_diff_all order by 1;
-</code></pre><table>
+<h4 id="sample-output-1">Sample output</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff_all</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><table>
   <thead>
       <tr>
           <th>snapshot_time</th>
@@ -1064,23 +1085,29 @@ pgstat_snap.control
       </tr>
   </tbody>
 </table>
-<h1 id="query-examples">Query Examples</h1>
+<h2 id="query-examples">Query Examples</h2>
 <p>Depending on screensize, you might want to set format to aligned, especially when querying <em>pstat_snap_diff_all</em>:</p>
-<pre tabindex="0"><code>\pset format aligned
-</code></pre><p>What was happening:</p>
-<pre tabindex="0"><code>select * from pgstat_snap_diff order by 1;
-</code></pre><p>What was every query doing:</p>
-<pre tabindex="0"><code>select * from pgstat_snap_diff order by 2,1;
-</code></pre><p>Which database touched the most rows:</p>
-<pre tabindex="0"><code>select sum(rows_d),datname from pgstat_snap_diff group by datname;
-</code></pre><p>Which query DML affected the most rows:</p>
-<pre tabindex="0"><code>select sum(rows_d),queryid,query from pgstat_snap_diff where upper(query) not like &#39;SELECT%&#39; group by queryid,query;
-</code></pre><p>What wait events happened which weren&rsquo;t of type Client:</p>
-<pre tabindex="0"><code>select * from pgstat_snap_diff where wait_event_type is not null and wait_event_type &lt;&gt; &#39;Client&#39; order by 2,1;
-</code></pre><p>If needed you can access all columns for a particular query directly in the history tables:</p>
-<pre tabindex="0"><code>select * from pgstat_snap_stat_history where queryid=&#39;123455678909876&#39;;
-</code></pre>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="err">\</span><span class="n">pset</span><span class="w"> </span><span class="n">format</span><span class="w"> </span><span class="n">aligned</span><span class="w">
+</span></span></span></code></pre></div><h3 id="what-was-happening-ordered-by-time">What was happening, ordered by time:</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="what-was-every-query-doing">What was every query doing:</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="which-database-touched-the-most-rows">Which database touched the most rows:</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">rows_d</span><span class="p">),</span><span class="n">datname</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">datname</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="which-query-dml-affected-the-most-rows">Which query DML affected the most rows:</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">rows_d</span><span class="p">),</span><span class="n">queryid</span><span class="p">,</span><span class="n">query</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="k">upper</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;SELECT%&#39;</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">queryid</span><span class="p">,</span><span class="n">query</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="what-wait-events-happened-which-werent-of-type-client">What wait events happened which weren&rsquo;t of type Client:</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s1">&#39;Client&#39;</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="access-raw-data-directly">Access raw data directly</h3>
+<p>If needed you can access all columns for a particular query directly in the history tables:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_stat_history</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">queryid</span><span class="o">=</span><span class="s1">&#39;123455678909876&#39;</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div>
 	
+<div class="text-muted pt-3 border-top">
+  Last modified: July 9, 2025
+</div>
+
+
 </div>
 
 

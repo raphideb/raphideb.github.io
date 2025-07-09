@@ -1,22 +1,26 @@
 ---
-title: "active session history"
+title: "Active Session History"
 type: "docs"
-geekdocToC: 2
 weight: 1
 description: "Oracle's active session history demystified"
 ---
-## ASH - Active Session History
+<img class="floatimg" src="/oracle/ash.jpg" alt="active_session_history" width="25%" height="25%"/>
+<p>The view gv$active_session_history (ASH) records in memory every second the wait events of all active sessions. It is the single most important source of information for deep performance analysis on a session or even query level, like what a session was doing in a particular moment in time, what queries it was executing or which other sessions were blocking it. For all the data it contains it is surprisingly easy to use. First I will explain how the ASH works and what fields it provides, then I show you a basic script and how to extend it with all sorts of queries to get the info that you need.
 
-<img src="/oracle/ash.jpg" alt="active_session_history" width="25%" height="25%"/>
+Since the memory for ASH is limited, the data is only available for a few days or even hours. It is also usually gone when the instance was restarted, therefore, every 10 seconds a snapshot of the ASH data is stored permanently on disk and can be accessed through the view dba_hist_active_sess_history (DASH). The live view (Top activity) of Enterprise Manager is based on ASH data, AWR reports are based on dba_hist_* views.</p>
+<div style="clear: both;"></div>
 
-The view **gv$active_session_history** (ASH) records in memory every second the wait events of all active sessions. It is the single most important source of information for deep performance analysis on a session or even query level, like what a session was doing in a particular moment in time, what queries it was executing or which other sessions were blocking it. For all the data it contains it is surprisingly easy to use. First I will explain how the ASH works and what fields it provides, then I show you a basic script and how to extend it with all sorts of queries to get the info that you need.
+## ASH Basics
+All ASH/DASH data is stored at the CDB level and can be accessed either from the CDB or a specific PDB. However, when you want to map the USER_ID, CURRENT_OBJ\#, CURRENT_FILE\# etc to names stored in dba_views, it's best to query ASH from within the corresponding PDB.
 
-Since the memory for ASH is limited, the data is only available for a few days or even hours. It is also usually gone when the instance was restarted, therefore, every 10 seconds a snapshot of the ASH data is stored permanently on disk and can be accessed through the view **dba_hist_active_sess_history** (DASH). The live view (Top activity) of Enterprise Manager is based on ASH data, AWR reports are based on **dba_hist_*** views.
+A word about gv$active_session_history vs. v$active_session_history: While they are defacto the same on a non-RAC database, on a RAC database the v$ variant only shows sessions running on one instance, whereas gv$ shows all sessions an all instances of the database. I therefore made it a habbit to always use gv$active_session_history and include the inst_id in my queries. The same is true for many other v$ views, in RAC there's usually a gv$ variant (like gv$session). 
+
+Note that the dba_hist views are always cluster wide and store the data for all instances.
 
 ### Useful Tables and Views
 To fully leverage all the information that the ASH provides, it helps to know some other useful views related to performance analysis.
 
-| Name | Data Description | Notes |
+| Name | Description | Notes |
 | :-- | :-- | :-- |
 | v\$active_session_history | Wait events for all sessions of a node in 1-second snapshots | In memory, limited space |
 | gv\$active_session_history | Same as above, but for all nodes in a RAC cluster | Has additional column "INST_ID" |
@@ -27,12 +31,6 @@ To fully leverage all the information that the ASH provides, it helps to know so
 | dba_objects | Info on all objects in the DB | Useful for mapping to current_obj\# in ASH |
 | dba_data_files | Info on all data files | Useful for mapping to current_file\# in ASH |
 
-## ASH Basics
-All ASH/DASH data is stored at the CDB level and can be accessed either from the CDB or a specific PDB. However, when you want to map the USER_ID, CURRENT_OBJ\#, CURRENT_FILE\# etc to names stored in dba_views, it's best to query ASH from within the corresponding PDB.
-
-A word about gv$active_session_history vs. v$active_session_history: While they are defacto the same on a non-RAC database, on a RAC database the v$ variant only shows sessions running on one instance, whereas gv$ shows all sessions an all instances of the database. I therefore made it a habbit to always use gv$active_session_history and include the inst_id in my queries. The same is true for many other v$ views, in RAC there's usually a gv$ variant (like gv$session). 
-
-Note that the dba_hist views are always cluster wide and store the data for all instances.
 
 ### Description of the fields
 ASH and DASH have over 100 fields, and more are added with each release. The description of all fields is available here:
@@ -120,7 +118,6 @@ As you will shortly see, it's very easy to start with a basic script to get an o
 ### Basic Script
 Let's start with a basic query which will be the blueprint for our more complex queries. It returns the most important columns of all wait events in the last hour for all nodes of a RAC database and works in both CDB and PDB.
 
-**Important**: The "TIME_WAITED" column shows 0 for as long as the session was waiting for that particular event to end. When ordered by sample_time, the first non-zero value for a unique combination of inst_id/session_id/sql_id shows the total amount of time (in ms) the session had to wait on that event. When the "TIME_WAITED" and "EVENT" column are NULL (not 0), the session was on the CPU and not waiting for an event. You can select the session_state in your query if you want to confirm this.
 
 #### Query from ASH
 ```sql
@@ -316,6 +313,19 @@ order by 4;
 
 ## Making sense of the output
 Now that we know how to query the ASH it's time to speak about what to do with the information.
+
+### TIME_WAITED
+As mentioned above, ASH data is stored every second for all sessions. The "TIME_WAITED" column shows 0 when a session was still waiting for a particular event to end when it was added to ASH. When ordered by sample_time, the first non-zero value for a unique combination of inst_id/session_id/sql_id shows the total amount of time (in ms) the session had to wait on that event. When the "TIME_WAITED" and "EVENT" column are NULL (not 0) on the other hand, the session was on the CPU and not waiting for an event. You can select the session_state in your query if you want to confirm this. 
+
+In this example, session 14553 was waiting for "cursor: pin S wait on X" since 3:40:54 for 4120324 microseconds, when it finally finished at 3:40:58. Session 7578 was running on the CPU and thus did not have any wait event.
+
+| SAMPLE_TIME | INST_ID | SQL_ID | SESSION_ID | EVENT | TIME_WAITED |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+| 08-JUL-25 03.40.54.154 | 2 | 84p8c9j3ctpua | 14553 | cursor: pin S wait on X | 0 |
+| 08-JUL-25 03.40.55.134 | 2 | 84p8c9j3ctpua | 14553 | cursor: pin S wait on X | 0 |
+| 08-JUL-25 03.40.56.112 | 2 | 84p8c9j3ctpua | 14553 | cursor: pin S wait on X | 0 |
+| 08-JUL-25 03.40.57.252 | 2 | 84p8c9j3ctpua | 14553 | cursor: pin S wait on X | 4120324 |
+| 08-JUL-25 03.40.58.252 | 2 | cxfgr5c2j9zgg|  7578 |  |  |
 
 ### Wait events
 This is the true bread and butter of the ASH. Understanding wait events, why they occur, what impact they have, how to correlate them and ultimately how to solve them is what makes performance tuning an art form rather than a scientific method. I can not go into the details of every important wait event because most would warrant a dedicated blog post of it's own. However, the official Oracle documentation has a brief description of all wait events:

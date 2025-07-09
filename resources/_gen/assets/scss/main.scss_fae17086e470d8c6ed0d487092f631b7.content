@@ -20340,6 +20340,19 @@ div.drawioframe {
   [data-bs-theme="dark"] .chroma {
     background-color: var(--td-pre-bg); }
 
+.td-page-meta__child {
+  display: none !important; }
+
+.td-page-meta__edit {
+  display: none !important; }
+
+.td-page-meta__view {
+  display: none !important; }
+
+.td-page-meta__issue {
+  padding-top: 2em;
+  padding-bottom: 1em; }
+
 .floatimg {
   float: left;
   border: 1px solid black;
