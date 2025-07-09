@@ -1,6 +1,6 @@
 baseURL = "https://raphideb.github.io/"
 languageCode = "en-us"
-title = "raphi's corner"
+title = "crashdump"
 
 enableMissingTranslationPlaceholders = true
 

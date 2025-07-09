@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>PostgreSQL on raphi&#39;s corner</title>
+    <title>PostgreSQL on crashdump</title>
     <link>http://localhost:1313/postgres/</link>
-    <description>Recent content in PostgreSQL on raphi&#39;s corner</description>
+    <description>Recent content in PostgreSQL on crashdump</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <atom:link href="http://localhost:1313/postgres/index.xml" rel="self" type="application/rss+xml" />
@@ -19,7 +19,7 @@
       <link>http://localhost:1313/postgres/pgstat_snap/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/postgres/pgstat_snap/</guid>
-      <description>&lt;h2 id=&#34;purpose-of-this-extension&#34;&gt;Purpose of this extension&lt;/h2&gt;&#xA;&lt;p&gt;The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages.&lt;/p&gt;&#xA;&lt;p&gt;With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database.&lt;/p&gt;</description>
+      <description>&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/postgres/pgstat_snap.jpg&#34; alt=&#34;active_session_history&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;p&gt;The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages. &#xA;&lt;p&gt;With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

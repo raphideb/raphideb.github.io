@@ -5,15 +5,15 @@ type: "docs"
 weight: 10
 description: "Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements"
 ---
-
-## Purpose of this extension
-The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages. 
+<img class="floatimg" src="/postgres/pgstat_snap.jpg" alt="active_session_history" width="25%" height="25%"/>
+<p>The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages. 
 
 With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database. 
 
 If you haven't already, download the extension from my github repo: [https://github.com/raphideb/pgstat_snap](https://github.com/raphideb/pgstat_snap)
 
-The README.md is a shorter version of this post with just the essentials.
+The README.md is a shorter version of this post with just the essentials.</p>
+<div style="clear: both;"></div>
 
 ## Installation
 To install the extension, download these files from my github repo:

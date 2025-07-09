@@ -1,0 +1,15 @@
+<div id="back-to-top" style="display:none; position:fixed; bottom:40px; right:30px; z-index:99;">
+  <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' });" title="Back to top">
+    ↑ Top
+  </button>
+</div>
+<script>
+  document.addEventListener("scroll", function() {
+    var btn = document.getElementById("back-to-top");
+    if (window.scrollY > 400) {
+      btn.style.display = "block";
+    } else {
+      btn.style.display = "none";
+    }
+  });
+</script>

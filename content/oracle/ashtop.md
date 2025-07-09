@@ -6,7 +6,7 @@ weight: 10
 description: "Usage and examples for Tanel Poder's ashtop, the fastest way to query ASH"
 ---
 ## ashtop - the Swiss Army Knife for ASH
-<img class="floatimg" src="/oracle/ashtop.jpg" alt="ashtop" width="20%" height="20%"/>
+<img class="floatimg" src="/oracle/ashtop.jpg" alt="ashtop" width="30%" height="30%"/>
 <p>
 Tanel Poder's script "ashtop.sql" greatly simplifies querying ASH and is essentially a fully parameterizable "grep" for ASH. The script comes in two variants:  
 
