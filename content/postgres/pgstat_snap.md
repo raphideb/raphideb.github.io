@@ -1,7 +1,9 @@
 ---
 title: "pgstat_snap"
 linktitle: "pgstat_snap"
-type: "posts"
+type: "docs"
+weight: 10
+description: "Extension for PostgreSQL to create timestamped snapshots of pg_stat_activity"
 ---
 
 # Purpose of this script

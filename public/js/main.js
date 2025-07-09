@@ -1,5 +1,5 @@
 /*!
-  * Bootstrap v5.3.6 (https://getbootstrap.com/)
+  * Bootstrap v5.3.7 (https://getbootstrap.com/)
   * Copyright 2011-2025 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -647,7 +647,7 @@
    * Constants
    */
 
-  const VERSION = '5.3.6';
+  const VERSION = '5.3.7';
 
   /**
    * Class definition
@@ -4805,7 +4805,6 @@
    *
    * Shout-out to Angular https://github.com/angular/angular/blob/15.2.8/packages/core/src/sanitization/url_sanitizer.ts#L38
    */
-  // eslint-disable-next-line unicorn/better-regex
   const SAFE_URL_PATTERN = /^(?!javascript:)(?:[a-z0-9+.-]+:|[^&:/?#]*(?:[/?#]|$))/i;
   const allowedAttribute = (attribute, allowedAttributeList) => {
     const attributeName = attribute.nodeName.toLowerCase();
@@ -5349,6 +5348,7 @@
         if (trigger === 'click') {
           EventHandler.on(this._element, this.constructor.eventName(EVENT_CLICK$1), this._config.selector, event => {
             const context = this._initializeOnDelegatedTarget(event);
+            context._activeTrigger[TRIGGER_CLICK] = !(context._isShown() && context._activeTrigger[TRIGGER_CLICK]);
             context.toggle();
           });
         } else if (trigger !== TRIGGER_MANUAL) {
@@ -6410,7 +6410,7 @@ limitations under the License.
           }
 
           var query = $(this).val();
-          var searchPage = 'http://localhost:1313/search/?q=' + query;
+          var searchPage = '//localhost:1313/search/?q=' + query;
           document.location = searchPage;
 
           return false;
@@ -6430,3 +6430,197 @@ limitations under the License.
 
 ;
 
+
+(function () {
+  var shade;
+  var iframe;
+
+  var insertFrame = function () {
+    shade = document.createElement('div');
+    shade.classList.add('drawioframe');
+    iframe = document.createElement('iframe');
+    shade.appendChild(iframe);
+    document.body.appendChild(shade);
+  }
+
+  var closeFrame = function () {
+    if (shade) {
+      document.body.removeChild(shade);
+      shade = undefined;
+      iframe = undefined;
+    }
+  }
+
+  var imghandler = function (img, imgdata) {
+    var url = "https://embed.diagrams.net/";
+    url += '?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&saveAndEdit=1&noSaveBtn=1';
+
+    var wrapper = document.createElement('div');
+    wrapper.classList.add('drawio');
+    img.parentNode.insertBefore(wrapper, img);
+    wrapper.appendChild(img);
+
+    var btn = document.createElement('button');
+    btn.classList.add('drawiobtn');
+    btn.insertAdjacentHTML('beforeend', '<i class="fas fa-edit"></i>');
+    wrapper.appendChild(btn);
+
+    btn.addEventListener('click', function (evt) {
+      if (iframe) return;
+      insertFrame();
+      var handler = function (evt) {
+        var wind = iframe.contentWindow;
+        if (evt.data.length > 0 && evt.source == wind) {
+          var msg = JSON.parse(evt.data);
+
+          if (msg.event == 'init') {
+            wind.postMessage(JSON.stringify({action: 'load', xml: imgdata}), '*');
+
+          } else if (msg.event == 'save') {
+            var fmt = imgdata.indexOf('data:image/png') == 0 ? 'xmlpng' : 'xmlsvg';
+            wind.postMessage(JSON.stringify({action: 'export', format: fmt}), '*');
+
+          } else if (msg.event == 'export') {
+            const fn = img.src.replace(/^.*?([^/]+)$/, '$1');
+            const dl = document.createElement('a');
+            dl.setAttribute('href', msg.data);
+            dl.setAttribute('download', fn);
+            document.body.appendChild(dl);
+            dl.click();
+            dl.parentNode.removeChild(dl);
+          }
+
+          if (msg.event == 'exit' || msg.event == 'export') {
+            window.removeEventListener('message', handler);
+            closeFrame();
+          }
+        }
+      };
+
+      window.addEventListener('message', handler);
+      iframe.setAttribute('src', url);
+    });
+  };
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  // find all the png and svg images that may have embedded xml diagrams
+  for (const el of document.getElementsByTagName('img')) {
+    const img = el;
+    const src = img.getAttribute('src');
+    if (!src.endsWith('.svg') && !src.endsWith('.png')) {
+      continue;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.responseType = 'blob';
+    xhr.open("GET", src);
+    xhr.addEventListener("load", function () {
+      const fr = new FileReader();
+      fr.addEventListener('load', function () {
+        if (fr.result.indexOf('mxfile') != -1) {
+          const fr = new FileReader();
+          fr.addEventListener('load', function () {
+            const imgdata = fr.result;
+            imghandler(img, imgdata);
+          });
+          fr.readAsDataURL(xhr.response);
+        }
+      });
+      fr.readAsBinaryString(xhr.response);
+    });
+    xhr.send();
+  };
+});
+}());
+
+
+
+;
+/*!
+ * This is a Docsy-adapted version of https://github.com/twbs/examples/blob/main/color-modes/js/color-modes.js.
+ *
+ * Original header:
+ *
+ * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+ * Copyright 2011-2024 The Bootstrap Authors
+ * Licensed under the Creative Commons Attribution 3.0 Unported License.
+ */
+
+(() => {
+  'use strict'
+
+  const themeKey = 'td-color-theme'
+  const getStoredTheme = () => localStorage.getItem(themeKey)
+  const setStoredTheme = theme => localStorage.setItem(themeKey, theme)
+
+  const getPreferredTheme = () => {
+    const storedTheme = getStoredTheme()
+    if (storedTheme) {
+      return storedTheme
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+
+  const setTheme = theme => {
+    if (theme === 'auto') {
+      document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+    } else {
+      document.documentElement.setAttribute('data-bs-theme', theme)
+    }
+  }
+
+  setTheme(getPreferredTheme())
+
+  const showActiveTheme = (theme, focus = false) => {
+    const themeSwitcher = document.querySelector('#bd-theme')
+
+    if (!themeSwitcher) {
+      return
+    }
+
+    const themeSwitcherText = document.querySelector('#bd-theme-text')
+    const activeThemeIcon = document.querySelector('.theme-icon-active use')
+    const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+    const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
+
+    document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+      element.classList.remove('active')
+      element.setAttribute('aria-pressed', 'false')
+    })
+
+    btnToActive.classList.add('active')
+    btnToActive.setAttribute('aria-pressed', 'true')
+    activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+    if (themeSwitcherText) {
+      const themeSwitcherLabel = `${themeSwitcherText.textContent} (${btnToActive.dataset.bsThemeValue})`
+      themeSwitcher.setAttribute('aria-label', themeSwitcherLabel)
+    }
+
+    if (focus) {
+      themeSwitcher.focus()
+    }
+  }
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    const storedTheme = getStoredTheme()
+    if (storedTheme !== 'light' && storedTheme !== 'dark') {
+      setTheme(getPreferredTheme())
+    }
+  })
+
+  window.addEventListener('DOMContentLoaded', () => {
+    showActiveTheme(getPreferredTheme())
+
+    document.querySelectorAll('[data-bs-theme-value]')
+      .forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const theme = toggle.getAttribute('data-bs-theme-value')
+          setStoredTheme(theme)
+          setTheme(theme)
+          showActiveTheme(theme, true)
+        })
+      })
+  })
+})()

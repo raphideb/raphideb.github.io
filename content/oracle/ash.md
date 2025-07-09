@@ -1,17 +1,14 @@
 ---
 title: "active session history"
-type: "posts"
+type: "docs"
 geekdocToC: 2
 weight: 1
+description: "Oracle's active session history demystified"
 ---
 ## ASH - Active Session History
 
-<table><tr><td valign="top" style="padding-top: 5%">
-<img src="/oracle/ash.jpg" alt="active_session_history" width="100%" height="100%"/>
-</td><td width="40%" valign="top">
-<h2>Table of content</h2>
-{{< toc html >}}
-</td></tr></table>
+<img src="/oracle/ash.jpg" alt="active_session_history" width="25%" height="25%"/>
+
 The view **gv$active_session_history** (ASH) records in memory every second the wait events of all active sessions. It is the single most important source of information for deep performance analysis on a session or even query level, like what a session was doing in a particular moment in time, what queries it was executing or which other sessions were blocking it. For all the data it contains it is surprisingly easy to use. First I will explain how the ASH works and what fields it provides, then I show you a basic script and how to extend it with all sorts of queries to get the info that you need.
 
 Since the memory for ASH is limited, the data is only available for a few days or even hours. It is also usually gone when the instance was restarted, therefore, every 10 seconds a snapshot of the ASH data is stored permanently on disk and can be accessed through the view **dba_hist_active_sess_history** (DASH). The live view (Top activity) of Enterprise Manager is based on ASH data, AWR reports are based on **dba_hist_*** views.

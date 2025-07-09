@@ -1,5 +1,6 @@
 ---
 title: "other stuff"
-type: "posts"
+linkTitle: "Other stuff"
+type: "docs"
 ---
 nothing to see here yet.

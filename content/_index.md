@@ -1,24 +1,19 @@
 ---
-title: "Welcome to my little place on the internet"
+title: "Hi there!"
 linkTitle: "Home"
 weight: 1
 hide_readingtime: true
-geekdocBreadcrumb: false
+type: "docs"
 ---
+<img class="floatimg" src="/bar.jpg" alt="raphis bar" width="40%" height="40%"/>
 <br>
-<img class="floatimg" src="/bar.jpg" alt="raphis bar" width="60%" height="60%"/>
-<p>
-Hi there!
-
-Powered by some github wizardry and the mighty help of vi, I use this space to post stuff I've picked up during the years, mainly PostgreSQL and Oracle related and some other things I have fun with. 
-
-Feel free to contact me if you find any errors or need some clarification: <raphi@crashdump.ch>
-
+<br>
+Welcome to my little place on the internet. Powered by some github wizardry and the mighty help of vi, I use this space to post stuff I've picked up during the years, mainly PostgreSQL and Oracle related and some other things I have fun with. 
+<br>
+<br>
+Feel free to contact me if you find any errors or need some clarification: <a href="mailto:raphi@crashdump.ch">raphi@crashdump.ch</a>
+<br>
+<br>
 Otherwise, grep a coffee and have fun ;)
 </p>
 <div style="clear: both;"></div>
-<br>
-<br>
-<center>  
-{{< xkcd >}}
-</center>

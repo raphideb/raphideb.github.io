@@ -1,0 +1,15 @@
+@import 'td/code-dark'
+;
+.floatimg {
+    float: left;
+    border: 1px solid black;
+    margin: 0 40px 0 0;
+}
+
+pre { overflow-x: auto; white-space: pre; }
+
+th, td {
+  vertical-align: top; 
+  border: 1px solid #333;
+  padding: 0.5em;
+}

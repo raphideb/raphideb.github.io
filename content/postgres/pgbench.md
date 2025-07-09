@@ -1,22 +1,18 @@
 ---
 title: "pgbench"
-type: "posts"
+type: "docs"
+weight: 1
+description: "Using pgbench for custom benchmarks"
 ---
 ## The PostgreSQL benchmark utility
 
-<table><tr><td>
-<img class="floatimg" src="/postgres/pgbench.jpg" alt="elephant" width="100%" height="100%"/>
-</td><td width="40%">
-<h2>Table of content</h2>
-
-{{< toc html >}}
-</td></tr></table>
-<div style="clear: both;"></div>
+<img class="floatimg" src="/postgres/pgbench.jpg" alt="elephant" width="25%" height="25%"/>
+<br><br>
 <p>Including a benchmark utility with a database product demonstrates a strong commitment to performance and transparency. For PostgreSQL, the built-in tool is pgbench, which allows users to test various aspects of the database system. Not only that, it can also run benchmarks on any set of tables with any script that you created yourself, making it the perfect tool to benchmark a specific application workload.
 
 The official documentation is here: [https://www.postgresql.org/docs/current/pgbench.html](https://www.postgresql.org/docs/current/pgbench.html)
 </p>
-
+<div style="clear: both;"></div>
 
 ## Installation
 In most cases, pgbench is installed in your system’s binary directory when you install PostgreSQL, typically /usr/bin or in the PostgreSQL bindir:
