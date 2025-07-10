@@ -39,14 +39,13 @@ The following tables will be dropped and recreated if they already exist:
 - pgbench_history
 - pgbench_tellers
 
-If you do not specify a database, the tables will be created in the database that psql connects you to (typically your OS user, e.g. postgres). To create the tables, run:
-
+If you do not specify a database, the tables will be created in the database that psql connects you to (typically your OS user, e.g. postgres) in the publich schema. To create the tables, run:
 ```bash
 pgbench -i -s 100
 ```
 
 ### Installation in dedicated database
-If you want the tables to be created in their own database, you need to create a role, database and schema first:
+If you want the tables to be created in their own database and schema, you need to create a role, database and schema first and set the search_path correctly:
 ```sql
 psql
 
@@ -59,6 +58,9 @@ CREATE DATABASE pgbench OWNER pgbench;
 -- connect to the newly created schema
 \c pgbench
 CREATE SCHEMA pgbench;
+
+-- set search_path to the new schema
+ALTER ROLE pgbench SET search_path TO pgbench;
 
 -- grant the necessary rights
 GRANT ALL ON SCHEMA pgbench TO pgbench;

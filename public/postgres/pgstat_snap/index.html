@@ -31,7 +31,7 @@
   <meta itemprop="name" content="pgstat_snap">
   <meta itemprop="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
   <meta itemprop="dateModified" content="2025-07-09T23:01:51+02:00">
-  <meta itemprop="wordCount" content="1672">
+  <meta itemprop="wordCount" content="3602">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="pgstat_snap">
   <meta name="twitter:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
@@ -40,6 +40,7 @@
   src="https://code.jquery.com/jquery-3.7.1.min.js"
   integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
   crossorigin="anonymous"></script>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
 
   </head>
   <body class="td-page">
@@ -184,25 +185,31 @@
         <li><a href="#collect-snapshots">Collect snapshots</a></li>
         <li><a href="#reset">Reset</a></li>
         <li><a href="#uninstall">Uninstall</a></li>
+        <li><a href="#help">Help</a></li>
       </ul>
     </li>
     <li><a href="#how-it-works">How it works</a></li>
     <li><a href="#views-description">Views description</a>
       <ul>
+        <li><a href="#exec_ms_d">exec_ms_d</a></li>
+        <li><a href="#wait_event">wait_event</a></li>
         <li><a href="#pgstat_snap_diff">pgstat_snap_diff</a></li>
         <li><a href="#pgstat_snap_diff_all">pgstat_snap_diff_all</a></li>
       </ul>
     </li>
-    <li><a href="#query-examples">Query Examples</a>
+    <li><a href="#drill-down">Drill down</a>
       <ul>
-        <li><a href="#what-was-happening-ordered-by-time">What was happening, ordered by time:</a></li>
-        <li><a href="#what-was-every-query-doing">What was every query doing:</a></li>
-        <li><a href="#which-database-touched-the-most-rows">Which database touched the most rows:</a></li>
-        <li><a href="#which-query-dml-affected-the-most-rows">Which query DML affected the most rows:</a></li>
-        <li><a href="#what-wait-events-happened-which-werent-of-type-client">What wait events happened which weren&rsquo;t of type Client:</a></li>
+        <li><a href="#test-setup">Test setup</a></li>
+        <li><a href="#output-format">Output format</a></li>
+        <li><a href="#what-was-happening-ordered-by-time">What was happening, ordered by time</a></li>
+        <li><a href="#what-was-every-query-doing">What was every query doing</a></li>
+        <li><a href="#which-database-modified-the-most-rows">Which database modified the most rows</a></li>
+        <li><a href="#which-query-dml-affected-the-most-rows">Which query DML affected the most rows</a></li>
+        <li><a href="#what-wait-events-happened-the-most">What wait events happened the most</a></li>
         <li><a href="#access-raw-data-directly">Access raw data directly</a></li>
       </ul>
     </li>
+    <li><a href="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
       </div>
@@ -227,7 +234,7 @@
 	<div class="lead">Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements</div>
 	<header class="article-meta">
 		
-<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 8 minute read &nbsp;</p>
+<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 17 minute read &nbsp;</p>
 </header>
 	<img class="floatimg" src="/postgres/pgstat_snap.jpg" alt="active_session_history" width="25%" height="25%"/>
 <p>The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages. 
@@ -265,22 +272,29 @@ pg_stat_statements.track_utility = off
 </span></span></span></code></pre></div><p>Or gather a snapshot every 5 seconds for 10 minutes:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CALL</span><span class="w"> </span><span class="n">pgstat_snap_collect</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">120</span><span class="p">);</span><span class="w">
 </span></span></span></code></pre></div><p><strong>IMPORTANT:</strong> on very busy clusters with many databases a lot of data can be collected, 500mb per minute or more. Don&rsquo;t let it run for a very long time with short intervals, unless you have the disk space for it.</p>
-<p>After you collected the snapshots, check out the <a href="/postgres/pgstat_snap/#query-examples">Query Examples</a> for how to query the views.</p>
+<p>After you collected the snapshots, check out the <a href="/postgres/pgstat_snap/#drill-down">Drilldown Section</a> for how to query the views.</p>
 <h3 id="reset">Reset</h3>
-<p>Because everything is timestamped, a reset is usually not needed between CALLs to create_snapshot. But you can to cleanup and keep the tables smaller. You can also reset pg_stats*.</p>
+<p>Because everything is timestamped, a reset is usually not needed between CALLs to create_snapshot. But you can, for example to cleanup the tables and free some space. You can also reset pg_stats*.</p>
 <p>Reset all pgstat_snap tables with:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">();</span><span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">reset</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">pgstat_snap</span><span class="p">.</span><span class="n">pgstat</span><span class="o">*</span><span class="n">history</span><span class="w"> </span><span class="n">tables</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">pg_stat_statements_reset</span><span class="p">()</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">pg_stat_reset</span><span class="p">()</span><span class="w">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">();</span><span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">reset</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="n">pgstat_snap</span><span class="p">.</span><span class="n">pgstat</span><span class="o">*</span><span class="n">history</span><span class="w"> </span><span class="n">tables</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">pg_stat_statements_reset</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_reset</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">pg_stat_reset</span><span class="p">()</span><span class="w">
 </span></span></span></code></pre></div><h3 id="uninstall">Uninstall</h3>
 <p>To completely uninstall pgstat_snap, run:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">DROP</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="n">pgstat_snap</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="help">Help</h3>
+<p>The extension also has a help function, listing all views, tables and functions:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgstat_snap_help</span><span class="p">();</span><span class="w">
 </span></span></span></code></pre></div><h2 id="how-it-works">How it works</h2>
 <p>The first argument to create_snapshot is the interval in seconds, the second argument is how many snapshots should be collected. Every <em>interval</em> seconds, <em>select * from pg_stat_statements</em> will be inserted into <em>pgstat_snap_stat_history</em> and <em>select * from pgstat_act_statements</em> into <em>pgstat_snap_act_history</em>.</p>
 <p>For every row, a timestamp will be added. Only rows where the &ldquo;rows&rdquo; column has changed will be inserted into <em>pgstat_snap_stat_history</em> and always only one row per timestamp, dbid and queryid. Every insert is immediately committed to be able to live follow the tables/views.</p>
 <p>The views have a <em>_d</em> column which displays the difference between the current row and the last row where the query was recorded in the pgstat_snap_stat_history table. <em>NULL</em> values in <em>rows_d</em>, <em>calls_d</em> and so on mean, that no previous row for this query was found because it was executed the first time since create_snapshot was running.</p>
 <p>The views also contain the datname, wait events and the first 20 characters of the query, making it easier to identify queries of interest.</p>
 <h2 id="views-description">Views description</h2>
+<h3 id="exec_ms_d">exec_ms_d</h3>
+<p>The views show the difference between each snapshot and not second by second. For example, when a query was called one time (calls_d=1) and has an execution time of 3 seconds (exec_ms_d=3000), it ran for 3 seconds since the last time it was executed. This is why you might see exec_ms_d higher than a second in one particular second. You can filter by queryid if you want to see exactly when a particular query was executed.</p>
+<h3 id="wait_event">wait_event</h3>
+<p>This is a bit wonky as it only shows what one backend process executing a query was waiting for when the snapshot was collected. It does not mean that all processes executing that query had the same wait event but it might help point you in the right direction, for example if one query always has a lock.</p>
 <h3 id="pgstat_snap_diff">pgstat_snap_diff</h3>
 <p>This view only contains the difference between the previous and next execution of a queryid/dbid pair:</p>
 <table>
@@ -350,270 +364,24 @@ pg_stat_statements.track_utility = off
   </tbody>
 </table>
 <h4 id="sample-output">Sample output</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div><table>
-  <thead>
-      <tr>
-          <th>snapshot_time</th>
-          <th>queryid</th>
-          <th>query</th>
-          <th>datname</th>
-          <th>usename</th>
-          <th>wait_event_type</th>
-          <th>wait_event</th>
-          <th>rows_d</th>
-          <th>calls_d</th>
-          <th>exec_ms_d</th>
-          <th>sb_hit_d</th>
-          <th>sb_read_d</th>
-          <th>sb_dirt_d</th>
-          <th>sb_write_d</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>2025-03-25 11:00:19</td>
-          <td>4380144606300689468</td>
-          <td>UPDATE pgbench_tell</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>4485</td>
-          <td>4485</td>
-          <td>986.262098</td>
-          <td>22827</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:20</td>
-          <td>4380144606300689468</td>
-          <td>UPDATE pgbench_tell</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1204</td>
-          <td>1204</td>
-          <td>228.822413</td>
-          <td>6115</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:20</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1204</td>
-          <td>1204</td>
-          <td>1758.190499</td>
-          <td>5655</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:21</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1273</td>
-          <td>1273</td>
-          <td>2009.227575</td>
-          <td>6024</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:22</td>
-          <td>2931033680287349001</td>
-          <td>UPDATE pgbench_acco</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Client</td>
-          <td>ClientRead</td>
-          <td>9377</td>
-          <td>9377</td>
-          <td>1818.464415</td>
-          <td>66121</td>
-          <td>3699</td>
-          <td>7358</td>
-          <td>35</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:22</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1356</td>
-          <td>1356</td>
-          <td>1659.806856</td>
-          <td>6341</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:23</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1168</td>
-          <td>1168</td>
-          <td>1697.322874</td>
-          <td>5484</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:24</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>[NULL]</td>
-          <td>[NULL]</td>
-          <td>1135</td>
-          <td>1135</td>
-          <td>1539.999618</td>
-          <td>5237</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:24</td>
-          <td>5744520630148654507</td>
-          <td>SELECT abalance FROM</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>[NULL]</td>
-          <td>[NULL]</td>
-          <td>11679</td>
-          <td>11679</td>
-          <td>114.347514</td>
-          <td>49451</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:25</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1274</td>
-          <td>1274</td>
-          <td>1861.747733</td>
-          <td>6043</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:26</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1080</td>
-          <td>1080</td>
-          <td>1855.803660</td>
-          <td>5080</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:27</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1155</td>
-          <td>1155</td>
-          <td>1669.499608</td>
-          <td>5373</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:27</td>
-          <td>7113545590461720994</td>
-          <td>SELECT CASE WHEN pg</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Client</td>
-          <td>ClientRead</td>
-          <td>1</td>
-          <td>1</td>
-          <td>0.098783</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:28</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>1178</td>
-          <td>1178</td>
-          <td>1623.365492</td>
-          <td>5466</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:29</td>
-          <td>2931033680287349001</td>
-          <td>UPDATE pgbench_acco</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Client</td>
-          <td>ClientRead</td>
-          <td>8350</td>
-          <td>8350</td>
-          <td>1456.806356</td>
-          <td>58400</td>
-          <td>3317</td>
-          <td>6135</td>
-          <td>30</td>
-      </tr>
-  </tbody>
-</table>
-<h3 id="pgstat_snap_diff_all">pgstat_snap_diff_all</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">snapshot_time</span><span class="w">    </span><span class="o">|</span><span class="w">       </span><span class="n">queryid</span><span class="w">        </span><span class="o">|</span><span class="w">        </span><span class="n">query</span><span class="w">        </span><span class="o">|</span><span class="w">  </span><span class="n">datname</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">usename</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="n">wait_event</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">rows_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">calls_d</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="n">exec_ms_d</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">sb_hit_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_read_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_dirt_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_write_d</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">---------------------+----------------------+---------------------+-----------+----------+-----------------+---------------+--------+---------+--------------+----------+-----------+-----------+------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">200</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">3142</span><span class="p">.</span><span class="mi">512490</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2090</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">325798</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">14</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">3249</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">3249</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1768</span><span class="p">.</span><span class="mi">453916</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">15380</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">7095169429556301570</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">LWLock</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">BufferMapping</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">10730</span><span class="p">.</span><span class="mi">907623</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">124847</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">93865</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3375</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">300</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">2947</span><span class="p">.</span><span class="mi">915426</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">8355</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">483493</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">37</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">2177783729771621131</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_acco</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">   </span><span class="mi">6414</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">6414</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">541</span><span class="p">.</span><span class="mi">561524</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">30523</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">12649</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">7321</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">904</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5796608934964327314</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Client</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">ClientRead</span><span class="w">    </span><span class="o">|</span><span class="w">  </span><span class="mi">13879</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">13879</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">135</span><span class="p">.</span><span class="mi">870508</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">14057</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">94</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">99</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">3162</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">3162</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1868</span><span class="p">.</span><span class="mi">084329</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">14876</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8431081492085281285</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_tell</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">   </span><span class="mi">5889</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">5889</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">506</span><span class="p">.</span><span class="mi">675114</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">29865</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8537798620180856986</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">600</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">14137</span><span class="p">.</span><span class="mi">163555</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">9804</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">973812</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">17</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">7095169429556301570</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">      </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5569</span><span class="p">.</span><span class="mi">364955</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">43608</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">65748</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4553</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">400</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">9745</span><span class="p">.</span><span class="mi">461818</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">8764</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">646980</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">22</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">2718</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">2718</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1718</span><span class="p">.</span><span class="mi">941857</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">12808</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5981687818415711060</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">     </span><span class="mi">40</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4591</span><span class="p">.</span><span class="mi">836860</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">12552</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">643240</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">38</span><span class="w">
+</span></span></span></code></pre></div><h3 id="pgstat_snap_diff_all">pgstat_snap_diff_all</h3>
 <p>This view contains the difference between the previous and next execution of a queryid/dbid pair and the sum of the fields as recorded in pg_stat_statements at that time:</p>
 <table>
   <thead>
@@ -711,397 +479,120 @@ pg_stat_statements.track_utility = off
 </table>
 <h4 id="sample-output-1">Sample output</h4>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff_all</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div><table>
-  <thead>
-      <tr>
-          <th>snapshot_time</th>
-          <th>queryid</th>
-          <th>query</th>
-          <th>datname</th>
-          <th>usename</th>
-          <th>wait_event_type</th>
-          <th>wait_event</th>
-          <th>rows</th>
-          <th>rows_d</th>
-          <th>calls</th>
-          <th>calls_d</th>
-          <th>exec_ms</th>
-          <th>exec_ms_d</th>
-          <th>sb_hit</th>
-          <th>sb_hit_d</th>
-          <th>sb_read</th>
-          <th>sb_read_d</th>
-          <th>sb_dirt</th>
-          <th>sb_dirt_d</th>
-          <th>sb_write</th>
-          <th>sb_write_d</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>2025-03-25 11:00:19</td>
-          <td>4380144606300689468</td>
-          <td>UPDATE pgbench_tell</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>241818</td>
-          <td>4485</td>
-          <td>241818</td>
-          <td>4485</td>
-          <td>39693.679945</td>
-          <td>986.262098</td>
-          <td>1237102</td>
-          <td>1237098</td>
-          <td>4</td>
-          <td>0</td>
-          <td>90</td>
-          <td>0</td>
-          <td>22</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:20</td>
-          <td>4380144606300689468</td>
-          <td>UPDATE pgbench_tell</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>243022</td>
-          <td>1204</td>
-          <td>243022</td>
-          <td>1204</td>
-          <td>39922.502358</td>
-          <td>228.822413</td>
-          <td>1243217</td>
-          <td>1243213</td>
-          <td>4</td>
-          <td>0</td>
-          <td>90</td>
-          <td>0</td>
-          <td>22</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:20</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>243020</td>
-          <td>1204</td>
-          <td>243020</td>
-          <td>1204</td>
-          <td>322868.346002</td>
-          <td>1758.190499</td>
-          <td>1142441</td>
-          <td>1142440</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:21</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>244293</td>
-          <td>1273</td>
-          <td>244293</td>
-          <td>1273</td>
-          <td>324877.573577</td>
-          <td>2009.227575</td>
-          <td>1148465</td>
-          <td>1148464</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:22</td>
-          <td>2931033680287349001</td>
-          <td>UPDATE pgbench_acco</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Client</td>
-          <td>ClientRead</td>
-          <td>245652</td>
-          <td>9377</td>
-          <td>245652</td>
-          <td>9377</td>
-          <td>51188.172394</td>
-          <td>1818.464415</td>
-          <td>2140583</td>
-          <td>2022215</td>
-          <td>122067</td>
-          <td>3699</td>
-          <td>233128</td>
-          <td>7358</td>
-          <td>2150</td>
-          <td>35</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:22</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>245649</td>
-          <td>1356</td>
-          <td>245649</td>
-          <td>1356</td>
-          <td>326537.380433</td>
-          <td>1659.806856</td>
-          <td>1154806</td>
-          <td>1154805</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:23</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>246817</td>
-          <td>1168</td>
-          <td>246817</td>
-          <td>1168</td>
-          <td>328234.703307</td>
-          <td>1697.322874</td>
-          <td>1160290</td>
-          <td>1160289</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:24</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>[NULL]</td>
-          <td>[NULL]</td>
-          <td>247952</td>
-          <td>1135</td>
-          <td>247952</td>
-          <td>1135</td>
-          <td>329774.702925</td>
-          <td>1539.999618</td>
-          <td>1165527</td>
-          <td>1165526</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:24</td>
-          <td>5744520630148654507</td>
-          <td>SELECT abalance FROM</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>[NULL]</td>
-          <td>[NULL]</td>
-          <td>247954</td>
-          <td>11679</td>
-          <td>247954</td>
-          <td>11679</td>
-          <td>2917.940273</td>
-          <td>114.347514</td>
-          <td>1121749</td>
-          <td>1121749</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:25</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>249226</td>
-          <td>1274</td>
-          <td>249226</td>
-          <td>1274</td>
-          <td>331636.450658</td>
-          <td>1861.747733</td>
-          <td>1171570</td>
-          <td>1171569</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:26</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>250306</td>
-          <td>1080</td>
-          <td>250306</td>
-          <td>1080</td>
-          <td>333492.254318</td>
-          <td>1855.803660</td>
-          <td>1176650</td>
-          <td>1176649</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:27</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>251461</td>
-          <td>1155</td>
-          <td>251461</td>
-          <td>1155</td>
-          <td>335161.753926</td>
-          <td>1669.499608</td>
-          <td>1182023</td>
-          <td>1182022</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:27</td>
-          <td>7113545590461720994</td>
-          <td>SELECT CASE WHEN pg</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Client</td>
-          <td>ClientRead</td>
-          <td>3783</td>
-          <td>1</td>
-          <td>3783</td>
-          <td>1</td>
-          <td>373.398846</td>
-          <td>0.098783</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:28</td>
-          <td>7073332947325598809</td>
-          <td>UPDATE pgbench_bran</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Lock</td>
-          <td>transactionid</td>
-          <td>252639</td>
-          <td>1178</td>
-          <td>252639</td>
-          <td>1178</td>
-          <td>336785.119418</td>
-          <td>1623.365492</td>
-          <td>1187489</td>
-          <td>1187488</td>
-          <td>1</td>
-          <td>0</td>
-          <td>71</td>
-          <td>0</td>
-          <td>21</td>
-          <td>0</td>
-      </tr>
-      <tr>
-          <td>2025-03-25 11:00:29</td>
-          <td>2931033680287349001</td>
-          <td>UPDATE pgbench_acco</td>
-          <td>postgres</td>
-          <td>postgres</td>
-          <td>Client</td>
-          <td>ClientRead</td>
-          <td>254002</td>
-          <td>8350</td>
-          <td>254002</td>
-          <td>8350</td>
-          <td>52644.978750</td>
-          <td>1456.806356</td>
-          <td>2198983</td>
-          <td>2076916</td>
-          <td>125384</td>
-          <td>3317</td>
-          <td>239263</td>
-          <td>6135</td>
-          <td>2180</td>
-          <td>30</td>
-      </tr>
-  </tbody>
-</table>
-<h2 id="query-examples">Query Examples</h2>
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">snapshot_time</span><span class="w">    </span><span class="o">|</span><span class="w">       </span><span class="n">queryid</span><span class="w">        </span><span class="o">|</span><span class="w">        </span><span class="n">query</span><span class="w">        </span><span class="o">|</span><span class="w">  </span><span class="n">datname</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">usename</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="n">wait_event</span><span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="k">rows</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">rows_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">calls</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">calls_d</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="n">exec_ms</span><span class="w">    </span><span class="o">|</span><span class="w">  </span><span class="n">exec_ms_d</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">sb_hit</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">sb_hit_d</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">sb_read</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">sb_read_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_dirt</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_dirt_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_write</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_write_d</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">---------------------+----------------------+---------------------+-----------+----------+-----------------+---------------+--------+--------+--------+---------+---------------+--------------+---------+-----------+----------+-----------+---------+-----------+----------+------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5981687818415711060</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">   </span><span class="mi">3250</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">30</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">325</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">506209</span><span class="p">.</span><span class="mi">382549</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5098</span><span class="p">.</span><span class="mi">012464</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">578683</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">51638449</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">52703041</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">485909</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">5078</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">29</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8431081492085281285</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_tell</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">362116</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="mi">362116</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="o">|</span><span class="w">  </span><span class="mi">30769</span><span class="p">.</span><span class="mi">931769</span><span class="w"> </span><span class="o">|</span><span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="mi">1840386</span><span class="w"> </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">       </span><span class="mi">22</span><span class="w"> </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">     </span><span class="mi">160</span><span class="w"> </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">       </span><span class="mi">20</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">  </span><span class="mi">32600</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">200</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">326</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">595288</span><span class="p">.</span><span class="mi">665764</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">3142</span><span class="p">.</span><span class="mi">512490</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">884799</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">51349764</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">52560361</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">325798</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">9754</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">14</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8537798620180856986</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">  </span><span class="mi">33300</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">400</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">333</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">688264</span><span class="p">.</span><span class="mi">881853</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4895</span><span class="p">.</span><span class="mi">604348</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2960269</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">48019037</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">51631691</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">652385</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">14832</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">20</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">362121</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">3249</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">362121</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">3249</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">192172</span><span class="p">.</span><span class="mi">014593</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1768</span><span class="p">.</span><span class="mi">453916</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1688815</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">1688792</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">48</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">13</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">7095169429556301570</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">LWLock</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">BufferMapping</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">321</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">321</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">445005</span><span class="p">.</span><span class="mi">367489</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">10730</span><span class="p">.</span><span class="mi">907623</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4231400</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="o">-</span><span class="mi">219327</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4544592</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">93865</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">189</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">342185</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3375</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">  </span><span class="mi">32900</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">300</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">329</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">598236</span><span class="p">.</span><span class="mi">581190</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">2947</span><span class="p">.</span><span class="mi">915426</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">893154</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">51667207</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">53043854</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">483493</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">9791</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">37</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">2177783729771621131</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_acco</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="mi">365288</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">6414</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">365288</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">6414</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">151503</span><span class="p">.</span><span class="mi">887700</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">541</span><span class="p">.</span><span class="mi">561524</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2380434</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">1681465</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">711618</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">12649</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">511717</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">7321</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">75839</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">904</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5796608934964327314</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Client</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">ClientRead</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="mi">365282</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">13879</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">365282</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">13879</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">3669</span><span class="p">.</span><span class="mi">242144</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">135</span><span class="p">.</span><span class="mi">870508</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">370809</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">370766</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">53</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">2370</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">94</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2562</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">99</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">365283</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">3162</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">365283</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">3162</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">194040</span><span class="p">.</span><span class="mi">098922</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1868</span><span class="p">.</span><span class="mi">084329</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1703691</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">1703665</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">48</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">13</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">0</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8431081492085281285</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_tell</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="mi">368005</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">5889</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">368005</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">5889</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">31276</span><span class="p">.</span><span class="mi">606883</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">506</span><span class="p">.</span><span class="mi">675114</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1870251</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">1870229</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">22</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">160</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">20</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">0</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8537798620180856986</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">  </span><span class="mi">33900</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">600</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">339</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">702402</span><span class="p">.</span><span class="mi">045408</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">14137</span><span class="p">.</span><span class="mi">163555</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2970073</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">48661618</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">52605503</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">973812</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">14849</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">17</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">7095169429556301570</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">325</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">325</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">450574</span><span class="p">.</span><span class="mi">732444</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5569</span><span class="p">.</span><span class="mi">364955</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4275008</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="o">-</span><span class="mi">269584</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4610340</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">65748</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">191</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">346738</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4553</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">  </span><span class="mi">33300</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">400</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">333</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">607982</span><span class="p">.</span><span class="mi">043008</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">9745</span><span class="p">.</span><span class="mi">461818</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">901918</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">52141936</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">53690834</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">646980</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">9813</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">22</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">368001</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">2718</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">368001</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">2718</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">195759</span><span class="p">.</span><span class="mi">040779</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1718</span><span class="p">.</span><span class="mi">941857</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1716499</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">1716473</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">48</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">13</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">0</span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5981687818415711060</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">   </span><span class="mi">3290</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">40</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">329</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">510801</span><span class="p">.</span><span class="mi">219409</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4591</span><span class="p">.</span><span class="mi">836860</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">591235</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">52111806</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">53346281</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">643240</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">5116</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">38</span><span class="w">
+</span></span></span></code></pre></div><h2 id="drill-down">Drill down</h2>
+<h3 id="test-setup">Test setup</h3>
+<p>For the following examples I was running two instances of pgbench. One instance was connected to the database oltpbench and ran the default pgbench benchmark:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pgbench -c <span class="m">20</span> -j <span class="m">20</span> -T <span class="m">600</span> -d oltpbench -U oltpuser
+</span></span></code></pre></div><p>The second instance was running a datawarehouse like benchmark in the database dwhbench:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pgbench -c <span class="m">20</span> -j <span class="m">20</span> -T <span class="m">600</span> -d dwhbench -U dwhuser -f dwhbench.sql
+</span></span></code></pre></div><p>After 2 minutes I started collecting snapshots with pgstat_snap for a minute.</p>
+<p>Tip: if you want to know how to create your own benchmark, check out this post: <a href="/postgres/pgbench/">pgbench</a></p>
+<h3 id="output-format">Output format</h3>
 <p>Depending on screensize, you might want to set format to aligned, especially when querying <em>pstat_snap_diff_all</em>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="err">\</span><span class="n">pset</span><span class="w"> </span><span class="n">format</span><span class="w"> </span><span class="n">aligned</span><span class="w">
-</span></span></span></code></pre></div><h3 id="what-was-happening-ordered-by-time">What was happening, ordered by time:</h3>
+</span></span></span></code></pre></div><h3 id="what-was-happening-ordered-by-time">What was happening, ordered by time</h3>
+<p>It is usually a good start to first get an overview of what was going on second-by-second. Let&rsquo;s dissect what we see when just focusing on seconds 20:33:25 and 26:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div><h3 id="what-was-every-query-doing">What was every query doing:</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div><h3 id="which-database-touched-the-most-rows">Which database touched the most rows:</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">rows_d</span><span class="p">),</span><span class="n">datname</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">datname</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div><h3 id="which-query-dml-affected-the-most-rows">Which query DML affected the most rows:</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">rows_d</span><span class="p">),</span><span class="n">queryid</span><span class="p">,</span><span class="n">query</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="k">upper</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;SELECT%&#39;</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">queryid</span><span class="p">,</span><span class="n">query</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div><h3 id="what-wait-events-happened-which-werent-of-type-client">What wait events happened which weren&rsquo;t of type Client:</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s1">&#39;Client&#39;</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">snapshot_time</span><span class="w">    </span><span class="o">|</span><span class="w">       </span><span class="n">queryid</span><span class="w">        </span><span class="o">|</span><span class="w">        </span><span class="n">query</span><span class="w">        </span><span class="o">|</span><span class="w">  </span><span class="n">datname</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">usename</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="n">wait_event</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">rows_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">calls_d</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="n">exec_ms_d</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">sb_hit_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_read_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_dirt_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">sb_write_d</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">---------------------+----------------------+---------------------+-----------+----------+-----------------+---------------+--------+---------+--------------+----------+-----------+-----------+------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8431081492085281285</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_tell</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="o">|</span><span class="w">         </span><span class="o">|</span><span class="w">              </span><span class="o">|</span><span class="w">          </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">200</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">3142</span><span class="p">.</span><span class="mi">512490</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2090</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">325798</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">14</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8537798620180856986</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">400</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">4895</span><span class="p">.</span><span class="mi">604348</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">3399</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">652385</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">20</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">3249</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">3249</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1768</span><span class="p">.</span><span class="mi">453916</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">15380</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">7095169429556301570</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">LWLock</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">BufferMapping</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">10730</span><span class="p">.</span><span class="mi">907623</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">124847</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">93865</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3375</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">bid</span><span class="p">,</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">dwhuser</span><span class="w">  </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">    </span><span class="mi">300</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">2947</span><span class="p">.</span><span class="mi">915426</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">8355</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">483493</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">37</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">2177783729771621131</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_acco</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w">                 </span><span class="o">|</span><span class="w">               </span><span class="o">|</span><span class="w">   </span><span class="mi">6414</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">6414</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">541</span><span class="p">.</span><span class="mi">561524</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">30523</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">12649</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">7321</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">904</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5796608934964327314</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Client</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">ClientRead</span><span class="w">    </span><span class="o">|</span><span class="w">  </span><span class="mi">13879</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">13879</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">135</span><span class="p">.</span><span class="mi">870508</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">14057</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w">        </span><span class="mi">94</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">99</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpuser</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Lock</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">3162</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">3162</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">1868</span><span class="p">.</span><span class="mi">084329</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">14876</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">          </span><span class="mi">0</span><span class="w"> 
+</span></span></span></code></pre></div><p>OLTP:</p>
+<ul>
+<li>user &ldquo;oltpuser&rdquo; executed DMLs in the database &ldquo;oltpbench&rdquo;</li>
+<li>the first query with id &ldquo;8431081492085281285&rdquo; has a null value in rows_d and calls_d because it was executed for the first time since I started collecting snapshots. It might have been executed before but pgstat_snap can not go back in time</li>
+<li>the number of rows_d and calls_d is always the same for the user oltpuser. This means, every DML just updated or inserted a single row and the queries were called many times between snapshots</li>
+<li>the queries were also executed very fast, less than a millisecond (exec_ms_d_/calls_d), some processes had to wait for locks to be released</li>
+</ul>
+<p>DWH:</p>
+<ul>
+<li>user &ldquo;dwhuser&rdquo; executed mainly SELECTS and few DMLs in the database &ldquo;dwhbench&rdquo;</li>
+<li>most queries affected more than one row per call, like the query &ldquo;8092674635626072858&rdquo;, which returned 100 rows per call and was only called a few times between snapshots</li>
+<li>the queries usually ran for a second or more, &ldquo;8092674635626072858&rdquo; was called 2 times and was executed for 3.142 seconds (we&rsquo;ll verify this later)</li>
+</ul>
+<h3 id="what-was-every-query-doing">What was every query doing</h3>
+<p>Let&rsquo;s focus on the querid &ldquo;8092674635626072858&rdquo; a bit more, what was it doing? To get a better understanding, we can query pgstat_snap_diff_all which also has the summarized values as recorded in pg_stat_statemens when the snapshot was collected:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="n">snapshot_time</span><span class="p">,</span><span class="n">queryid</span><span class="p">,</span><span class="k">rows</span><span class="p">,</span><span class="n">rows_d</span><span class="p">,</span><span class="n">calls</span><span class="p">,</span><span class="n">calls_d</span><span class="p">,</span><span class="n">exec_ms</span><span class="p">,</span><span class="n">exec_ms_d</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff_all</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">queryid</span><span class="o">=</span><span class="s1">&#39;8092674635626072858&#39;</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">snapshot_time</span><span class="w">    </span><span class="o">|</span><span class="w">       </span><span class="n">queryid</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">rows_d</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">calls_d</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="n">exec_ms</span><span class="w">    </span><span class="o">|</span><span class="w">  </span><span class="n">exec_ms_d</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">---------------------+---------------------+-------+--------+-------+---------+---------------+--------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">21</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">31500</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">200</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">315</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">574525</span><span class="p">.</span><span class="mi">768201</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">3318</span><span class="p">.</span><span class="mi">129896</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">22</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32200</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">700</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">322</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">588935</span><span class="p">.</span><span class="mi">828000</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">14410</span><span class="p">.</span><span class="mi">059799</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">23</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32400</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">200</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">324</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">592146</span><span class="p">.</span><span class="mi">153274</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">3210</span><span class="p">.</span><span class="mi">325274</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32600</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">200</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">326</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">595288</span><span class="p">.</span><span class="mi">665764</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">3142</span><span class="p">.</span><span class="mi">512490</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32900</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">300</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">329</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">598236</span><span class="p">.</span><span class="mi">581190</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">2947</span><span class="p">.</span><span class="mi">915426</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">33300</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">400</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">333</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">607982</span><span class="p">.</span><span class="mi">043008</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">9745</span><span class="p">.</span><span class="mi">461818</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">28</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">33600</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">300</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">336</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">610530</span><span class="p">.</span><span class="mi">950563</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">2548</span><span class="p">.</span><span class="mi">907555</span><span class="w">
+</span></span></span></code></pre></div><ul>
+<li>in the first example, we saw that at 20:33:25 it was called twice and ran for 3142ms.</li>
+<li>there was no execution at 20:33:24, 20:33:23 is when it was executed the last time before 20:33:25. Nice, everything fits - or does it?</li>
+<li>at 20:33:27 it has been executed 4 times with an exec_ms_d of 9745ms. But it was also executed the second before, how can this be?</li>
+</ul>
+<p>That&rsquo;s the limitation of pg_stat_statements, there is no way to know why the calls count and total_exec_ms went up exactly because we can not trace sessions, everything is summarized over all executions. We don&rsquo;t know when all the sessions were started that increased the calls count to 4. Keep that in mind when trying to time how long one query was executed.</p>
+<h3 id="which-database-modified-the-most-rows">Which database modified the most rows</h3>
+<p>It seems that more rows were modified in the oltpbench database, let&rsquo;s verify this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">rows_d</span><span class="p">),</span><span class="n">datname</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="k">upper</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;SELECT%&#39;</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">datname</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">sum</span><span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="n">datname</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">--------+-----------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w"> </span><span class="mi">678031</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">oltpbench</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="mi">165</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">dwhbench</span><span class="w">
+</span></span></span></code></pre></div><p>This is useful on busy clusters with many databases and you want to figure out which database might be doing the most I/O operations. Many DML in particular can slow a whole cluster down when standbys in SYNC mode are involved.</p>
+<h3 id="which-query-dml-affected-the-most-rows">Which query DML affected the most rows</h3>
+<p>With a slight modification we can also check which query did the most DML:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">rows_d</span><span class="p">),</span><span class="n">queryid</span><span class="p">,</span><span class="n">query</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="k">upper</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;SELECT%&#39;</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">queryid</span><span class="p">,</span><span class="n">query</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">sum</span><span class="w">   </span><span class="o">|</span><span class="w">       </span><span class="n">queryid</span><span class="w">        </span><span class="o">|</span><span class="w">        </span><span class="n">query</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">--------+----------------------+---------------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="mi">165</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">7095169429556301570</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">160834</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">8431081492085281285</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_tell</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">166739</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">2177783729771621131</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_acco</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">174205</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">5796608934964327314</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgbench</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">176253</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">-</span><span class="mi">1263534209317543048</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">pgbench_bran</span><span class="w">
+</span></span></span></code></pre></div><h3 id="what-wait-events-happened-the-most">What wait events happened the most</h3>
+<p>We can also check which wait events occured the most. Again, it&rsquo;s a bit wonky (see View description above) but if one event stands out you might want to investigate further:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="n">wait_event</span><span class="p">,</span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">wait_event_type</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s1">&#39;Client&#39;</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">wait_event</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">wait_event</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">---------------+-------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w"> </span><span class="n">tuple</span><span class="w">         </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">LockManager</span><span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">SpinDelay</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="mi">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">WALWrite</span><span class="w">      </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">DataFileWrite</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">BufferIo</span><span class="w">      </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">DataFileRead</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="mi">9</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">BufferMapping</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">30</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="n">transactionid</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">54</span><span class="w">
 </span></span></span></code></pre></div><h3 id="access-raw-data-directly">Access raw data directly</h3>
-<p>If needed you can access all columns for a particular query directly in the history tables:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_stat_history</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">queryid</span><span class="o">=</span><span class="s1">&#39;123455678909876&#39;</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div>
+<p>Lastly, if you don&rsquo;t trust the views you can always access the history tables directly, for example to see the statistics for the query &ldquo;8092674635626072858&rdquo; as they were in pg_stat_statements second by second:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="n">snapshot_time</span><span class="p">,</span><span class="n">queryid</span><span class="p">,</span><span class="k">rows</span><span class="p">,</span><span class="n">calls</span><span class="p">,</span><span class="n">total_exec_time</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_stat_history</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">queryid</span><span class="o">=</span><span class="s1">&#39;8092674635626072858&#39;</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">snapshot_time</span><span class="w">    </span><span class="o">|</span><span class="w">       </span><span class="n">queryid</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="n">total_exec_time</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">---------------------+---------------------+-------+-------+-------------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">21</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">31500</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">315</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">574525</span><span class="p">.</span><span class="mi">7682009998</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">22</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32200</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">322</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">588935</span><span class="p">.</span><span class="mi">8279999999</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">23</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32400</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">324</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">592146</span><span class="p">.</span><span class="mi">1532739999</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">24</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32400</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">324</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">592146</span><span class="p">.</span><span class="mi">1532739999</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32600</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">326</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">595288</span><span class="p">.</span><span class="mi">6657639999</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">26</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">32900</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">329</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">598236</span><span class="p">.</span><span class="mi">5811899999</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">33300</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">333</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">607982</span><span class="p">.</span><span class="mi">0430079999</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">28</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">33600</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">336</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">610530</span><span class="p">.</span><span class="mi">9505629999</span><span class="w">
+</span></span></span></code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>Tracing query executions can be cumbersom with pg_stat_statements alone, which is why I wrote this extension. At my workplace we don&rsquo;t have that many performance problems with PostgreSQL to warrant setting up a centralized solution like pgwatch or pg_profile. But when I encounter a performance problem once in a blue moon on a cluster, especially with many databases, I can now quickly see which database or query might be responsible. All it takes is to load up the extension, collect some snapshots and query pgstat_snap_diff in whatever way I want. And when I&rsquo;m done I drop the extension again with all the collected data to not have any dead waste in the database.</p>
+<p>I hope you&rsquo;ll find it useful too, please let me know if there&rsquo;s anything I could improve: <a href="mailto:raphi@crashdump.ch">raphi@crashdump.ch</a>.</p>
+
 	
 <div class="text-muted pt-3 border-top">
   Last modified: July 9, 2025

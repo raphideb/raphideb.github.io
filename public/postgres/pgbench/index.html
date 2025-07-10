@@ -31,7 +31,7 @@
   <meta itemprop="name" content="pgbench">
   <meta itemprop="description" content="Using pgbench for custom benchmarks">
   <meta itemprop="dateModified" content="2025-07-09T16:16:50+02:00">
-  <meta itemprop="wordCount" content="3158">
+  <meta itemprop="wordCount" content="3183">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="pgbench">
   <meta name="twitter:description" content="Using pgbench for custom benchmarks">
@@ -40,6 +40,7 @@
   src="https://code.jquery.com/jquery-3.7.1.min.js"
   integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
   crossorigin="anonymous"></script>
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
 
   </head>
   <body class="td-page">
@@ -253,10 +254,10 @@
 <li>pgbench_history</li>
 <li>pgbench_tellers</li>
 </ul>
-<p>If you do not specify a database, the tables will be created in the database that psql connects you to (typically your OS user, e.g. postgres). To create the tables, run:</p>
+<p>If you do not specify a database, the tables will be created in the database that psql connects you to (typically your OS user, e.g. postgres) in the publich schema. To create the tables, run:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pgbench -i -s <span class="m">100</span>
 </span></span></code></pre></div><h3 id="installation-in-dedicated-database">Installation in dedicated database</h3>
-<p>If you want the tables to be created in their own database, you need to create a role, database and schema first:</p>
+<p>If you want the tables to be created in their own database and schema, you need to create a role, database and schema first and set the search_path correctly:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">psql</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- create a role:
@@ -268,6 +269,9 @@
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- connect to the newly created schema
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="err">\</span><span class="k">c</span><span class="w"> </span><span class="n">pgbench</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="n">pgbench</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- set search_path to the new schema
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">search_path</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">pgbench</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- grant the necessary rights
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="n">pgbench</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">pgbench</span><span class="p">;</span><span class="w">
