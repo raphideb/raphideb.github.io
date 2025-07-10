@@ -232,7 +232,7 @@ select * from pgstat_snap_diff order by 1;
 DWH:
 - user "dwhuser" executed mainly SELECTS and few DMLs in the database "dwhbench"
 - most queries affected more than one row per call, like the query "8092674635626072858", which returned 100 rows per call and was only called a few times between snapshots
-- the queries usually ran for a second or more, "8092674635626072858" was called 2 times and was executed for 3.142 seconds (we'll verify this later)
+- the queries usually ran for a second or more, "8092674635626072858" was called 2 times and the total exeuction time increased by 3.142 seconds (we'll verify this later)
 
 ### What was every query doing
 Let's focus on the querid "8092674635626072858" a bit more, what was it doing? To get a better understanding, we can query pgstat_snap_diff_all which also has the summarized values as recorded in pg_stat_statemens when the snapshot was collected:
@@ -248,11 +248,11 @@ select snapshot_time,queryid,rows,rows_d,calls,calls_d,exec_ms,exec_ms_d from pg
  2025-07-10 20:33:27 | 8092674635626072858 | 33300 |    400 |   333 |       4 | 607982.043008 |  9745.461818
  2025-07-10 20:33:28 | 8092674635626072858 | 33600 |    300 |   336 |       3 | 610530.950563 |  2548.907555
 ```
-- in the first example, we saw that at 20:33:25 it was called twice and ran for 3142ms. 
+- in the first example, we saw that at 20:33:25 it was called twice and the execution time increased by 3142ms. 
 - there was no execution at 20:33:24, 20:33:23 is when it was executed the last time before 20:33:25. Nice, everything fits - or does it?
 - at 20:33:27 it has been executed 4 times with an exec_ms_d of 9745ms. But it was also executed the second before, how can this be?
 
-That's the limitation of pg_stat_statements, there is no way to know why the calls count and total_exec_ms went up exactly because we can not trace sessions, everything is summarized over all executions. We don't know when all the sessions were started that increased the calls count to 4. Keep that in mind when trying to time how long one query was executed.
+That's the limitation of pg_stat_statements, we can not trace sessions, everything is summarized over all executions and the views only show the difference between snapshots. We don't know when all the sessions were started that increased the calls count by 4, maybe one execution was slower than the others. Keep that in mind when trying to time how long one query was executed.
 
 ### Which database modified the most rows
 It seems that more rows were modified in the oltpbench database, let's verify this:
