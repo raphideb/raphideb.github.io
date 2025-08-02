@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://raphideb.github.io/sitemap.xml
