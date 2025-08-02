@@ -1,46 +1,7 @@
 <!doctype html>
 <html itemscope itemtype="http://schema.org/WebPage" lang="en" class="no-js">
   <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
-
-
-<link rel="shortcut icon" href="/favicons/favicon.ico" >
-<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
-<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
-<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
-<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
-<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
-<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
-<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
-<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
-<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
-
-<title>pgstat_snap | crashdump</title>
-<meta name="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
-<meta property="og:url" content="http://localhost:1313/postgres/pgstat_snap/">
-  <meta property="og:site_name" content="crashdump">
-  <meta property="og:title" content="pgstat_snap">
-  <meta property="og:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
-  <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="postgres">
-    <meta property="article:modified_time" content="2025-07-09T23:01:51+02:00">
-
-  <meta itemprop="name" content="pgstat_snap">
-  <meta itemprop="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
-  <meta itemprop="dateModified" content="2025-07-09T23:01:51+02:00">
-  <meta itemprop="wordCount" content="3602">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="pgstat_snap">
-  <meta name="twitter:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
-<link href="/scss/main.css" rel="stylesheet">
-<script
-  src="https://code.jquery.com/jquery-3.7.1.min.js"
-  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-  crossorigin="anonymous"></script>
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
+    <meta name="google-site-verification" content="yIs8HxNKHFWzdJCQOYw1Gb4UqF2Lefe13WszIZGnE_c" />
 
   </head>
   <body class="td-page">
@@ -524,7 +485,7 @@ pg_stat_statements.track_utility = off
 <ul>
 <li>user &ldquo;dwhuser&rdquo; executed mainly SELECTS and few DMLs in the database &ldquo;dwhbench&rdquo;</li>
 <li>most queries affected more than one row per call, like the query &ldquo;8092674635626072858&rdquo;, which returned 100 rows per call and was only called a few times between snapshots</li>
-<li>the queries usually ran for a second or more, &ldquo;8092674635626072858&rdquo; was called 2 times and was executed for 3.142 seconds (we&rsquo;ll verify this later)</li>
+<li>the queries usually ran for a second or more, &ldquo;8092674635626072858&rdquo; was called 2 times and the total exeuction time increased by 3.142 seconds (we&rsquo;ll verify this later)</li>
 </ul>
 <h3 id="what-was-every-query-doing">What was every query doing</h3>
 <p>Let&rsquo;s focus on the querid &ldquo;8092674635626072858&rdquo; a bit more, what was it doing? To get a better understanding, we can query pgstat_snap_diff_all which also has the summarized values as recorded in pg_stat_statemens when the snapshot was collected:</p>
@@ -539,11 +500,11 @@ pg_stat_statements.track_utility = off
 </span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">33300</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">400</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">333</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">607982</span><span class="p">.</span><span class="mi">043008</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">9745</span><span class="p">.</span><span class="mi">461818</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">28</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">33600</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">300</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">336</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">610530</span><span class="p">.</span><span class="mi">950563</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">2548</span><span class="p">.</span><span class="mi">907555</span><span class="w">
 </span></span></span></code></pre></div><ul>
-<li>in the first example, we saw that at 20:33:25 it was called twice and ran for 3142ms.</li>
+<li>in the first example, we saw that at 20:33:25 it was called twice and the execution time increased by 3142ms.</li>
 <li>there was no execution at 20:33:24, 20:33:23 is when it was executed the last time before 20:33:25. Nice, everything fits - or does it?</li>
 <li>at 20:33:27 it has been executed 4 times with an exec_ms_d of 9745ms. But it was also executed the second before, how can this be?</li>
 </ul>
-<p>That&rsquo;s the limitation of pg_stat_statements, there is no way to know why the calls count and total_exec_ms went up exactly because we can not trace sessions, everything is summarized over all executions. We don&rsquo;t know when all the sessions were started that increased the calls count to 4. Keep that in mind when trying to time how long one query was executed.</p>
+<p>That&rsquo;s the limitation of pg_stat_statements, we can not trace sessions, everything is summarized over all executions and the views only show the difference between snapshots. We don&rsquo;t know when all the sessions were started that increased the calls count by 4, maybe one execution was slower than the others. Keep that in mind when trying to time how long one query was executed.</p>
 <h3 id="which-database-modified-the-most-rows">Which database modified the most rows</h3>
 <p>It seems that more rows were modified in the oltpbench database, let&rsquo;s verify this:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">rows_d</span><span class="p">),</span><span class="n">datname</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pgstat_snap_diff</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="k">upper</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">like</span><span class="w"> </span><span class="s1">&#39;SELECT%&#39;</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">datname</span><span class="p">;</span><span class="w">
@@ -595,7 +556,7 @@ pg_stat_statements.track_utility = off
 
 	
 <div class="text-muted pt-3 border-top">
-  Last modified: July 9, 2025
+  Last modified: July 10, 2025
 </div>
 
 
