@@ -19,4 +19,4 @@ So, grep a coffee and have fun ;)
 <div style="clear: both;"></div>
 <br>
 <br>
-<img src="https://imgs.xkcd.com/comics/shouldnt_be_hard.png" alt="shouldn't be hard">
+<img src="/shouldnt_be_hard.png" alt="shouldn't be hard">
