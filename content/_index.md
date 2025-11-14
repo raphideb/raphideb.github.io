@@ -6,7 +6,7 @@ hide_readingtime: true
 type: "docs"
 ---
 <br>
-<img class="floatimg" src="/dontpanic.jpg" alt="crashdump.info" width="40%" height="40%" style="padding-bottom:30px"/>
+<img class="floatimg" src="/dontpanic.jpg" alt="crashdump.info" width="30%" height="30%" style="padding-bottom:30px"/>
 <br>
 <br>
 Welcome to my little place on the internet. Powered by some github wizardry and the mighty help of vi, I use this space to post stuff I've picked up during the years, mainly PostgreSQL and Oracle related and some other stuff. 
