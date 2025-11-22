@@ -1,4 +1,4 @@
-baseURL = "https://raphideb.github.io/"
+baseURL = "https://crashdump.info/"
 languageCode = "en-us"
 title = "crashdump"
 
@@ -47,10 +47,10 @@ pygmentsUseClassic = false
 # See https://help.farbox.com/pygments.html
 pygmentsStyle = "tango"
 
-#[sitemap]
-  #changefreq = "daily"
-  #filename = "sitemap.xml"
-  #priority = 0.5
+[sitemap]
+  changefreq = "daily"
+  filename = "sitemap.xml"
+  priority = 0.5
 
 [markup]
   [markup.highlight]

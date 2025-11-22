@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://raphideb.github.io/sitemap.xml
+Sitemap: https://crashdump.info/sitemap.xml

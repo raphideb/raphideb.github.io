@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
 <url>
-  <loc>https://raphideb.github.io/</loc>
+  <loc>https://crashdump.info/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/postgres/</loc>
+  <loc>https://crashdump.info/postgres/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/postgres/pgbench/</loc>
+  <loc>https://crashdump.info/postgres/pgbench/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/postgres/pgstat_snap/</loc>
+  <loc>https://crashdump.info/postgres/pgstat_snap/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/oracle/</loc>
+  <loc>https://crashdump.info/oracle/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/oracle/ash/</loc>
+  <loc>https://crashdump.info/oracle/ash/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/oracle/ashtop/</loc>
+  <loc>https://crashdump.info/oracle/ashtop/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/stuff/</loc>
+  <loc>https://crashdump.info/stuff/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/stuff/stuff/</loc>
+  <loc>https://crashdump.info/stuff/stuff/</loc>
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>https://raphideb.github.io/postgres/pgstat_snap/#drill-down</loc>
+  <loc>https://crashdump.info/postgres/pgstat_snap/#drill-down</loc>
   <changefreq>weekly</changefreq>
 </url>
 </urlset>
