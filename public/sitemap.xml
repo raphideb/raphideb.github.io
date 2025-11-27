@@ -17,6 +17,10 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
+    <loc>http://localhost:1313/stuff/vibeshake/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>http://localhost:1313/oracle/ashtop/</loc>
     <lastmod>2025-07-09T23:07:10+02:00</lastmod>
     <changefreq>daily</changefreq>

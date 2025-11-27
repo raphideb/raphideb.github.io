@@ -8,6 +8,13 @@
     <language>en-us</language>
     <atom:link href="http://localhost:1313/stuff/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>VibeShake</title>
+      <link>http://localhost:1313/stuff/vibeshake/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/stuff/vibeshake/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>other stuff</title>
       <link>http://localhost:1313/stuff/stuff/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

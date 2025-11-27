@@ -22,6 +22,13 @@
       <description>&lt;h2 id=&#34;the-postgresql-benchmark-utility&#34;&gt;The PostgreSQL benchmark utility&lt;/h2&gt;&#xA;&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/postgres/pgbench.jpg&#34; alt=&#34;elephant&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;br&gt;&lt;br&gt;&#xA;&lt;p&gt;Including a benchmark utility with a database product demonstrates a strong commitment to performance and transparency. For PostgreSQL, the built-in tool is pgbench, which allows users to test various aspects of the database system. Not only that, it can also run benchmarks on any set of tables with any script that you created yourself, making it the perfect tool to benchmark a specific application workload.&#xA;&lt;p&gt;The official documentation is here: &lt;a href=&#34;https://www.postgresql.org/docs/current/pgbench.html&#34;&gt;https://www.postgresql.org/docs/current/pgbench.html&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
+      <title>VibeShake</title>
+      <link>http://localhost:1313/stuff/vibeshake/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/stuff/vibeshake/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>ashtop</title>
       <link>http://localhost:1313/oracle/ashtop/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
