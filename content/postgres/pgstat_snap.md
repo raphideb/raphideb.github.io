@@ -312,5 +312,5 @@ select snapshot_time,queryid,rows,calls,total_exec_time from pgstat_snap_stat_hi
 ## Conclusion
 Tracing query executions can be cumbersom with pg_stat_statements alone, which is why I wrote this extension. At my workplace we don't have that many performance problems with PostgreSQL to warrant setting up a centralized solution like pgwatch or pg_profile. But when I encounter a performance problem once in a blue moon on a cluster, especially with many databases, I can now quickly see which database or query might be responsible. All it takes is to load up the extension, collect some snapshots and query pgstat_snap_diff in whatever way I want. And when I'm done I drop the extension again with all the collected data to not have any dead waste in the database.  
 
-I hope you'll find it useful too, please let me know if there's anything I could improve: <raphi@crashdump.ch>.
+I hope you'll find it useful too, please create a github issue if something's not working.
 
