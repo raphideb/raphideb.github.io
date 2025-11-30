@@ -1,0 +1,552 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="en" class="no-js">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
+
+<title>PostgreSQL on Kubernetes | crashdump</title>
+<meta name="description" content="PostgreSQL deployment with CloudNativePG operator">
+<meta property="og:url" content="http://localhost:1313/kubernetes/postgres/">
+  <meta property="og:site_name" content="crashdump">
+  <meta property="og:title" content="PostgreSQL on Kubernetes">
+  <meta property="og:description" content="PostgreSQL deployment with CloudNativePG operator">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="kubernetes">
+
+  <meta itemprop="name" content="PostgreSQL on Kubernetes">
+  <meta itemprop="description" content="PostgreSQL deployment with CloudNativePG operator">
+  <meta itemprop="wordCount" content="1006">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PostgreSQL on Kubernetes">
+  <meta name="twitter:description" content="PostgreSQL deployment with CloudNativePG operator">
+<link href="/scss/main.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous"></script>
+<link rel="canonical" href="http://localhost:1313/kubernetes/postgres/">
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
+
+  </head>
+  <body class="td-page">
+    <header>
+      <nav class="td-navbar js-navbar-scroll" data-bs-theme="dark">
+<div class="container-fluid flex-column flex-md-row">
+  <a class="navbar-brand" href="/"><span class="navbar-brand__logo navbar-logo"><svg width="60" height="0" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-size="64" font-type="bold" fill="#fff">ok#</text></svg></span><span class="navbar-brand__name">crashdump</span></a>
+  <div class="td-navbar-nav-scroll ms-md-auto" id="main_navbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.postgresql.org/docs/" target="_blank" rel="noopener"><span>Postgres documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://docs.oracle.com/en/database/oracle/oracle-database/index.html" target="_blank" rel="noopener"><span>Oracle documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://kubernetes.io/docs/" target="_blank" rel="noopener"><span>Kubernetes documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://claude.ai/" target="_blank" rel="noopener"><span>Claude</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.perplexity.ai/" target="_blank" rel="noopener"><span>Perplexity</span></a>
+      </li>
+      <li class="td-light-dark-menu nav-item dropdown">
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="check2" viewBox="0 0 16 16">
+    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+  </symbol>
+  <symbol id="circle-half" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+  </symbol>
+  <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+  </symbol>
+  <symbol id="sun-fill" viewBox="0 0 16 16">
+    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+  </symbol>
+</svg>
+
+<button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
+        id="bd-theme"
+        type="button"
+        aria-expanded="false"
+        data-bs-toggle="dropdown"
+        data-bs-display="static"
+        aria-label="Toggle theme (auto)">
+  <svg class="bi my-1 theme-icon-active"><use href="#circle-half"></use></svg>
+</button>
+<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#sun-fill"></use></svg>
+      Light
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#moon-stars-fill"></use></svg>
+      Dark
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+      <svg class="bi me-2 opacity-50"><use href="#circle-half"></use></svg>
+      Auto
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+</ul>
+
+      </li>
+      </ul>
+  </div>
+  <div class="d-none d-lg-block">
+    
+  </div>
+</div>
+</nav>
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            <div id="td-sidebar-menu" class="td-sidebar__inner">
+  <form class="td-sidebar__search d-flex align-items-center">
+    
+    <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ms-3 fas fa-bars" type="button" data-bs-toggle="collapse" data-bs-target="#td-section-nav" aria-controls="td-section-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    </button>
+  </form>
+  <nav class="td-sidebar-nav collapse" id="td-section-nav">
+    <ul class="td-sidebar-nav__section pe-md-3 ul-0">
+      <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m--li">
+  <a href="/" title="hi there!" class="align-left ps-0 td-sidebar-link td-sidebar-link__section tree-root" id="m-"><span class="">Home</span></a>
+  <ul class="ul-1">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-postgres-li">
+  <a href="/postgres/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-postgres"><span class="">PostgreSQL</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgbench-li">
+  <a href="/postgres/pgbench/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgbench"><span class="">pgbench</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgstat_snap-li">
+  <a href="/postgres/pgstat_snap/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgstat_snap"><span class="">pgstat_snap</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-oracle-li">
+  <a href="/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-oracle"><span class="">Oracle</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleash-li">
+  <a href="/oracle/ash/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleash"><span class="">Active Session History</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleashtop-li">
+  <a href="/oracle/ashtop/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleashtop"><span class="">ashtop</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-kubernetes-li">
+  <a href="/kubernetes/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-kubernetes"><span class="">Kubernetes</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetescluster-li">
+  <a href="/kubernetes/cluster/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetescluster"><span class="">Cluster Management</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-kubernetespostgres-li">
+  <a href="/kubernetes/postgres/" class="align-left ps-0 active td-sidebar-link td-sidebar-link__page" id="m-kubernetespostgres"><span class="td-sidebar-nav-active-item">PostgreSQL on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesmongodb-li">
+  <a href="/kubernetes/mongodb/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesmongodb"><span class="">MongoDB on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesoracle-li">
+  <a href="/kubernetes/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesoracle"><span class="">Oracle on Kubernetes</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-stuff-li">
+  <a href="/stuff/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-stuff"><span class="">Other stuff</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-stuffstuff-li">
+  <a href="/stuff/stuff/" title="other stuff" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-stuffstuff"><span class="">Other stuff</span></a>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+    </ul>
+  </nav>
+</div>
+
+          </aside>
+          <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+            <div class="td-page-meta ms-2 pb-1 pt-2 mb-0">
+<a href="https://github.com/raphideb/raphideb.github.io/tree/main/content/kubernetes/postgres.md" class="td-page-meta--view td-page-meta__view" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines fa-fw"></i> View page source</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/edit/main/content/kubernetes/postgres.md" class="td-page-meta--edit td-page-meta__edit" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Edit this page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/new/main/content/kubernetes?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" class="td-page-meta--child td-page-meta__child" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Create child page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/issues/new?title=PostgreSQL%20on%20Kubernetes" class="td-page-meta--issue td-page-meta__issue" target="_blank" rel="noopener"><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
+  
+</div>
+
+            <div class="td-toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#cloudnativepg-operator">CloudNativePG Operator</a></li>
+    <li><a href="#connecting-to-postgresql">Connecting to PostgreSQL</a>
+      <ul>
+        <li><a href="#using-cnpg-plugin-recommended">Using cnpg Plugin (Recommended)</a></li>
+        <li><a href="#using-port-forwarding">Using Port Forwarding</a></li>
+        <li><a href="#direct-pod-access">Direct Pod Access</a></li>
+      </ul>
+    </li>
+    <li><a href="#high-availability-and-failover">High Availability and Failover</a>
+      <ul>
+        <li><a href="#view-cluster-status">View Cluster Status</a></li>
+        <li><a href="#test-automatic-failover">Test Automatic Failover</a></li>
+        <li><a href="#check-replication-status">Check Replication Status</a></li>
+      </ul>
+    </li>
+    <li><a href="#scaling-the-cluster">Scaling the Cluster</a>
+      <ul>
+        <li><a href="#scale-to-more-instances">Scale to More Instances</a></li>
+        <li><a href="#scale-down">Scale Down</a></li>
+      </ul>
+    </li>
+    <li><a href="#performance-testing-with-pgbench">Performance Testing with pgbench</a>
+      <ul>
+        <li><a href="#initialize-pgbench-tables">Initialize pgbench Tables</a></li>
+        <li><a href="#run-tpc-b-benchmark">Run TPC-B Benchmark</a></li>
+        <li><a href="#monitor-in-grafana">Monitor in Grafana</a></li>
+      </ul>
+    </li>
+    <li><a href="#configuration-changes">Configuration Changes</a>
+      <ul>
+        <li><a href="#view-current-configuration">View Current Configuration</a></li>
+        <li><a href="#modify-postgresql-parameters">Modify PostgreSQL Parameters</a></li>
+        <li><a href="#verify-configuration">Verify Configuration</a></li>
+      </ul>
+    </li>
+    <li><a href="#backup-and-recovery">Backup and Recovery</a>
+      <ul>
+        <li><a href="#view-backup-configuration">View Backup Configuration</a></li>
+        <li><a href="#list-backups">List Backups</a></li>
+        <li><a href="#trigger-manual-backup">Trigger Manual Backup</a></li>
+      </ul>
+    </li>
+    <li><a href="#monitoring-and-troubleshooting">Monitoring and Troubleshooting</a>
+      <ul>
+        <li><a href="#check-cluster-events">Check Cluster Events</a></li>
+        <li><a href="#view-pod-logs">View Pod Logs</a></li>
+        <li><a href="#resource-usage">Resource Usage</a></li>
+        <li><a href="#connection-pooling">Connection Pooling</a></li>
+      </ul>
+    </li>
+    <li><a href="#database-administration">Database Administration</a>
+      <ul>
+        <li><a href="#create-additional-databases">Create Additional Databases</a></li>
+        <li><a href="#run-sql-scripts">Run SQL Scripts</a></li>
+        <li><a href="#check-database-size">Check Database Size</a></li>
+      </ul>
+    </li>
+    <li><a href="#deploy-additional-clusters">Deploy Additional Clusters</a></li>
+    <li><a href="#cleanup">Cleanup</a>
+      <ul>
+        <li><a href="#delete-a-single-cluster">Delete a Single Cluster</a></li>
+        <li><a href="#delete-everything-including-data">Delete Everything Including Data</a></li>
+      </ul>
+    </li>
+    <li><a href="#useful-queries-for-monitoring">Useful Queries for Monitoring</a>
+      <ul>
+        <li><a href="#active-connections">Active Connections</a></li>
+        <li><a href="#long-running-queries">Long Running Queries</a></li>
+        <li><a href="#database-cache-hit-ratio">Database Cache Hit Ratio</a></li>
+        <li><a href="#table-sizes">Table Sizes</a></li>
+      </ul>
+    </li>
+    <li><a href="#getting-started">Getting Started</a></li>
+  </ul>
+</nav>
+      </div>
+    
+            
+
+          </aside>
+          <main class="col-12 col-md-9 col-xl-8 ps-md-5" role="main">
+            
+  
+
+            <nav aria-label="breadcrumb" class="td-breadcrumbs">
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item">
+    <a href="/kubernetes/">Kubernetes</a></li>
+  <li class="breadcrumb-item active" aria-current="page">
+    PostgreSQL on Kubernetes</li>
+  </ol>
+</nav>
+<div class="td-content">
+	<h1>PostgreSQL on Kubernetes</h1>
+	<div class="lead">PostgreSQL deployment with CloudNativePG operator</div>
+	<header class="article-meta">
+		
+<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 5 minute read &nbsp;</p>
+</header>
+	<h2 id="cloudnativepg-operator">CloudNativePG Operator</h2>
+<p>After deploying PostgreSQL using the scripts from <a href="https://github.com/raphideb/kube" target="_blank">github.com/raphideb/kube</a>, you have a fully usable PostgreSQL cluster managed by the CloudNativePG operator.</p>
+<p>The deployment includes:</p>
+<ul>
+<li><strong>CloudNativePG operator</strong> - Kubernetes-native PostgreSQL management</li>
+<li><strong>cnpg plugin</strong> - Easy database access via kubectl</li>
+<li><strong>PostgreSQL cluster</strong> - Multi-instance cluster with replication</li>
+<li><strong>Grafana integration</strong> - Automatic monitoring setup</li>
+</ul>
+<h2 id="connecting-to-postgresql">Connecting to PostgreSQL</h2>
+<h3 id="using-cnpg-plugin-recommended">Using cnpg Plugin (Recommended)</h3>
+<p>Connect directly with psql:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cnpg psql pg-cluster -n postgres
+</span></span></code></pre></div><h3 id="using-port-forwarding">Using Port Forwarding</h3>
+<p>Forward the PostgreSQL port to your local machine:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl port-forward -n postgres svc/pg-cluster-rw 5432:5432
+</span></span></code></pre></div><p>Then connect from another terminal:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">psql -h localhost -p <span class="m">5432</span> -U postgres postgres
+</span></span></code></pre></div><h3 id="direct-pod-access">Direct Pod Access</h3>
+<p>Get the pod name and connect:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n postgres
+</span></span><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it pg-cluster-1 -n postgres -- bash
+</span></span><span class="line"><span class="cl">psql -U postgres
+</span></span></code></pre></div><h2 id="high-availability-and-failover">High Availability and Failover</h2>
+<h3 id="view-cluster-status">View Cluster Status</h3>
+<p>Check the cluster and its instances:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get cluster -n postgres
+</span></span><span class="line"><span class="cl">kubectl get pods -n postgres
+</span></span></code></pre></div><p>Output shows which pod is primary and which are replicas:</p>
+<pre tabindex="0"><code>NAME           AGE   INSTANCES   READY   STATUS
+pg-cluster     5m    3           3       Cluster in healthy state
+
+NAME             READY   STATUS    ROLE
+pg-cluster-1     1/1     Running   Primary
+pg-cluster-2     1/1     Running   Replica
+pg-cluster-3     1/1     Running   Replica
+</code></pre><h3 id="test-automatic-failover">Test Automatic Failover</h3>
+<p>Delete the primary pod and watch the operator promote a replica:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Watch cluster status in one terminal</span>
+</span></span><span class="line"><span class="cl">kubectl get cluster -n postgres -w
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># In another terminal, delete the primary</span>
+</span></span><span class="line"><span class="cl">kubectl delete pod pg-cluster-1 -n postgres
+</span></span></code></pre></div><p>The operator automatically promotes a replica to primary within seconds. A new replica pod is created to maintain the desired instance count.</p>
+<h3 id="check-replication-status">Check Replication Status</h3>
+<p>Connect and check replication:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cnpg psql pg-cluster -n postgres
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SELECT client_addr, state, sync_state
+</span></span><span class="line"><span class="cl">FROM pg_stat_replication<span class="p">;</span>
+</span></span></code></pre></div><h2 id="scaling-the-cluster">Scaling the Cluster</h2>
+<h3 id="scale-to-more-instances">Scale to More Instances</h3>
+<p>Increase from 3 to 5 instances:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch cluster pg-cluster -n postgres --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p <span class="s1">&#39;{&#34;spec&#34;:{&#34;instances&#34;:5}}&#39;</span>
+</span></span></code></pre></div><p>Watch new pods being created:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n postgres -w
+</span></span></code></pre></div><h3 id="scale-down">Scale Down</h3>
+<p>Reduce to 2 instances:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch cluster pg-cluster -n postgres --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p <span class="s1">&#39;{&#34;spec&#34;:{&#34;instances&#34;:2}}&#39;</span>
+</span></span></code></pre></div><p>The operator removes replicas while preserving the primary.</p>
+<h2 id="performance-testing-with-pgbench">Performance Testing with pgbench</h2>
+<h3 id="initialize-pgbench-tables">Initialize pgbench Tables</h3>
+<p>Connect to the database and create pgbench schema:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cnpg psql pg-cluster -n postgres
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">CREATE DATABASE pgbench<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="se">\q</span>
+</span></span></code></pre></div><p>Get the pod name and initialize:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">POD</span><span class="o">=</span><span class="k">$(</span>kubectl get pod -n postgres -l <span class="nv">role</span><span class="o">=</span>primary -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[0].metadata.name}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it <span class="nv">$POD</span> -n postgres -- pgbench -i -s <span class="m">100</span> -d pgbench -U postgres
+</span></span></code></pre></div><h3 id="run-tpc-b-benchmark">Run TPC-B Benchmark</h3>
+<p>Run a 60-second benchmark:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it <span class="nv">$POD</span> -n postgres -- <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  pgbench -c <span class="m">20</span> -j <span class="m">20</span> -T <span class="m">60</span> -d pgbench -U postgres
+</span></span></code></pre></div><p>Output shows transactions per second (TPS):</p>
+<pre tabindex="0"><code>transaction type: &lt;builtin: TPC-B (sort of)&gt;
+scaling factor: 100
+number of clients: 20
+duration: 60 s
+number of transactions: 318422
+tps = 5307.477304
+</code></pre><h3 id="monitor-in-grafana">Monitor in Grafana</h3>
+<p>While pgbench runs, open Grafana:</p>
+<p>http://&lt;your-host-ip&gt;:30000</p>
+<p>Import Dashboard ID: <strong>20417</strong> for CloudNativePG</p>
+<p>Watch real-time metrics:</p>
+<ul>
+<li>Transaction rate</li>
+<li>Active connections</li>
+<li>Cache hit ratio</li>
+<li>Replication lag</li>
+</ul>
+<h2 id="configuration-changes">Configuration Changes</h2>
+<h3 id="view-current-configuration">View Current Configuration</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get cluster pg-cluster -n postgres -o yaml
+</span></span></code></pre></div><h3 id="modify-postgresql-parameters">Modify PostgreSQL Parameters</h3>
+<p>Edit the cluster to add custom parameters:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl edit cluster pg-cluster -n postgres
+</span></span></code></pre></div><p>Add under <code>spec.postgresql</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">postgresql</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">max_connections</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;200&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">shared_buffers</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;256MB&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">work_mem</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;8MB&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">maintenance_work_mem</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;128MB&#34;</span><span class="w">
+</span></span></span></code></pre></div><p>Save and exit. The operator applies changes with a rolling update.</p>
+<p>Watch the update:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n postgres -w
+</span></span></code></pre></div><h3 id="verify-configuration">Verify Configuration</h3>
+<p>Connect and check:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cnpg psql pg-cluster -n postgres
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SHOW max_connections<span class="p">;</span>
+</span></span><span class="line"><span class="cl">SHOW shared_buffers<span class="p">;</span>
+</span></span></code></pre></div><h2 id="backup-and-recovery">Backup and Recovery</h2>
+<h3 id="view-backup-configuration">View Backup Configuration</h3>
+<p>Check if backups are configured:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get cluster pg-cluster -n postgres -o yaml <span class="p">|</span> grep -A <span class="m">10</span> backup
+</span></span></code></pre></div><h3 id="list-backups">List Backups</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get backup -n postgres
+</span></span></code></pre></div><h3 id="trigger-manual-backup">Trigger Manual Backup</h3>
+<p>Create an on-demand backup:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">postgresql.cnpg.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Backup</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pg-cluster-backup-manual</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">postgres</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cluster</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pg-cluster</span><span class="w">
+</span></span></span></code></pre></div><p>Apply it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f backup.yaml
+</span></span></code></pre></div><p>Monitor backup progress:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get backup -n postgres -w
+</span></span><span class="line"><span class="cl">kubectl describe backup pg-cluster-backup-manual -n postgres
+</span></span></code></pre></div><h2 id="monitoring-and-troubleshooting">Monitoring and Troubleshooting</h2>
+<h3 id="check-cluster-events">Check Cluster Events</h3>
+<p>View operator events:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get events -n postgres --sort-by<span class="o">=</span><span class="s1">&#39;.lastTimestamp&#39;</span>
+</span></span></code></pre></div><h3 id="view-pod-logs">View Pod Logs</h3>
+<p>Check PostgreSQL logs:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs -f pg-cluster-1 -n postgres
+</span></span></code></pre></div><p>View previous container logs (after crash):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs pg-cluster-1 -n postgres --previous
+</span></span></code></pre></div><h3 id="resource-usage">Resource Usage</h3>
+<p>Check CPU and memory usage:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl top pods -n postgres
+</span></span></code></pre></div><h3 id="connection-pooling">Connection Pooling</h3>
+<p>The cluster includes PgBouncer for connection pooling. Check pooler pods:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n postgres -l cnpg.io/poolerName
+</span></span></code></pre></div><p>Connect through pooler:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl port-forward -n postgres svc/pg-cluster-pooler-rw 5432:5432
+</span></span><span class="line"><span class="cl">psql -h localhost -p <span class="m">5432</span> -U postgres postgres
+</span></span></code></pre></div><h2 id="database-administration">Database Administration</h2>
+<h3 id="create-additional-databases">Create Additional Databases</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cnpg psql pg-cluster -n postgres
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">CREATE DATABASE myapp<span class="p">;</span>
+</span></span><span class="line"><span class="cl">CREATE USER myapp_user WITH PASSWORD <span class="s1">&#39;secure_password&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">GRANT ALL PRIVILEGES ON DATABASE myapp TO myapp_user<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="se">\q</span>
+</span></span></code></pre></div><h3 id="run-sql-scripts">Run SQL Scripts</h3>
+<p>Create a script locally:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- schema.sql
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">username</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">email</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">created_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_users_email</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">users</span><span class="p">(</span><span class="n">email</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Copy to pod and execute:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">POD</span><span class="o">=</span><span class="k">$(</span>kubectl get pod -n postgres -l <span class="nv">role</span><span class="o">=</span>primary -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[0].metadata.name}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">kubectl cp schema.sql postgres/<span class="nv">$POD</span>:/tmp/schema.sql
+</span></span><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it <span class="nv">$POD</span> -n postgres -- psql -U postgres -d myapp -f /tmp/schema.sql
+</span></span></code></pre></div><h3 id="check-database-size">Check Database Size</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cnpg psql pg-cluster -n postgres
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SELECT pg_database.datname,
+</span></span><span class="line"><span class="cl">       pg_size_pretty<span class="o">(</span>pg_database_size<span class="o">(</span>pg_database.datname<span class="o">))</span> AS size
+</span></span><span class="line"><span class="cl">FROM pg_database
+</span></span><span class="line"><span class="cl">ORDER BY pg_database_size<span class="o">(</span>pg_database.datname<span class="o">)</span> DESC<span class="p">;</span>
+</span></span></code></pre></div><h2 id="deploy-additional-clusters">Deploy Additional Clusters</h2>
+<p>The repository includes a template YAML file to deploy more PostgreSQL clusters.</p>
+<p>View the template:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat pg-cluster.yml
+</span></span></code></pre></div><p>Deploy a new cluster:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f pg-cluster.yml
+</span></span></code></pre></div><p>This creates a separate PostgreSQL cluster with its own storage and resources.</p>
+<h2 id="cleanup">Cleanup</h2>
+<h3 id="delete-a-single-cluster">Delete a Single Cluster</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete cluster pg-cluster -n postgres
+</span></span></code></pre></div><p>This deletes pods and services but preserves PVCs (data).</p>
+<h3 id="delete-everything-including-data">Delete Everything Including Data</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete cluster pg-cluster -n postgres
+</span></span><span class="line"><span class="cl">kubectl delete pvc -n postgres --all
+</span></span></code></pre></div><h2 id="useful-queries-for-monitoring">Useful Queries for Monitoring</h2>
+<p>Connect to the database and run these queries:</p>
+<h3 id="active-connections">Active Connections</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">WHERE</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;active&#39;</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="long-running-queries">Long Running Queries</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="p">.</span><span class="n">query_start</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">duration</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">WHERE</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;active&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">AND</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="p">.</span><span class="n">query_start</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="s1">&#39;5 minutes&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">duration</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="database-cache-hit-ratio">Database Cache Hit Ratio</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">heap_blks_read</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">heap_read</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="k">sum</span><span class="p">(</span><span class="n">heap_blks_hit</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">heap_hit</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="k">sum</span><span class="p">(</span><span class="n">heap_blks_hit</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="k">sum</span><span class="p">(</span><span class="n">heap_blks_hit</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">heap_blks_read</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">cache_hit_ratio</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_statio_user_tables</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="table-sizes">Table Sizes</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">schemaname</span><span class="p">,</span><span class="w"> </span><span class="n">tablename</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_total_relation_size</span><span class="p">(</span><span class="n">schemaname</span><span class="o">||</span><span class="s1">&#39;.&#39;</span><span class="o">||</span><span class="n">tablename</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">size</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_tables</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">WHERE</span><span class="w"> </span><span class="n">schemaname</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;pg_catalog&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;information_schema&#39;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">pg_total_relation_size</span><span class="p">(</span><span class="n">schemaname</span><span class="o">||</span><span class="s1">&#39;.&#39;</span><span class="o">||</span><span class="n">tablename</span><span class="p">)</span><span class="w"> </span><span class="k">DESC</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><h2 id="getting-started">Getting Started</h2>
+<p>For installation instructions and deployment details, see the README files in the <a href="https://github.com/raphideb/kube" target="_blank">script repository</a>.</p>
+
+	
+
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      <footer class="td-footer row d-print-none">
+  <div class="container-fluid">
+    <div class="row mx-md-2">
+      <div class="td-footer__left col-6 col-sm-4 order-sm-1">
+        
+      </div><div class="td-footer__right col-6 col-sm-4 order-sm-3">
+        
+      </div><div class="td-footer__center col-12 col-sm-4 py-2 order-sm-2">
+        
+      </div>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <script src="/js/main.js"></script>
+<script defer src="/js/click-to-copy.js" crossorigin="anonymous"></script>
+<script src='/js/tabpane-persist.js'></script>
+
+  </body>
+</html>

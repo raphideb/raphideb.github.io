@@ -1,0 +1,616 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="en" class="no-js">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
+
+<title>MongoDB on Kubernetes | crashdump</title>
+<meta name="description" content="MongoDB deployment with Community Operator">
+<meta property="og:url" content="http://localhost:1313/kubernetes/mongodb/">
+  <meta property="og:site_name" content="crashdump">
+  <meta property="og:title" content="MongoDB on Kubernetes">
+  <meta property="og:description" content="MongoDB deployment with Community Operator">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="kubernetes">
+
+  <meta itemprop="name" content="MongoDB on Kubernetes">
+  <meta itemprop="description" content="MongoDB deployment with Community Operator">
+  <meta itemprop="wordCount" content="1035">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="MongoDB on Kubernetes">
+  <meta name="twitter:description" content="MongoDB deployment with Community Operator">
+<link href="/scss/main.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous"></script>
+<link rel="canonical" href="http://localhost:1313/kubernetes/mongodb/">
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
+
+  </head>
+  <body class="td-page">
+    <header>
+      <nav class="td-navbar js-navbar-scroll" data-bs-theme="dark">
+<div class="container-fluid flex-column flex-md-row">
+  <a class="navbar-brand" href="/"><span class="navbar-brand__logo navbar-logo"><svg width="60" height="0" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-size="64" font-type="bold" fill="#fff">ok#</text></svg></span><span class="navbar-brand__name">crashdump</span></a>
+  <div class="td-navbar-nav-scroll ms-md-auto" id="main_navbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.postgresql.org/docs/" target="_blank" rel="noopener"><span>Postgres documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://docs.oracle.com/en/database/oracle/oracle-database/index.html" target="_blank" rel="noopener"><span>Oracle documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://kubernetes.io/docs/" target="_blank" rel="noopener"><span>Kubernetes documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://claude.ai/" target="_blank" rel="noopener"><span>Claude</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.perplexity.ai/" target="_blank" rel="noopener"><span>Perplexity</span></a>
+      </li>
+      <li class="td-light-dark-menu nav-item dropdown">
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="check2" viewBox="0 0 16 16">
+    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+  </symbol>
+  <symbol id="circle-half" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+  </symbol>
+  <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+  </symbol>
+  <symbol id="sun-fill" viewBox="0 0 16 16">
+    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+  </symbol>
+</svg>
+
+<button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
+        id="bd-theme"
+        type="button"
+        aria-expanded="false"
+        data-bs-toggle="dropdown"
+        data-bs-display="static"
+        aria-label="Toggle theme (auto)">
+  <svg class="bi my-1 theme-icon-active"><use href="#circle-half"></use></svg>
+</button>
+<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#sun-fill"></use></svg>
+      Light
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#moon-stars-fill"></use></svg>
+      Dark
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+      <svg class="bi me-2 opacity-50"><use href="#circle-half"></use></svg>
+      Auto
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+</ul>
+
+      </li>
+      </ul>
+  </div>
+  <div class="d-none d-lg-block">
+    
+  </div>
+</div>
+</nav>
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            <div id="td-sidebar-menu" class="td-sidebar__inner">
+  <form class="td-sidebar__search d-flex align-items-center">
+    
+    <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ms-3 fas fa-bars" type="button" data-bs-toggle="collapse" data-bs-target="#td-section-nav" aria-controls="td-section-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    </button>
+  </form>
+  <nav class="td-sidebar-nav collapse" id="td-section-nav">
+    <ul class="td-sidebar-nav__section pe-md-3 ul-0">
+      <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m--li">
+  <a href="/" title="hi there!" class="align-left ps-0 td-sidebar-link td-sidebar-link__section tree-root" id="m-"><span class="">Home</span></a>
+  <ul class="ul-1">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-postgres-li">
+  <a href="/postgres/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-postgres"><span class="">PostgreSQL</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgbench-li">
+  <a href="/postgres/pgbench/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgbench"><span class="">pgbench</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgstat_snap-li">
+  <a href="/postgres/pgstat_snap/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgstat_snap"><span class="">pgstat_snap</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-oracle-li">
+  <a href="/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-oracle"><span class="">Oracle</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleash-li">
+  <a href="/oracle/ash/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleash"><span class="">Active Session History</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleashtop-li">
+  <a href="/oracle/ashtop/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleashtop"><span class="">ashtop</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-kubernetes-li">
+  <a href="/kubernetes/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-kubernetes"><span class="">Kubernetes</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetescluster-li">
+  <a href="/kubernetes/cluster/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetescluster"><span class="">Cluster Management</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetespostgres-li">
+  <a href="/kubernetes/postgres/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetespostgres"><span class="">PostgreSQL on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-kubernetesmongodb-li">
+  <a href="/kubernetes/mongodb/" class="align-left ps-0 active td-sidebar-link td-sidebar-link__page" id="m-kubernetesmongodb"><span class="td-sidebar-nav-active-item">MongoDB on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesoracle-li">
+  <a href="/kubernetes/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesoracle"><span class="">Oracle on Kubernetes</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-stuff-li">
+  <a href="/stuff/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-stuff"><span class="">Other stuff</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-stuffstuff-li">
+  <a href="/stuff/stuff/" title="other stuff" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-stuffstuff"><span class="">Other stuff</span></a>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+    </ul>
+  </nav>
+</div>
+
+          </aside>
+          <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+            <div class="td-page-meta ms-2 pb-1 pt-2 mb-0">
+<a href="https://github.com/raphideb/raphideb.github.io/tree/main/content/kubernetes/mongodb.md" class="td-page-meta--view td-page-meta__view" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines fa-fw"></i> View page source</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/edit/main/content/kubernetes/mongodb.md" class="td-page-meta--edit td-page-meta__edit" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Edit this page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/new/main/content/kubernetes?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" class="td-page-meta--child td-page-meta__child" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Create child page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/issues/new?title=MongoDB%20on%20Kubernetes" class="td-page-meta--issue td-page-meta__issue" target="_blank" rel="noopener"><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
+  
+</div>
+
+            <div class="td-toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#mongodb-community-operator">MongoDB Community Operator</a></li>
+    <li><a href="#connecting-to-mongodb">Connecting to MongoDB</a>
+      <ul>
+        <li><a href="#using-port-forwarding">Using Port Forwarding</a></li>
+        <li><a href="#direct-pod-access">Direct Pod Access</a></li>
+      </ul>
+    </li>
+    <li><a href="#replica-set-operations">Replica Set Operations</a>
+      <ul>
+        <li><a href="#view-replica-set-status">View Replica Set Status</a></li>
+        <li><a href="#test-automatic-failover">Test Automatic Failover</a></li>
+      </ul>
+    </li>
+    <li><a href="#scaling-the-replica-set">Scaling the Replica Set</a>
+      <ul>
+        <li><a href="#scale-to-more-members">Scale to More Members</a></li>
+        <li><a href="#scale-down">Scale Down</a></li>
+      </ul>
+    </li>
+    <li><a href="#database-operations">Database Operations</a>
+      <ul>
+        <li><a href="#create-database-and-collection">Create Database and Collection</a></li>
+        <li><a href="#create-user-with-permissions">Create User with Permissions</a></li>
+        <li><a href="#import-data">Import Data</a></li>
+      </ul>
+    </li>
+    <li><a href="#performance-testing">Performance Testing</a>
+      <ul>
+        <li><a href="#insert-test-data">Insert Test Data</a></li>
+        <li><a href="#query-performance">Query Performance</a></li>
+        <li><a href="#monitor-in-grafana">Monitor in Grafana</a></li>
+      </ul>
+    </li>
+    <li><a href="#monitoring-and-troubleshooting">Monitoring and Troubleshooting</a>
+      <ul>
+        <li><a href="#check-cluster-status">Check Cluster Status</a></li>
+        <li><a href="#view-events">View Events</a></li>
+        <li><a href="#view-pod-logs">View Pod Logs</a></li>
+        <li><a href="#resource-usage">Resource Usage</a></li>
+        <li><a href="#check-replication-lag">Check Replication Lag</a></li>
+      </ul>
+    </li>
+    <li><a href="#backup-and-recovery">Backup and Recovery</a>
+      <ul>
+        <li><a href="#create-backup-with-mongodump">Create Backup with mongodump</a></li>
+        <li><a href="#restore-with-mongorestore">Restore with mongorestore</a></li>
+        <li><a href="#backup-specific-database">Backup Specific Database</a></li>
+      </ul>
+    </li>
+    <li><a href="#useful-mongodb-commands">Useful MongoDB Commands</a>
+      <ul>
+        <li><a href="#database-statistics">Database Statistics</a></li>
+        <li><a href="#collection-statistics">Collection Statistics</a></li>
+        <li><a href="#index-information">Index Information</a></li>
+        <li><a href="#current-operations">Current Operations</a></li>
+        <li><a href="#server-status">Server Status</a></li>
+        <li><a href="#check-connection-count">Check Connection Count</a></li>
+      </ul>
+    </li>
+    <li><a href="#deploy-additional-clusters">Deploy Additional Clusters</a></li>
+    <li><a href="#cleanup">Cleanup</a>
+      <ul>
+        <li><a href="#delete-cluster">Delete Cluster</a></li>
+        <li><a href="#delete-everything-including-data">Delete Everything Including Data</a></li>
+      </ul>
+    </li>
+    <li><a href="#working-with-aggregations">Working with Aggregations</a>
+      <ul>
+        <li><a href="#create-sample-data">Create Sample Data</a></li>
+        <li><a href="#run-aggregation-pipeline">Run Aggregation Pipeline</a></li>
+      </ul>
+    </li>
+    <li><a href="#network-policies">Network Policies</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
+  </ul>
+</nav>
+      </div>
+    
+            
+
+          </aside>
+          <main class="col-12 col-md-9 col-xl-8 ps-md-5" role="main">
+            
+  
+
+            <nav aria-label="breadcrumb" class="td-breadcrumbs">
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item">
+    <a href="/kubernetes/">Kubernetes</a></li>
+  <li class="breadcrumb-item active" aria-current="page">
+    MongoDB on Kubernetes</li>
+  </ol>
+</nav>
+<div class="td-content">
+	<h1>MongoDB on Kubernetes</h1>
+	<div class="lead">MongoDB deployment with Community Operator</div>
+	<header class="article-meta">
+		
+<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 5 minute read &nbsp;</p>
+</header>
+	<h2 id="mongodb-community-operator">MongoDB Community Operator</h2>
+<p>After deploying MongoDB using the scripts from <a href="https://github.com/raphideb/kube" target="_blank">github.com/raphideb/kube</a>, you have a fully usable MongoDB replica set managed by the MongoDB Community Operator.</p>
+<p>The deployment includes:</p>
+<ul>
+<li><strong>MongoDB Community Operator</strong> - Kubernetes-native MongoDB management</li>
+<li><strong>Replica Set</strong> - Multi-node MongoDB cluster</li>
+<li><strong>Sample database</strong> - Pre-configured MongoDB deployment</li>
+<li><strong>Grafana integration</strong> - Custom monitoring dashboard with Percona exporter</li>
+</ul>
+<h2 id="connecting-to-mongodb">Connecting to MongoDB</h2>
+<h3 id="using-port-forwarding">Using Port Forwarding</h3>
+<p>Forward MongoDB port to your local machine:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl port-forward -n mongodb svc/mongodb-svc 27017:27017
+</span></span></code></pre></div><p>Connect with mongosh from another terminal:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mongosh -u admin mongodb://localhost:27017/admin
+</span></span></code></pre></div><p>The default password is in the mongodb.yml file.</p>
+<h3 id="direct-pod-access">Direct Pod Access</h3>
+<p>Get the pod name and connect:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n mongodb
+</span></span><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-0 -n mongodb -- mongosh
+</span></span></code></pre></div><p>Authenticate after connecting:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">auth</span><span class="p">(</span><span class="s2">&#34;admin&#34;</span><span class="p">,</span> <span class="s2">&#34;password&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="replica-set-operations">Replica Set Operations</h2>
+<h3 id="view-replica-set-status">View Replica Set Status</h3>
+<p>Connect to MongoDB and check replica set:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-0 -n mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;admin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">rs.status<span class="o">()</span>
+</span></span></code></pre></div><p>Output shows which member is PRIMARY and which are SECONDARY:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">members</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;mongodb-0:27017&#39;</span><span class="p">,</span> <span class="nx">health</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">stateStr</span><span class="o">:</span> <span class="s1">&#39;PRIMARY&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;mongodb-1:27017&#39;</span><span class="p">,</span> <span class="nx">health</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">stateStr</span><span class="o">:</span> <span class="s1">&#39;SECONDARY&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;mongodb-2:27017&#39;</span><span class="p">,</span> <span class="nx">health</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">stateStr</span><span class="o">:</span> <span class="s1">&#39;SECONDARY&#39;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="test-automatic-failover">Test Automatic Failover</h3>
+<p>Delete the primary pod and watch the replica set elect a new primary:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Watch pods in one terminal</span>
+</span></span><span class="line"><span class="cl">kubectl get pods -n mongodb -w
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># In another terminal, delete the primary</span>
+</span></span><span class="line"><span class="cl">kubectl delete pod mongodb-0 -n mongodb
+</span></span></code></pre></div><p>Connect and check the new primary:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-1 -n mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;admin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">rs.status<span class="o">()</span>
+</span></span></code></pre></div><p>A new primary is elected within seconds, and mongodb-0 rejoins as a secondary.</p>
+<h2 id="scaling-the-replica-set">Scaling the Replica Set</h2>
+<h3 id="scale-to-more-members">Scale to More Members</h3>
+<p>Increase from 3 to 5 members:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch mongodbcommunity mongodb-cluster -n mongodb --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p <span class="s1">&#39;{&#34;spec&#34;:{&#34;members&#34;:5}}&#39;</span>
+</span></span></code></pre></div><p>Watch new pods being created:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n mongodb -w
+</span></span></code></pre></div><p>New members automatically sync data and join the replica set.</p>
+<h3 id="scale-down">Scale Down</h3>
+<p>Reduce to 2 members:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch mongodbcommunity mongodb-cluster -n mongodb --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p <span class="s1">&#39;{&#34;spec&#34;:{&#34;members&#34;:2}}&#39;</span>
+</span></span></code></pre></div><h2 id="database-operations">Database Operations</h2>
+<h3 id="create-database-and-collection">Create Database and Collection</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-0 -n mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;admin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use myapp
+</span></span><span class="line"><span class="cl">db.createCollection<span class="o">(</span><span class="s2">&#34;users&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">db.users.insertOne<span class="o">({</span>
+</span></span><span class="line"><span class="cl">  username: <span class="s2">&#34;alice&#34;</span>,
+</span></span><span class="line"><span class="cl">  email: <span class="s2">&#34;alice@example.com&#34;</span>,
+</span></span><span class="line"><span class="cl">  created: new Date<span class="o">()</span>
+</span></span><span class="line"><span class="cl"><span class="o">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">db.users.find<span class="o">()</span>
+</span></span></code></pre></div><h3 id="create-user-with-permissions">Create User with Permissions</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">auth</span><span class="p">(</span><span class="s2">&#34;admin&#34;</span><span class="p">,</span> <span class="s2">&#34;password&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">createUser</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">user</span><span class="o">:</span> <span class="s2">&#34;myapp_user&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">pwd</span><span class="o">:</span> <span class="s2">&#34;secure_password&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">roles</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">role</span><span class="o">:</span> <span class="s2">&#34;readWrite&#34;</span><span class="p">,</span> <span class="nx">db</span><span class="o">:</span> <span class="s2">&#34;myapp&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></div><p>Test the new user:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mongosh -u myapp_user -p secure_password mongodb://localhost:27017/myapp
+</span></span></code></pre></div><h3 id="import-data">Import Data</h3>
+<p>Create a JSON file locally:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Alice&#34;</span><span class="p">,</span> <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="nt">&#34;city&#34;</span><span class="p">:</span> <span class="s2">&#34;New York&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Bob&#34;</span><span class="p">,</span> <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nt">&#34;city&#34;</span><span class="p">:</span> <span class="s2">&#34;San Francisco&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Charlie&#34;</span><span class="p">,</span> <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span> <span class="nt">&#34;city&#34;</span><span class="p">:</span> <span class="s2">&#34;Seattle&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></div><p>Copy to pod and import:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cp users.json mongodb/mongodb-0:/tmp/users.json
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-0 -n mongodb -- mongoimport <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --db myapp <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --collection users <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --file /tmp/users.json <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --jsonArray <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --username admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --password password <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --authenticationDatabase admin
+</span></span></code></pre></div><p>Verify:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-0 -n mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;admin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">use myapp
+</span></span><span class="line"><span class="cl">db.users.find<span class="o">()</span>
+</span></span></code></pre></div><h2 id="performance-testing">Performance Testing</h2>
+<h3 id="insert-test-data">Insert Test Data</h3>
+<p>Create a simple benchmark script:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">testdb</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">100000</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">db</span><span class="p">.</span><span class="nx">testcollection</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">index</span><span class="o">:</span> <span class="nx">i</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">data</span><span class="o">:</span> <span class="s2">&#34;test data &#34;</span> <span class="o">+</span> <span class="nx">i</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">timestamp</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">random</span><span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Run it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-0 -n mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;admin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">// paste the script above
+</span></span></code></pre></div><h3 id="query-performance">Query Performance</h3>
+<p>Test query performance:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">testdb</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Create index
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">db</span><span class="p">.</span><span class="nx">testcollection</span><span class="p">.</span><span class="nx">createIndex</span><span class="p">({</span> <span class="nx">index</span><span class="o">:</span> <span class="mi">1</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Query with explain
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">db</span><span class="p">.</span><span class="nx">testcollection</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">index</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$gt</span><span class="o">:</span> <span class="mi">50000</span> <span class="p">}</span> <span class="p">}).</span><span class="nx">explain</span><span class="p">(</span><span class="s2">&#34;executionStats&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="monitor-in-grafana">Monitor in Grafana</h3>
+<p>While tests run, open Grafana:</p>
+<p>http://&lt;your-host-ip&gt;:30000</p>
+<p>Import the custom dashboard from the repository:</p>
+<pre tabindex="0"><code>MongoDB_Percona_Grafana.json
+</code></pre><p>Watch real-time metrics:</p>
+<ul>
+<li>Operations per second</li>
+<li>Connection counts</li>
+<li>Replication lag</li>
+<li>Memory usage</li>
+<li>Cache statistics</li>
+</ul>
+<h2 id="monitoring-and-troubleshooting">Monitoring and Troubleshooting</h2>
+<h3 id="check-cluster-status">Check Cluster Status</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get mongodbcommunity -n mongodb
+</span></span><span class="line"><span class="cl">kubectl get pods -n mongodb
+</span></span></code></pre></div><h3 id="view-events">View Events</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get events -n mongodb --sort-by<span class="o">=</span><span class="s1">&#39;.lastTimestamp&#39;</span>
+</span></span></code></pre></div><h3 id="view-pod-logs">View Pod Logs</h3>
+<p>Check MongoDB logs:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs -f mongodb-0 -n mongodb
+</span></span></code></pre></div><p>Check operator logs:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs -n mongodb -l app.kubernetes.io/name<span class="o">=</span>mongodb-kubernetes-operator
+</span></span></code></pre></div><h3 id="resource-usage">Resource Usage</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl top pods -n mongodb
+</span></span></code></pre></div><h3 id="check-replication-lag">Check Replication Lag</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it mongodb-1 -n mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;admin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">rs.printSlaveReplicationInfo<span class="o">()</span>
+</span></span></code></pre></div><h2 id="backup-and-recovery">Backup and Recovery</h2>
+<h3 id="create-backup-with-mongodump">Create Backup with mongodump</h3>
+<p>Backup the entire database:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> mongodb-0 -n mongodb -- mongodump <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --out<span class="o">=</span>/tmp/backup <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --username<span class="o">=</span>admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --password<span class="o">=</span>password <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --authenticationDatabase<span class="o">=</span>admin
+</span></span></code></pre></div><p>Copy backup from pod:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cp mongodb/mongodb-0:/tmp/backup ./mongodb-backup
+</span></span></code></pre></div><h3 id="restore-with-mongorestore">Restore with mongorestore</h3>
+<p>Copy backup to pod:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cp ./mongodb-backup mongodb/mongodb-0:/tmp/restore
+</span></span></code></pre></div><p>Restore:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> mongodb-0 -n mongodb -- mongorestore <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  /tmp/restore <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --username<span class="o">=</span>admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --password<span class="o">=</span>password <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --authenticationDatabase<span class="o">=</span>admin
+</span></span></code></pre></div><h3 id="backup-specific-database">Backup Specific Database</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> mongodb-0 -n mongodb -- mongodump <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --db<span class="o">=</span>myapp <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --out<span class="o">=</span>/tmp/backup-myapp <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --username<span class="o">=</span>admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --password<span class="o">=</span>password <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --authenticationDatabase<span class="o">=</span>admin
+</span></span></code></pre></div><h2 id="useful-mongodb-commands">Useful MongoDB Commands</h2>
+<p>Connect and run these administrative commands:</p>
+<h3 id="database-statistics">Database Statistics</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">myapp</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">stats</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="collection-statistics">Collection Statistics</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">myapp</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">users</span><span class="p">.</span><span class="nx">stats</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="index-information">Index Information</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">myapp</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">users</span><span class="p">.</span><span class="nx">getIndexes</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="current-operations">Current Operations</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">currentOp</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="server-status">Server Status</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">serverStatus</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="check-connection-count">Check Connection Count</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">serverStatus</span><span class="p">().</span><span class="nx">connections</span>
+</span></span></code></pre></div><h2 id="deploy-additional-clusters">Deploy Additional Clusters</h2>
+<p>The repository includes a template YAML file for deploying more MongoDB clusters.</p>
+<p>View the template:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat mongodb.yml
+</span></span></code></pre></div><p>Deploy a new cluster:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f mongodb.yml
+</span></span></code></pre></div><p>This creates a separate MongoDB replica set with its own storage and resources.</p>
+<h2 id="cleanup">Cleanup</h2>
+<h3 id="delete-cluster">Delete Cluster</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete mongodbcommunity mongodb-cluster -n mongodb
+</span></span></code></pre></div><p>This deletes pods and services but preserves PVCs (data).</p>
+<h3 id="delete-everything-including-data">Delete Everything Including Data</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete mongodbcommunity mongodb-cluster -n mongodb
+</span></span><span class="line"><span class="cl">kubectl delete pvc -n mongodb --all
+</span></span></code></pre></div><h2 id="working-with-aggregations">Working with Aggregations</h2>
+<h3 id="create-sample-data">Create Sample Data</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">sales</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">orders</span><span class="p">.</span><span class="nx">insertMany</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">product</span><span class="o">:</span> <span class="s2">&#34;laptop&#34;</span><span class="p">,</span> <span class="nx">quantity</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">price</span><span class="o">:</span> <span class="mi">1200</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="s2">&#34;2024-01-15&#34;</span><span class="p">)</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">product</span><span class="o">:</span> <span class="s2">&#34;mouse&#34;</span><span class="p">,</span> <span class="nx">quantity</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="nx">price</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="s2">&#34;2024-01-16&#34;</span><span class="p">)</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">product</span><span class="o">:</span> <span class="s2">&#34;keyboard&#34;</span><span class="p">,</span> <span class="nx">quantity</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">price</span><span class="o">:</span> <span class="mi">75</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="s2">&#34;2024-01-17&#34;</span><span class="p">)</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">product</span><span class="o">:</span> <span class="s2">&#34;laptop&#34;</span><span class="p">,</span> <span class="nx">quantity</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">price</span><span class="o">:</span> <span class="mi">1200</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="s2">&#34;2024-01-18&#34;</span><span class="p">)</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">product</span><span class="o">:</span> <span class="s2">&#34;monitor&#34;</span><span class="p">,</span> <span class="nx">quantity</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">price</span><span class="o">:</span> <span class="mi">300</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="s2">&#34;2024-01-19&#34;</span><span class="p">)</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">])</span>
+</span></span></code></pre></div><h3 id="run-aggregation-pipeline">Run Aggregation Pipeline</h3>
+<p>Total sales by product:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">orders</span><span class="p">.</span><span class="nx">aggregate</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$group</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">_id</span><span class="o">:</span> <span class="s2">&#34;$product&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">totalQuantity</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$sum</span><span class="o">:</span> <span class="s2">&#34;$quantity&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">totalRevenue</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$sum</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$multiply</span><span class="o">:</span> <span class="p">[</span><span class="s2">&#34;$quantity&#34;</span><span class="p">,</span> <span class="s2">&#34;$price&#34;</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span> <span class="nx">$sort</span><span class="o">:</span> <span class="p">{</span> <span class="nx">totalRevenue</span><span class="o">:</span> <span class="o">-</span><span class="mi">1</span> <span class="p">}</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">])</span>
+</span></span></code></pre></div><h2 id="network-policies">Network Policies</h2>
+<p>Restrict access to MongoDB using Calico network policies:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">networking.k8s.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">NetworkPolicy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb-access</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb-svc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="l">Ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">from</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">podSelector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">myapp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">27017</span><span class="w">
+</span></span></span></code></pre></div><p>Apply it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f mongodb-policy.yaml
+</span></span></code></pre></div><p>Now only pods labeled with <code>app: myapp</code> can connect to MongoDB.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>For installation instructions and deployment details, see the README files in the <a href="https://github.com/raphideb/kube" target="_blank">script repository</a>.</p>
+
+	
+
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      <footer class="td-footer row d-print-none">
+  <div class="container-fluid">
+    <div class="row mx-md-2">
+      <div class="td-footer__left col-6 col-sm-4 order-sm-1">
+        
+      </div><div class="td-footer__right col-6 col-sm-4 order-sm-3">
+        
+      </div><div class="td-footer__center col-12 col-sm-4 py-2 order-sm-2">
+        
+      </div>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <script src="/js/main.js"></script>
+<script defer src="/js/click-to-copy.js" crossorigin="anonymous"></script>
+<script src='/js/tabpane-persist.js'></script>
+
+  </body>
+</html>

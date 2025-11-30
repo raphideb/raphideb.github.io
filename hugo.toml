@@ -85,6 +85,16 @@ path = "github.com/google/docsy"
     url = "https://docs.oracle.com/en/database/oracle/oracle-database/index.html"
 
 [[menu.main]]
+    name = "Kubernetes documentation"
+    weight = 25
+    url = "https://kubernetes.io/docs/"
+
+[[menu.main]]
+    name = "Claude"
+    weight = 27
+    url = "https://claude.ai/"
+
+[[menu.main]]
     name = "Perplexity"
     weight = 30
     url = "https://www.perplexity.ai/"

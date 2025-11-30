@@ -1,0 +1,595 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="en" class="no-js">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
+
+<title>Cluster Management | crashdump</title>
+<meta name="description" content="Managing your Kubernetes cluster - pods, deployments, monitoring and troubleshooting">
+<meta property="og:url" content="http://localhost:1313/kubernetes/cluster/">
+  <meta property="og:site_name" content="crashdump">
+  <meta property="og:title" content="Cluster Management">
+  <meta property="og:description" content="Managing your Kubernetes cluster - pods, deployments, monitoring and troubleshooting">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="kubernetes">
+
+  <meta itemprop="name" content="Cluster Management">
+  <meta itemprop="description" content="Managing your Kubernetes cluster - pods, deployments, monitoring and troubleshooting">
+  <meta itemprop="wordCount" content="1029">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cluster Management">
+  <meta name="twitter:description" content="Managing your Kubernetes cluster - pods, deployments, monitoring and troubleshooting">
+<link href="/scss/main.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous"></script>
+<link rel="canonical" href="http://localhost:1313/kubernetes/cluster/">
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
+
+  </head>
+  <body class="td-page">
+    <header>
+      <nav class="td-navbar js-navbar-scroll" data-bs-theme="dark">
+<div class="container-fluid flex-column flex-md-row">
+  <a class="navbar-brand" href="/"><span class="navbar-brand__logo navbar-logo"><svg width="60" height="0" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-size="64" font-type="bold" fill="#fff">ok#</text></svg></span><span class="navbar-brand__name">crashdump</span></a>
+  <div class="td-navbar-nav-scroll ms-md-auto" id="main_navbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.postgresql.org/docs/" target="_blank" rel="noopener"><span>Postgres documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://docs.oracle.com/en/database/oracle/oracle-database/index.html" target="_blank" rel="noopener"><span>Oracle documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://kubernetes.io/docs/" target="_blank" rel="noopener"><span>Kubernetes documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://claude.ai/" target="_blank" rel="noopener"><span>Claude</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.perplexity.ai/" target="_blank" rel="noopener"><span>Perplexity</span></a>
+      </li>
+      <li class="td-light-dark-menu nav-item dropdown">
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="check2" viewBox="0 0 16 16">
+    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+  </symbol>
+  <symbol id="circle-half" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+  </symbol>
+  <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+  </symbol>
+  <symbol id="sun-fill" viewBox="0 0 16 16">
+    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+  </symbol>
+</svg>
+
+<button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
+        id="bd-theme"
+        type="button"
+        aria-expanded="false"
+        data-bs-toggle="dropdown"
+        data-bs-display="static"
+        aria-label="Toggle theme (auto)">
+  <svg class="bi my-1 theme-icon-active"><use href="#circle-half"></use></svg>
+</button>
+<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#sun-fill"></use></svg>
+      Light
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#moon-stars-fill"></use></svg>
+      Dark
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+      <svg class="bi me-2 opacity-50"><use href="#circle-half"></use></svg>
+      Auto
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+</ul>
+
+      </li>
+      </ul>
+  </div>
+  <div class="d-none d-lg-block">
+    
+  </div>
+</div>
+</nav>
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            <div id="td-sidebar-menu" class="td-sidebar__inner">
+  <form class="td-sidebar__search d-flex align-items-center">
+    
+    <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ms-3 fas fa-bars" type="button" data-bs-toggle="collapse" data-bs-target="#td-section-nav" aria-controls="td-section-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    </button>
+  </form>
+  <nav class="td-sidebar-nav collapse" id="td-section-nav">
+    <ul class="td-sidebar-nav__section pe-md-3 ul-0">
+      <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m--li">
+  <a href="/" title="hi there!" class="align-left ps-0 td-sidebar-link td-sidebar-link__section tree-root" id="m-"><span class="">Home</span></a>
+  <ul class="ul-1">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-postgres-li">
+  <a href="/postgres/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-postgres"><span class="">PostgreSQL</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgbench-li">
+  <a href="/postgres/pgbench/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgbench"><span class="">pgbench</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgstat_snap-li">
+  <a href="/postgres/pgstat_snap/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgstat_snap"><span class="">pgstat_snap</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-oracle-li">
+  <a href="/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-oracle"><span class="">Oracle</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleash-li">
+  <a href="/oracle/ash/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleash"><span class="">Active Session History</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleashtop-li">
+  <a href="/oracle/ashtop/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleashtop"><span class="">ashtop</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-kubernetes-li">
+  <a href="/kubernetes/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-kubernetes"><span class="">Kubernetes</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-kubernetescluster-li">
+  <a href="/kubernetes/cluster/" class="align-left ps-0 active td-sidebar-link td-sidebar-link__page" id="m-kubernetescluster"><span class="td-sidebar-nav-active-item">Cluster Management</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetespostgres-li">
+  <a href="/kubernetes/postgres/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetespostgres"><span class="">PostgreSQL on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesmongodb-li">
+  <a href="/kubernetes/mongodb/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesmongodb"><span class="">MongoDB on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesoracle-li">
+  <a href="/kubernetes/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesoracle"><span class="">Oracle on Kubernetes</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-stuff-li">
+  <a href="/stuff/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-stuff"><span class="">Other stuff</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-stuffstuff-li">
+  <a href="/stuff/stuff/" title="other stuff" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-stuffstuff"><span class="">Other stuff</span></a>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+    </ul>
+  </nav>
+</div>
+
+          </aside>
+          <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+            <div class="td-page-meta ms-2 pb-1 pt-2 mb-0">
+<a href="https://github.com/raphideb/raphideb.github.io/tree/main/content/kubernetes/cluster.md" class="td-page-meta--view td-page-meta__view" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines fa-fw"></i> View page source</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/edit/main/content/kubernetes/cluster.md" class="td-page-meta--edit td-page-meta__edit" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Edit this page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/new/main/content/kubernetes?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" class="td-page-meta--child td-page-meta__child" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Create child page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/issues/new?title=Cluster%20Management" class="td-page-meta--issue td-page-meta__issue" target="_blank" rel="noopener"><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
+  
+</div>
+
+            <div class="td-toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#kubernetes-cluster-management">Kubernetes Cluster Management</a></li>
+    <li><a href="#managing-pods">Managing Pods</a>
+      <ul>
+        <li><a href="#view-running-pods">View Running Pods</a></li>
+        <li><a href="#execute-commands-in-pods">Execute Commands in Pods</a></li>
+        <li><a href="#view-pod-logs">View Pod Logs</a></li>
+        <li><a href="#delete-pods">Delete Pods</a></li>
+      </ul>
+    </li>
+    <li><a href="#managing-deployments-and-statefulsets">Managing Deployments and StatefulSets</a>
+      <ul>
+        <li><a href="#view-deployments">View Deployments</a></li>
+        <li><a href="#view-statefulsets">View StatefulSets</a></li>
+        <li><a href="#scale-deployments">Scale Deployments</a></li>
+        <li><a href="#update-deployments">Update Deployments</a></li>
+      </ul>
+    </li>
+    <li><a href="#monitoring-with-kubectl">Monitoring with kubectl</a>
+      <ul>
+        <li><a href="#view-cluster-nodes">View Cluster Nodes</a></li>
+        <li><a href="#view-resource-usage">View Resource Usage</a></li>
+        <li><a href="#view-services">View Services</a></li>
+        <li><a href="#view-persistent-volumes">View Persistent Volumes</a></li>
+      </ul>
+    </li>
+    <li><a href="#monitoring-with-prometheus-and-grafana">Monitoring with Prometheus and Grafana</a>
+      <ul>
+        <li><a href="#access-monitoring-uis">Access Monitoring UIs</a></li>
+        <li><a href="#view-metrics-in-prometheus">View Metrics in Prometheus</a></li>
+        <li><a href="#podmonitor-and-servicemonitor">PodMonitor and ServiceMonitor</a></li>
+      </ul>
+    </li>
+    <li><a href="#events-and-troubleshooting">Events and Troubleshooting</a>
+      <ul>
+        <li><a href="#view-cluster-events">View Cluster Events</a></li>
+        <li><a href="#debug-pod-issues">Debug Pod Issues</a></li>
+        <li><a href="#port-forwarding">Port Forwarding</a></li>
+      </ul>
+    </li>
+    <li><a href="#namespace-management">Namespace Management</a>
+      <ul>
+        <li><a href="#create-namespaces">Create Namespaces</a></li>
+        <li><a href="#view-namespaces">View Namespaces</a></li>
+        <li><a href="#set-default-namespace">Set Default Namespace</a></li>
+      </ul>
+    </li>
+    <li><a href="#resource-management">Resource Management</a>
+      <ul>
+        <li><a href="#view-resource-quotas">View Resource Quotas</a></li>
+        <li><a href="#view-limit-ranges">View Limit Ranges</a></li>
+        <li><a href="#apply-resource-limits">Apply Resource Limits</a></li>
+      </ul>
+    </li>
+    <li><a href="#working-with-configmaps-and-secrets">Working with ConfigMaps and Secrets</a>
+      <ul>
+        <li><a href="#view-secrets">View Secrets</a></li>
+        <li><a href="#view-configmaps">View ConfigMaps</a></li>
+      </ul>
+    </li>
+    <li><a href="#network-policies-with-calico">Network Policies with Calico</a>
+      <ul>
+        <li><a href="#restrict-database-access">Restrict Database Access</a></li>
+        <li><a href="#enable-wireguard-encryption">Enable WireGuard Encryption</a></li>
+        <li><a href="#view-network-policies">View Network Policies</a></li>
+      </ul>
+    </li>
+    <li><a href="#cluster-cleanup">Cluster Cleanup</a>
+      <ul>
+        <li><a href="#delete-resources">Delete Resources</a></li>
+        <li><a href="#delete-entire-namespace">Delete Entire Namespace</a></li>
+      </ul>
+    </li>
+    <li><a href="#useful-commands">Useful Commands</a></li>
+  </ul>
+</nav>
+      </div>
+    
+            
+
+          </aside>
+          <main class="col-12 col-md-9 col-xl-8 ps-md-5" role="main">
+            
+  
+
+            <nav aria-label="breadcrumb" class="td-breadcrumbs">
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item">
+    <a href="/kubernetes/">Kubernetes</a></li>
+  <li class="breadcrumb-item active" aria-current="page">
+    Cluster Management</li>
+  </ol>
+</nav>
+<div class="td-content">
+	<h1>Cluster Management</h1>
+	<div class="lead">Managing your Kubernetes cluster - pods, deployments, monitoring and troubleshooting</div>
+	<header class="article-meta">
+		
+<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 5 minute read &nbsp;</p>
+</header>
+	<h2 id="kubernetes-cluster-management">Kubernetes Cluster Management</h2>
+<p>Once you&rsquo;ve deployed your Kubernetes cluster using the scripts from <a href="https://github.com/raphideb/kube" target="_blank">github.com/raphideb/kube</a>, you have a fully usable platform for running containerized workloads.</p>
+<p>The cluster setup includes:</p>
+<ul>
+<li><strong>Docker with cri-dockerd</strong> - Container runtime</li>
+<li><strong>Kubernetes cluster</strong> - Orchestration platform</li>
+<li><strong>Calico networking</strong> - Network policies and security</li>
+<li><strong>Local-path-provisioner</strong> - Persistent storage</li>
+<li><strong>Helm package manager</strong> - Application deployment</li>
+</ul>
+<h2 id="managing-pods">Managing Pods</h2>
+<h3 id="view-running-pods">View Running Pods</h3>
+<p>List all pods across namespaces:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -A
+</span></span></code></pre></div><p>List pods in a specific namespace:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n postgres
+</span></span><span class="line"><span class="cl">kubectl get pods -n mongodb
+</span></span><span class="line"><span class="cl">kubectl get pods -n oracle
+</span></span></code></pre></div><p>Get detailed pod information:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl describe pod &lt;pod-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><h3 id="execute-commands-in-pods">Execute Commands in Pods</h3>
+<p>Start an interactive shell in a pod:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it &lt;pod-name&gt; -n &lt;namespace&gt; -- bash
+</span></span></code></pre></div><p>Run a single command:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> &lt;pod-name&gt; -n &lt;namespace&gt; -- ls -la /var/lib
+</span></span></code></pre></div><p>For PostgreSQL with cnpg plugin:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cnpg psql pg-cluster -n postgres
+</span></span></code></pre></div><h3 id="view-pod-logs">View Pod Logs</h3>
+<p>View current logs:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>Follow logs in real-time:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs -f &lt;pod-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>View logs from previous container (after crash):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt; --previous
+</span></span></code></pre></div><p>View last 100 lines:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt; --tail<span class="o">=</span><span class="m">100</span>
+</span></span></code></pre></div><h3 id="delete-pods">Delete Pods</h3>
+<p>Delete a specific pod (will be recreated by deployment/statefulset):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete pod &lt;pod-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>Force delete a stuck pod:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete pod &lt;pod-name&gt; -n &lt;namespace&gt; --grace-period<span class="o">=</span><span class="m">0</span> --force
+</span></span></code></pre></div><h2 id="managing-deployments-and-statefulsets">Managing Deployments and StatefulSets</h2>
+<h3 id="view-deployments">View Deployments</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get deployments -A
+</span></span><span class="line"><span class="cl">kubectl get deployments -n &lt;namespace&gt;
+</span></span></code></pre></div><p>View detailed deployment info:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl describe deployment &lt;deployment-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><h3 id="view-statefulsets">View StatefulSets</h3>
+<p>Database operators typically use StatefulSets:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get statefulsets -A
+</span></span><span class="line"><span class="cl">kubectl get statefulsets -n postgres
+</span></span></code></pre></div><h3 id="scale-deployments">Scale Deployments</h3>
+<p>Scale a deployment up or down:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl scale deployment &lt;deployment-name&gt; -n &lt;namespace&gt; --replicas<span class="o">=</span><span class="m">3</span>
+</span></span></code></pre></div><p>For CloudNativePG PostgreSQL clusters:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch cluster pg-cluster -n postgres --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p <span class="s1">&#39;{&#34;spec&#34;:{&#34;instances&#34;:3}}&#39;</span>
+</span></span></code></pre></div><h3 id="update-deployments">Update Deployments</h3>
+<p>Set a new image version:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">set</span> image deployment/&lt;deployment-name&gt; <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  &lt;container-name&gt;<span class="o">=</span>&lt;new-image&gt;:&lt;tag&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>View rollout status:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl rollout status deployment/&lt;deployment-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>Rollback to previous version:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl rollout undo deployment/&lt;deployment-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><h2 id="monitoring-with-kubectl">Monitoring with kubectl</h2>
+<h3 id="view-cluster-nodes">View Cluster Nodes</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get nodes
+</span></span><span class="line"><span class="cl">kubectl get nodes -o wide
+</span></span></code></pre></div><p>Detailed node information:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl describe node &lt;node-name&gt;
+</span></span></code></pre></div><h3 id="view-resource-usage">View Resource Usage</h3>
+<p>Check node resource usage:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl top nodes
+</span></span></code></pre></div><p>Check pod resource usage:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl top pods -A
+</span></span><span class="line"><span class="cl">kubectl top pods -n postgres
+</span></span></code></pre></div><h3 id="view-services">View Services</h3>
+<p>List all services:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get services -A
+</span></span><span class="line"><span class="cl">kubectl get svc -n postgres
+</span></span></code></pre></div><p>Detailed service information:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl describe svc &lt;service-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><h3 id="view-persistent-volumes">View Persistent Volumes</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pv
+</span></span><span class="line"><span class="cl">kubectl get pvc -A
+</span></span><span class="line"><span class="cl">kubectl get pvc -n postgres
+</span></span></code></pre></div><p>Check which pods are using volumes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl describe pvc &lt;pvc-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><h2 id="monitoring-with-prometheus-and-grafana">Monitoring with Prometheus and Grafana</h2>
+<p>The monitoring stack provides comprehensive cluster observability.</p>
+<h3 id="access-monitoring-uis">Access Monitoring UIs</h3>
+<ul>
+<li><strong>Grafana:</strong> http://&lt;your-host-ip&gt;:30000 (user/pass: admin)</li>
+<li><strong>Prometheus:</strong> http://&lt;your-host-ip&gt;:30090</li>
+</ul>
+<h3 id="view-metrics-in-prometheus">View Metrics in Prometheus</h3>
+<p>Query pod CPU usage:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="kr">rate</span><span class="o">(</span><span class="nv">container_cpu_usage_seconds_total</span><span class="p">{</span><span class="nl">namespace</span><span class="o">=</span><span class="p">&#34;</span><span class="s">postgres</span><span class="p">&#34;}[</span><span class="s">5m</span><span class="p">]</span><span class="o">)</span><span class="w">
+</span></span></span></code></pre></div><p>Query pod memory usage:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="nv">container_memory_usage_bytes</span><span class="p">{</span><span class="nl">namespace</span><span class="o">=</span><span class="p">&#34;</span><span class="s">postgres</span><span class="p">&#34;}</span><span class="w">
+</span></span></span></code></pre></div><p>Query pod network traffic:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="kr">rate</span><span class="o">(</span><span class="nv">container_network_receive_bytes_total</span><span class="p">[</span><span class="s">5m</span><span class="p">]</span><span class="o">)</span><span class="w">
+</span></span></span></code></pre></div><h3 id="podmonitor-and-servicemonitor">PodMonitor and ServiceMonitor</h3>
+<p>List existing monitors:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get podmonitor -A
+</span></span><span class="line"><span class="cl">kubectl get servicemonitor -A
+</span></span></code></pre></div><p>View monitoring configuration:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl describe servicemonitor -n monitoring
+</span></span></code></pre></div><p>Create a custom PodMonitor:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">monitoring.coreos.com/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PodMonitor</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">myapp-monitor</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">default</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">myapp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">podMetricsEndpoints</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l">metrics</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l">30s</span><span class="w">
+</span></span></span></code></pre></div><p>Apply it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f podmonitor.yaml
+</span></span></code></pre></div><h2 id="events-and-troubleshooting">Events and Troubleshooting</h2>
+<h3 id="view-cluster-events">View Cluster Events</h3>
+<p>Watch all events in real-time:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get events -A --watch
+</span></span></code></pre></div><p>View events for a specific namespace:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get events -n postgres --sort-by<span class="o">=</span><span class="s1">&#39;.lastTimestamp&#39;</span>
+</span></span></code></pre></div><p>Filter events by type:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get events -A --field-selector <span class="nv">type</span><span class="o">=</span>Warning
+</span></span></code></pre></div><h3 id="debug-pod-issues">Debug Pod Issues</h3>
+<p>Check why a pod isn&rsquo;t starting:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl describe pod &lt;pod-name&gt; -n &lt;namespace&gt;
+</span></span><span class="line"><span class="cl">kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>Check pod status:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pod &lt;pod-name&gt; -n &lt;namespace&gt; -o yaml
+</span></span></code></pre></div><p>Common issues to look for:</p>
+<ul>
+<li>Image pull errors</li>
+<li>Resource limits (OOMKilled)</li>
+<li>Volume mount failures</li>
+<li>Configuration errors</li>
+</ul>
+<h3 id="port-forwarding">Port Forwarding</h3>
+<p>Forward a pod port to localhost:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl port-forward pod/&lt;pod-name&gt; -n &lt;namespace&gt; 5432:5432
+</span></span></code></pre></div><p>Forward a service port:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl port-forward -n postgres svc/pg-cluster-rw 5432:5432
+</span></span></code></pre></div><p>Run in background:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl port-forward -n postgres svc/pg-cluster-rw 5432:5432 <span class="p">&amp;</span>
+</span></span></code></pre></div><h2 id="namespace-management">Namespace Management</h2>
+<h3 id="create-namespaces">Create Namespaces</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create namespace development
+</span></span><span class="line"><span class="cl">kubectl create namespace production
+</span></span></code></pre></div><p>With labels:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create namespace dev
+</span></span><span class="line"><span class="cl">kubectl label namespace dev <span class="nv">environment</span><span class="o">=</span>development
+</span></span></code></pre></div><h3 id="view-namespaces">View Namespaces</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get namespaces
+</span></span><span class="line"><span class="cl">kubectl get ns
+</span></span></code></pre></div><h3 id="set-default-namespace">Set Default Namespace</h3>
+<p>Set default for current context:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl config set-context --current --namespace<span class="o">=</span>postgres
+</span></span></code></pre></div><p>Now <code>kubectl get pods</code> will show postgres namespace by default.</p>
+<h2 id="resource-management">Resource Management</h2>
+<h3 id="view-resource-quotas">View Resource Quotas</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get resourcequota -A
+</span></span><span class="line"><span class="cl">kubectl describe resourcequota -n &lt;namespace&gt;
+</span></span></code></pre></div><h3 id="view-limit-ranges">View Limit Ranges</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get limitrange -A
+</span></span></code></pre></div><h3 id="apply-resource-limits">Apply Resource Limits</h3>
+<p>Example deployment with limits:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">myapp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">myapp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">myapp:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;256Mi&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;250m&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">limits</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;512Mi&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;500m&#34;</span><span class="w">
+</span></span></span></code></pre></div><h2 id="working-with-configmaps-and-secrets">Working with ConfigMaps and Secrets</h2>
+<h3 id="view-secrets">View Secrets</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get secrets -n postgres
+</span></span></code></pre></div><p>Decode a secret:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get secret &lt;secret-name&gt; -n postgres -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.data.password}&#39;</span> <span class="p">|</span> base64 -d
+</span></span></code></pre></div><h3 id="view-configmaps">View ConfigMaps</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get configmaps -A
+</span></span><span class="line"><span class="cl">kubectl describe configmap &lt;configmap-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><h2 id="network-policies-with-calico">Network Policies with Calico</h2>
+<p>Your cluster includes Calico for network policies. Here are a few useful examples:</p>
+<h3 id="restrict-database-access">Restrict Database Access</h3>
+<p>Allow only specific pods to access PostgreSQL:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">networking.k8s.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">NetworkPolicy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">postgres-access</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">postgres</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">cnpg.io/cluster</span><span class="p">:</span><span class="w"> </span><span class="l">pg-cluster</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="l">Ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">from</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">podSelector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">myapp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">5432</span><span class="w">
+</span></span></span></code></pre></div><p>Apply it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f postgres-policy.yaml
+</span></span></code></pre></div><h3 id="enable-wireguard-encryption">Enable WireGuard Encryption</h3>
+<p>Encrypt all pod-to-pod traffic:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch felixconfiguration default --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --patch <span class="s1">&#39;{&#34;spec&#34;:{&#34;wireguardEnabled&#34;:true}}&#39;</span>
+</span></span></code></pre></div><p>Verify:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get felixconfiguration default -o yaml <span class="p">|</span> grep wireguard
+</span></span></code></pre></div><h3 id="view-network-policies">View Network Policies</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get networkpolicies -A
+</span></span><span class="line"><span class="cl">kubectl describe networkpolicy &lt;policy-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>For more Calico examples, see CALICO_USAGE.md in the <a href="https://github.com/raphideb/kube" target="_blank">script repository</a>.</p>
+<h2 id="cluster-cleanup">Cluster Cleanup</h2>
+<h3 id="delete-resources">Delete Resources</h3>
+<p>Delete by file:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete -f deployment.yaml
+</span></span></code></pre></div><p>Delete by type and name:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete deployment &lt;deployment-name&gt; -n &lt;namespace&gt;
+</span></span><span class="line"><span class="cl">kubectl delete service &lt;service-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div><p>Delete all pods in namespace (dangerous):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete pods --all -n &lt;namespace&gt;
+</span></span></code></pre></div><h3 id="delete-entire-namespace">Delete Entire Namespace</h3>
+<p>This deletes everything in the namespace:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete namespace &lt;namespace&gt;
+</span></span></code></pre></div><h2 id="useful-commands">Useful Commands</h2>
+<p>Quick reference for common operations:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Get everything in a namespace</span>
+</span></span><span class="line"><span class="cl">kubectl get all -n &lt;namespace&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Watch resources update in real-time</span>
+</span></span><span class="line"><span class="cl">kubectl get pods -n postgres -w
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Show labels for all pods</span>
+</span></span><span class="line"><span class="cl">kubectl get pods -n postgres --show-labels
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Filter by label</span>
+</span></span><span class="line"><span class="cl">kubectl get pods -l <span class="nv">app</span><span class="o">=</span>myapp -n default
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Export resource as YAML</span>
+</span></span><span class="line"><span class="cl">kubectl get deployment &lt;name&gt; -n &lt;namespace&gt; -o yaml &gt; deployment.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Dry-run to preview changes</span>
+</span></span><span class="line"><span class="cl">kubectl apply -f deployment.yaml --dry-run<span class="o">=</span>client
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Force refresh/restart deployment</span>
+</span></span><span class="line"><span class="cl">kubectl rollout restart deployment/&lt;deployment-name&gt; -n &lt;namespace&gt;
+</span></span></code></pre></div>
+	
+
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      <footer class="td-footer row d-print-none">
+  <div class="container-fluid">
+    <div class="row mx-md-2">
+      <div class="td-footer__left col-6 col-sm-4 order-sm-1">
+        
+      </div><div class="td-footer__right col-6 col-sm-4 order-sm-3">
+        
+      </div><div class="td-footer__center col-12 col-sm-4 py-2 order-sm-2">
+        
+      </div>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <script src="/js/main.js"></script>
+<script defer src="/js/click-to-copy.js" crossorigin="anonymous"></script>
+<script src='/js/tabpane-persist.js'></script>
+
+  </body>
+</html>

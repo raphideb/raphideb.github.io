@@ -1,32 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hi there! on crashdump</title>
-    <link>http://localhost:1313/</link>
-    <description>Recent content in hi there! on crashdump</description>
+    <title>Kubernetes on crashdump</title>
+    <link>http://localhost:1313/kubernetes/</link>
+    <description>Recent content in Kubernetes on crashdump</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Active Session History</title>
-      <link>http://localhost:1313/oracle/ash/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/oracle/ash/</guid>
-      <description>&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/oracle/ash.jpg&#34; alt=&#34;active_session_history&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;p&gt;The view gv$active_session_history (ASH) records in memory every second the wait events of all active sessions. It is the single most important source of information for deep performance analysis on a session or even query level, like what a session was doing in a particular moment in time, what queries it was executing or which other sessions were blocking it. For all the data it contains it is surprisingly easy to use. First I will explain how the ASH works and what fields it provides, then I show you a basic script and how to extend it with all sorts of queries to get the info that you need.&#xA;&lt;p&gt;Since the memory for ASH is limited, the data is only available for a few days or even hours. It is also usually gone when the instance was restarted, therefore, every 10 seconds a snapshot of the ASH data is stored permanently on disk and can be accessed through the view dba_hist_active_sess_history (DASH). &lt;/p&gt;</description>
-    </item>
+    <atom:link href="http://localhost:1313/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Cluster Management</title>
       <link>http://localhost:1313/kubernetes/cluster/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/kubernetes/cluster/</guid>
       <description>&lt;h2 id=&#34;kubernetes-cluster-management&#34;&gt;Kubernetes Cluster Management&lt;/h2&gt;&#xA;&lt;p&gt;Once you&amp;rsquo;ve deployed your Kubernetes cluster using the scripts from &lt;a href=&#34;https://github.com/raphideb/kube&#34; target=&#34;_blank&#34;&gt;github.com/raphideb/kube&lt;/a&gt;, you have a fully usable platform for running containerized workloads.&lt;/p&gt;&#xA;&lt;p&gt;The cluster setup includes:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Docker with cri-dockerd&lt;/strong&gt; - Container runtime&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Kubernetes cluster&lt;/strong&gt; - Orchestration platform&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Calico networking&lt;/strong&gt; - Network policies and security&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Local-path-provisioner&lt;/strong&gt; - Persistent storage&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Helm package manager&lt;/strong&gt; - Application deployment&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;managing-pods&#34;&gt;Managing Pods&lt;/h2&gt;&#xA;&lt;h3 id=&#34;view-running-pods&#34;&gt;View Running Pods&lt;/h3&gt;&#xA;&lt;p&gt;List all pods across namespaces:&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;kubectl get pods -A&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;List pods in a specific namespace:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>pgbench</title>
-      <link>http://localhost:1313/postgres/pgbench/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/postgres/pgbench/</guid>
-      <description>&lt;h2 id=&#34;the-postgresql-benchmark-utility&#34;&gt;The PostgreSQL benchmark utility&lt;/h2&gt;&#xA;&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/postgres/pgbench.jpg&#34; alt=&#34;elephant&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;br&gt;&lt;br&gt;&#xA;&lt;p&gt;Including a benchmark utility with a database product demonstrates a strong commitment to performance and transparency. For PostgreSQL, the built-in tool is pgbench, which allows users to test various aspects of the database system. Not only that, it can also run benchmarks on any set of tables with any script that you created yourself, making it the perfect tool to benchmark a specific application workload.&#xA;&lt;p&gt;The official documentation is here: &lt;a href=&#34;https://www.postgresql.org/docs/current/pgbench.html&#34;&gt;https://www.postgresql.org/docs/current/pgbench.html&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>PostgreSQL on Kubernetes</title>
@@ -48,27 +34,6 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/kubernetes/oracle/</guid>
       <description>&lt;h2 id=&#34;oracle-database-operator&#34;&gt;Oracle Database Operator&lt;/h2&gt;&#xA;&lt;p&gt;After deploying Oracle Database using the scripts from &lt;a href=&#34;https://github.com/raphideb/kube&#34; target=&#34;_blank&#34;&gt;github.com/raphideb/kube&lt;/a&gt;, you have a fully usable Oracle Database 23c Free Edition running in Kubernetes, managed by the Oracle Database Operator.&lt;/p&gt;&#xA;&lt;p&gt;The deployment includes:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Oracle Database Operator&lt;/strong&gt; - Kubernetes-native Oracle management&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Oracle 23c Free Edition&lt;/strong&gt; - Latest Oracle database features&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Single Instance Database&lt;/strong&gt; - Suitable for development and testing&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Grafana integration&lt;/strong&gt; - Custom monitoring dashboard with Oracle exporter&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;connecting-to-oracle&#34;&gt;Connecting to Oracle&lt;/h2&gt;&#xA;&lt;h3 id=&#34;using-orasql-script-recommended&#34;&gt;Using orasql Script (Recommended)&lt;/h3&gt;&#xA;&lt;p&gt;The repository includes a helper script for easy access:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>ashtop</title>
-      <link>http://localhost:1313/oracle/ashtop/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/oracle/ashtop/</guid>
-      <description>&lt;h2 id=&#34;ashtop---the-swiss-army-knife-for-ash&#34;&gt;ashtop - the Swiss Army Knife for ASH&lt;/h2&gt;&#xA;&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/oracle/ashtop.jpg&#34; alt=&#34;ashtop&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;p&gt;&#xA;Tanel Poder&#39;s script &#34;ashtop.sql&#34; greatly simplifies querying ASH and is essentially a fully parameterizable &#34;grep&#34; for ASH. The script comes in two variants:  &#xA;&lt;p&gt;ashtop.sql  → for querying ASH: &lt;code&gt;gv$active_session_history&lt;/code&gt;&lt;br&gt;&#xA;dashtop.sql → for querying DASH: &lt;code&gt;dba_hist_active_sess_history&lt;/code&gt;&lt;/p&gt;&#xA;&lt;p&gt;Both scripts are in the &amp;ldquo;ash&amp;rdquo; directory of Tanel&amp;rsquo;s github: &lt;a href=&#34;https://github.com/tanelpoder/tpt-oracle&#34;&gt;https://github.com/tanelpoder/tpt-oracle&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Pro tip:&lt;/strong&gt; do yourself a favour and download the whole repository. There are many, many more very useful scripts for all kinds of DBA tasks.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>pgstat_snap</title>
-      <link>http://localhost:1313/postgres/pgstat_snap/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/postgres/pgstat_snap/</guid>
-      <description>&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/postgres/pgstat_snap.jpg&#34; alt=&#34;active_session_history&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;p&gt;The cumulative statistics system (CSS) in PostgreSQL and pg_stat_statements in particular lack any timing information, all values are cumulative and the only way to figure out the difference between query executions is to reset the stats every time or work with averages. &#xA;&lt;p&gt;With the pgstat_snap extension, you can create timestamped snapshots of pg_stat_statements and pg_stat_activity when needed. It also provides views that show the difference between every snapshot for every query and database.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>other stuff</title>
-      <link>http://localhost:1313/stuff/stuff/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/stuff/stuff/</guid>
-      <description>&lt;p&gt;nothing to see here yet.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -7,6 +7,10 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
+    <loc>http://localhost:1313/kubernetes/cluster/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>http://localhost:1313/</loc>
     <lastmod>2025-11-14T17:09:36+01:00</lastmod>
     <changefreq>daily</changefreq>
@@ -17,8 +21,15 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/stuff/vibeshake/</loc>
-    <lastmod>2025-11-27T17:23:03+01:00</lastmod>
+    <loc>http://localhost:1313/kubernetes/postgres/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/kubernetes/mongodb/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/kubernetes/oracle/</loc>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -39,6 +50,10 @@
   </url><url>
     <loc>http://localhost:1313/oracle/</loc>
     <lastmod>2025-07-09T16:16:50+02:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/kubernetes/</loc>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
