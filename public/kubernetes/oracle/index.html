@@ -26,10 +26,12 @@
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="kubernetes">
+    <meta property="article:modified_time" content="2025-11-30T18:12:03+01:00">
 
   <meta itemprop="name" content="Oracle on Kubernetes">
   <meta itemprop="description" content="Oracle Database 23c Free Edition deployment">
-  <meta itemprop="wordCount" content="1086">
+  <meta itemprop="dateModified" content="2025-11-30T18:12:03+01:00">
+  <meta itemprop="wordCount" content="1087">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Oracle on Kubernetes">
   <meta name="twitter:description" content="Oracle Database 23c Free Edition deployment">
@@ -265,7 +267,7 @@
     </li>
     <li><a href="#cleanup">Cleanup</a>
       <ul>
-        <li><a href="#delete-single-database">Delete Single Database</a></li>
+        <li><a href="#delete-oracle-deployment">Delete Oracle Deployment</a></li>
         <li><a href="#manual-deletion">Manual Deletion</a></li>
         <li><a href="#delete-everything-including-data">Delete Everything Including Data</a></li>
       </ul>
@@ -568,9 +570,9 @@ myapp-db    Healthy   FREE
 </span></span></span></code></pre></div><h3 id="use-function">Use Function</h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">get_employee_count</span><span class="p">()</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_employees</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">dual</span><span class="p">;</span><span class="w">
 </span></span></span></code></pre></div><h2 id="cleanup">Cleanup</h2>
-<h3 id="delete-single-database">Delete Single Database</h3>
+<h3 id="delete-oracle-deployment">Delete Oracle Deployment</h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./del_oracle.sh
-</span></span></code></pre></div><p>Select the database to delete from the list.</p>
+</span></span></code></pre></div><p>This will delete everything from Oracle, including the Operator.</p>
 <h3 id="manual-deletion">Manual Deletion</h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete singleinstancedatabase oracle23 -n oracle
 </span></span></code></pre></div><p>This deletes the pod and service but preserves PVC (data).</p>
@@ -637,6 +639,10 @@ myapp-db    Healthy   FREE
 <p>For installation instructions, deployment scripts, and configuration details, see the README files in the <a href="https://github.com/raphideb/kube" target="_blank">script repository</a>.</p>
 
 	
+<div class="text-muted pt-3 border-top">
+  Last modified: November 30, 2025
+</div>
+
 
 </div>
 

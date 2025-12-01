@@ -440,13 +440,13 @@ SELECT get_employee_count() AS total_employees FROM dual;
 
 ## Cleanup
 
-### Delete Single Database
+### Delete Oracle Deployment
 
 ```bash
 ./del_oracle.sh
 ```
 
-Select the database to delete from the list.
+This will delete everything from Oracle, including the Operator.
 
 ### Manual Deletion
 

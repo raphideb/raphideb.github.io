@@ -26,12 +26,12 @@
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="postgres">
-    <meta property="article:modified_time" content="2025-07-10T23:25:19+02:00">
+    <meta property="article:modified_time" content="2025-11-30T19:31:47+01:00">
 
   <meta itemprop="name" content="pgstat_snap">
   <meta itemprop="description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
-  <meta itemprop="dateModified" content="2025-07-10T23:25:19+02:00">
-  <meta itemprop="wordCount" content="3609">
+  <meta itemprop="dateModified" content="2025-11-30T19:31:47+01:00">
+  <meta itemprop="wordCount" content="3607">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="pgstat_snap">
   <meta name="twitter:description" content="Extension for PostgreSQL to create timestamped snapshots of pg_stat_statements">
@@ -611,11 +611,11 @@ pg_stat_statements.track_utility = off
 </span></span></span><span class="line"><span class="cl"><span class="w"> </span><span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">28</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">8092674635626072858</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">33600</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">336</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">610530</span><span class="p">.</span><span class="mi">9505629999</span><span class="w">
 </span></span></span></code></pre></div><h2 id="conclusion">Conclusion</h2>
 <p>Tracing query executions can be cumbersom with pg_stat_statements alone, which is why I wrote this extension. At my workplace we don&rsquo;t have that many performance problems with PostgreSQL to warrant setting up a centralized solution like pgwatch or pg_profile. But when I encounter a performance problem once in a blue moon on a cluster, especially with many databases, I can now quickly see which database or query might be responsible. All it takes is to load up the extension, collect some snapshots and query pgstat_snap_diff in whatever way I want. And when I&rsquo;m done I drop the extension again with all the collected data to not have any dead waste in the database.</p>
-<p>I hope you&rsquo;ll find it useful too, please let me know if there&rsquo;s anything I could improve: <a href="mailto:raphi@crashdump.ch">raphi@crashdump.ch</a>.</p>
+<p>I hope you&rsquo;ll find it useful too, please create a github issue if something&rsquo;s not working.</p>
 
 	
 <div class="text-muted pt-3 border-top">
-  Last modified: July 10, 2025
+  Last modified: November 30, 2025
 </div>
 
 
