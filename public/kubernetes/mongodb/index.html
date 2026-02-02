@@ -18,23 +18,23 @@
 <link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
 
 <title>MongoDB on Kubernetes | crashdump</title>
-<meta name="description" content="MongoDB deployment with Community Operator">
+<meta name="description" content="MongoDB deployment with Community and Percona Operators">
 <meta property="og:url" content="http://localhost:1313/kubernetes/mongodb/">
   <meta property="og:site_name" content="crashdump">
   <meta property="og:title" content="MongoDB on Kubernetes">
-  <meta property="og:description" content="MongoDB deployment with Community Operator">
+  <meta property="og:description" content="MongoDB deployment with Community and Percona Operators">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="kubernetes">
     <meta property="article:modified_time" content="2025-11-30T18:12:03+01:00">
 
   <meta itemprop="name" content="MongoDB on Kubernetes">
-  <meta itemprop="description" content="MongoDB deployment with Community Operator">
+  <meta itemprop="description" content="MongoDB deployment with Community and Percona Operators">
   <meta itemprop="dateModified" content="2025-11-30T18:12:03+01:00">
-  <meta itemprop="wordCount" content="1035">
+  <meta itemprop="wordCount" content="1800">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="MongoDB on Kubernetes">
-  <meta name="twitter:description" content="MongoDB deployment with Community Operator">
+  <meta name="twitter:description" content="MongoDB deployment with Community and Percona Operators">
 <link href="/scss/main.css" rel="stylesheet">
 <script
   src="https://code.jquery.com/jquery-3.7.1.min.js"
@@ -169,6 +169,8 @@
   <a href="/kubernetes/mongodb/" class="align-left ps-0 active td-sidebar-link td-sidebar-link__page" id="m-kubernetesmongodb"><span class="td-sidebar-nav-active-item">MongoDB on Kubernetes</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesoracle-li">
   <a href="/kubernetes/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesoracle"><span class="">Oracle on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesopensearch-li">
+  <a href="/kubernetes/opensearch/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesopensearch"><span class="">OpenSearch on Kubernetes</span></a>
 </li>
   </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-stuff-li">
@@ -271,6 +273,21 @@
       </ul>
     </li>
     <li><a href="#network-policies">Network Policies</a></li>
+    <li><a href="#percona-mongodb-operator">Percona MongoDB Operator</a>
+      <ul>
+        <li><a href="#connecting-to-percona-mongodb">Connecting to Percona MongoDB</a></li>
+        <li><a href="#replica-set-status">Replica Set Status</a></li>
+        <li><a href="#test-automatic-failover-1">Test Automatic Failover</a></li>
+        <li><a href="#scaling-the-replica-set-1">Scaling the Replica Set</a></li>
+        <li><a href="#database-operations-1">Database Operations</a></li>
+        <li><a href="#user-management">User Management</a></li>
+        <li><a href="#backup-configuration">Backup Configuration</a></li>
+        <li><a href="#deploy-additional-clusters-1">Deploy Additional Clusters</a></li>
+        <li><a href="#monitoring">Monitoring</a></li>
+        <li><a href="#cleanup-1">Cleanup</a></li>
+        <li><a href="#network-policies-1">Network Policies</a></li>
+      </ul>
+    </li>
     <li><a href="#getting-started">Getting Started</a></li>
   </ul>
 </nav>
@@ -293,10 +310,10 @@
 </nav>
 <div class="td-content">
 	<h1>MongoDB on Kubernetes</h1>
-	<div class="lead">MongoDB deployment with Community Operator</div>
+	<div class="lead">MongoDB deployment with Community and Percona Operators</div>
 	<header class="article-meta">
 		
-<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 5 minute read &nbsp;</p>
+<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 9 minute read &nbsp;</p>
 </header>
 	<h2 id="mongodb-community-operator">MongoDB Community Operator</h2>
 <p>After deploying MongoDB using the scripts from <a href="https://github.com/raphideb/kube" target="_blank">github.com/raphideb/kube</a>, you have a fully usable MongoDB replica set managed by the MongoDB Community Operator.</p>
@@ -584,6 +601,190 @@
 </span></span></span></code></pre></div><p>Apply it:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f mongodb-policy.yaml
 </span></span></code></pre></div><p>Now only pods labeled with <code>app: myapp</code> can connect to MongoDB.</p>
+<h2 id="percona-mongodb-operator">Percona MongoDB Operator</h2>
+<p>In addition to the Community Operator, the repository also supports deploying MongoDB using the Percona Operator for MongoDB (<code>psmdb.percona.com/v1</code>). This runs Percona Server for MongoDB 8.0 and uses separate namespaces for the operator and database.</p>
+<p>The deployment includes:</p>
+<ul>
+<li><strong>Percona Operator</strong> - Kubernetes-native MongoDB management with advanced features</li>
+<li><strong>Percona Server for MongoDB 8.0</strong> - Production-ready MongoDB distribution</li>
+<li><strong>Replica Set</strong> - Multi-node cluster (rs0)</li>
+<li><strong>Built-in backup</strong> - Integrated backup with percona-backup-mongodb</li>
+<li><strong>Grafana integration</strong> - Percona exporter for monitoring</li>
+</ul>
+<h3 id="connecting-to-percona-mongodb">Connecting to Percona MongoDB</h3>
+<h4 id="direct-pod-access-1">Direct Pod Access</h4>
+<p>Get the pod name and connect:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n percona-mongodb
+</span></span><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it percona-mongodb-rs0-0 -n percona-mongodb -- mongosh
+</span></span></code></pre></div><p>Authenticate after connecting:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">auth</span><span class="p">(</span><span class="s2">&#34;clusterAdmin&#34;</span><span class="p">,</span> <span class="s2">&#34;password&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h4 id="using-port-forwarding-1">Using Port Forwarding</h4>
+<p>Forward MongoDB port to your local machine:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl port-forward -n percona-mongodb svc/percona-mongodb-rs0 27017:27017
+</span></span></code></pre></div><p>Connect with mongosh from another terminal:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mongosh -u clusterAdmin mongodb://localhost:27017/admin
+</span></span></code></pre></div><p>The default password is in the percona_mongodb.yml file.</p>
+<h3 id="replica-set-status">Replica Set Status</h3>
+<p>Check the Percona MongoDB cluster status:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get psmdb -n percona-mongodb
+</span></span></code></pre></div><p>Output shows the cluster state:</p>
+<pre tabindex="0"><code>NAME                STATUS   AGE
+percona-mongodb     ready    5m
+</code></pre><p>Connect and check replica set members:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it percona-mongodb-rs0-0 -n percona-mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;clusterAdmin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">rs.status<span class="o">()</span>
+</span></span></code></pre></div><p>Output shows which member is PRIMARY and which are SECONDARY:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">members</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;percona-mongodb-rs0-0:27017&#39;</span><span class="p">,</span> <span class="nx">health</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">stateStr</span><span class="o">:</span> <span class="s1">&#39;PRIMARY&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;percona-mongodb-rs0-1:27017&#39;</span><span class="p">,</span> <span class="nx">health</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">stateStr</span><span class="o">:</span> <span class="s1">&#39;SECONDARY&#39;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;percona-mongodb-rs0-2:27017&#39;</span><span class="p">,</span> <span class="nx">health</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">state</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">stateStr</span><span class="o">:</span> <span class="s1">&#39;SECONDARY&#39;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="test-automatic-failover-1">Test Automatic Failover</h3>
+<p>Delete the primary pod and watch the replica set elect a new primary:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Watch pods in one terminal</span>
+</span></span><span class="line"><span class="cl">kubectl get pods -n percona-mongodb -w
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># In another terminal, delete the primary</span>
+</span></span><span class="line"><span class="cl">kubectl delete pod percona-mongodb-rs0-0 -n percona-mongodb
+</span></span></code></pre></div><p>Connect and check the new primary:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it percona-mongodb-rs0-1 -n percona-mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;clusterAdmin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">rs.status<span class="o">()</span>
+</span></span></code></pre></div><p>A new primary is elected within seconds, and the deleted pod rejoins as a secondary.</p>
+<h3 id="scaling-the-replica-set-1">Scaling the Replica Set</h3>
+<h4 id="scale-to-more-members-1">Scale to More Members</h4>
+<p>Increase from 3 to 5 members:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch psmdb percona-mongodb -n percona-mongodb --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p <span class="s1">&#39;{&#34;spec&#34;:{&#34;replsets&#34;:[{&#34;name&#34;:&#34;rs0&#34;,&#34;size&#34;:5}]}}&#39;</span>
+</span></span></code></pre></div><p>Watch new pods being created:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n percona-mongodb -w
+</span></span></code></pre></div><p>New members automatically sync data and join the replica set.</p>
+<h4 id="scale-down-1">Scale Down</h4>
+<p>Reduce to 2 members:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl patch psmdb percona-mongodb -n percona-mongodb --type merge <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -p <span class="s1">&#39;{&#34;spec&#34;:{&#34;replsets&#34;:[{&#34;name&#34;:&#34;rs0&#34;,&#34;size&#34;:2}]}}&#39;</span>
+</span></span></code></pre></div><h3 id="database-operations-1">Database Operations</h3>
+<h4 id="create-database-and-collection-1">Create Database and Collection</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it percona-mongodb-rs0-0 -n percona-mongodb -- mongosh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use admin
+</span></span><span class="line"><span class="cl">db.auth<span class="o">(</span><span class="s2">&#34;clusterAdmin&#34;</span>, <span class="s2">&#34;password&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">use myapp
+</span></span><span class="line"><span class="cl">db.createCollection<span class="o">(</span><span class="s2">&#34;users&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">db.users.insertOne<span class="o">({</span>
+</span></span><span class="line"><span class="cl">  username: <span class="s2">&#34;alice&#34;</span>,
+</span></span><span class="line"><span class="cl">  email: <span class="s2">&#34;alice@example.com&#34;</span>,
+</span></span><span class="line"><span class="cl">  created: new Date<span class="o">()</span>
+</span></span><span class="line"><span class="cl"><span class="o">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">db.users.find<span class="o">()</span>
+</span></span></code></pre></div><h4 id="import-data-1">Import Data</h4>
+<p>Create a JSON file locally:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Alice&#34;</span><span class="p">,</span> <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="nt">&#34;city&#34;</span><span class="p">:</span> <span class="s2">&#34;New York&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Bob&#34;</span><span class="p">,</span> <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="nt">&#34;city&#34;</span><span class="p">:</span> <span class="s2">&#34;San Francisco&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Charlie&#34;</span><span class="p">,</span> <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span> <span class="nt">&#34;city&#34;</span><span class="p">:</span> <span class="s2">&#34;Seattle&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></div><p>Copy to pod and import:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cp users.json percona-mongodb/percona-mongodb-rs0-0:/tmp/users.json
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl <span class="nb">exec</span> -it percona-mongodb-rs0-0 -n percona-mongodb -- mongoimport <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --db myapp <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --collection users <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --file /tmp/users.json <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --jsonArray <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --username userAdmin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --password password <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --authenticationDatabase admin
+</span></span></code></pre></div><h3 id="user-management">User Management</h3>
+<p>Percona MongoDB includes built-in system users with predefined roles:</p>
+<ul>
+<li><strong>userAdmin</strong> - Database user administration</li>
+<li><strong>clusterAdmin</strong> - Cluster-wide administration</li>
+<li><strong>clusterMonitor</strong> - Read-only cluster monitoring</li>
+<li><strong>backup</strong> - Backup operations</li>
+</ul>
+<p>Create an application user:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span> <span class="nx">admin</span>
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">auth</span><span class="p">(</span><span class="s2">&#34;userAdmin&#34;</span><span class="p">,</span> <span class="s2">&#34;password&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">createUser</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">user</span><span class="o">:</span> <span class="s2">&#34;myapp_user&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">pwd</span><span class="o">:</span> <span class="s2">&#34;secure_password&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">roles</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span> <span class="nx">role</span><span class="o">:</span> <span class="s2">&#34;readWrite&#34;</span><span class="p">,</span> <span class="nx">db</span><span class="o">:</span> <span class="s2">&#34;myapp&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></div><p>Test the new user:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mongosh -u myapp_user -p secure_password mongodb://localhost:27017/myapp
+</span></span></code></pre></div><h3 id="backup-configuration">Backup Configuration</h3>
+<p>Percona MongoDB Operator includes built-in backup support using <code>percona-backup-mongodb:2.11.0</code>.</p>
+<p>Check backup status:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get psmdb percona-mongodb -n percona-mongodb -o yaml <span class="p">|</span> grep -A <span class="m">20</span> backup
+</span></span></code></pre></div><p>The backup agent runs as a sidecar container in each replica set pod. Configure backup storage and schedules in the <code>percona_mongodb.yml</code> template.</p>
+<h3 id="deploy-additional-clusters-1">Deploy Additional Clusters</h3>
+<p>The repository includes a template YAML file for deploying more Percona MongoDB clusters.</p>
+<p>View the template:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat percona_mongodb.yml
+</span></span></code></pre></div><p>Deploy a new cluster:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f percona_mongodb.yml
+</span></span></code></pre></div><p>This creates a separate Percona MongoDB replica set with its own storage and resources.</p>
+<h3 id="monitoring">Monitoring</h3>
+<p>The Percona exporter is automatically configured for Grafana integration.</p>
+<p>Open Grafana:</p>
+<p>http://&lt;your-host-ip&gt;:30000</p>
+<p>Import the custom dashboard from the repository:</p>
+<pre tabindex="0"><code>MongoDB_Percona_Grafana.json
+</code></pre><p>Watch real-time metrics:</p>
+<ul>
+<li>Operations per second</li>
+<li>Connection counts</li>
+<li>Replication lag</li>
+<li>Memory usage</li>
+<li>Cache statistics</li>
+</ul>
+<h3 id="cleanup-1">Cleanup</h3>
+<h4 id="delete-cluster-1">Delete Cluster</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete psmdb percona-mongodb -n percona-mongodb
+</span></span></code></pre></div><p>This deletes pods and services but preserves PVCs (data).</p>
+<h4 id="delete-everything-including-data-1">Delete Everything Including Data</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete psmdb percona-mongodb -n percona-mongodb
+</span></span><span class="line"><span class="cl">kubectl delete pvc -n percona-mongodb --all
+</span></span></code></pre></div><h4 id="delete-operator">Delete Operator</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete namespace percona-mongodb-operator
+</span></span></code></pre></div><h3 id="network-policies-1">Network Policies</h3>
+<p>Restrict access to Percona MongoDB using Calico network policies:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">networking.k8s.io/v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">NetworkPolicy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">percona-mongodb-access</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">percona-mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">podSelector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">app.kubernetes.io/instance</span><span class="p">:</span><span class="w"> </span><span class="l">percona-mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">policyTypes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="l">Ingress</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">from</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">podSelector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">myapp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">27017</span><span class="w">
+</span></span></span></code></pre></div><p>Apply it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f percona-mongodb-policy.yaml
+</span></span></code></pre></div><p>Now only pods labeled with <code>app: myapp</code> can connect to Percona MongoDB.</p>
 <h2 id="getting-started">Getting Started</h2>
 <p>For installation instructions and deployment details, see the README files in the <a href="https://github.com/raphideb/kube" target="_blank">script repository</a>.</p>
 

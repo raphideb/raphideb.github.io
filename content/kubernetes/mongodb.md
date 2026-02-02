@@ -2,7 +2,7 @@
 title: "MongoDB on Kubernetes"
 type: "docs"
 weight: 3
-description: "MongoDB deployment with Community Operator"
+description: "MongoDB deployment with Community and Percona Operators"
 ---
 
 ## MongoDB Community Operator
@@ -512,6 +512,328 @@ kubectl apply -f mongodb-policy.yaml
 ```
 
 Now only pods labeled with `app: myapp` can connect to MongoDB.
+
+## Percona MongoDB Operator
+
+In addition to the Community Operator, the repository also supports deploying MongoDB using the Percona Operator for MongoDB (`psmdb.percona.com/v1`). This runs Percona Server for MongoDB 8.0 and uses separate namespaces for the operator and database.
+
+The deployment includes:
+
+- **Percona Operator** - Kubernetes-native MongoDB management with advanced features
+- **Percona Server for MongoDB 8.0** - Production-ready MongoDB distribution
+- **Replica Set** - Multi-node cluster (rs0)
+- **Built-in backup** - Integrated backup with percona-backup-mongodb
+- **Grafana integration** - Percona exporter for monitoring
+
+### Connecting to Percona MongoDB
+
+#### Direct Pod Access
+
+Get the pod name and connect:
+
+```bash
+kubectl get pods -n percona-mongodb
+kubectl exec -it percona-mongodb-rs0-0 -n percona-mongodb -- mongosh
+```
+
+Authenticate after connecting:
+
+```javascript
+use admin
+db.auth("clusterAdmin", "password")
+```
+
+#### Using Port Forwarding
+
+Forward MongoDB port to your local machine:
+
+```bash
+kubectl port-forward -n percona-mongodb svc/percona-mongodb-rs0 27017:27017
+```
+
+Connect with mongosh from another terminal:
+
+```bash
+mongosh -u clusterAdmin mongodb://localhost:27017/admin
+```
+
+The default password is in the percona_mongodb.yml file.
+
+### Replica Set Status
+
+Check the Percona MongoDB cluster status:
+
+```bash
+kubectl get psmdb -n percona-mongodb
+```
+
+Output shows the cluster state:
+
+```
+NAME                STATUS   AGE
+percona-mongodb     ready    5m
+```
+
+Connect and check replica set members:
+
+```bash
+kubectl exec -it percona-mongodb-rs0-0 -n percona-mongodb -- mongosh
+
+use admin
+db.auth("clusterAdmin", "password")
+rs.status()
+```
+
+Output shows which member is PRIMARY and which are SECONDARY:
+
+```javascript
+{
+  members: [
+    { _id: 0, name: 'percona-mongodb-rs0-0:27017', health: 1, state: 1, stateStr: 'PRIMARY' },
+    { _id: 1, name: 'percona-mongodb-rs0-1:27017', health: 1, state: 2, stateStr: 'SECONDARY' },
+    { _id: 2, name: 'percona-mongodb-rs0-2:27017', health: 1, state: 2, stateStr: 'SECONDARY' }
+  ]
+}
+```
+
+### Test Automatic Failover
+
+Delete the primary pod and watch the replica set elect a new primary:
+
+```bash
+# Watch pods in one terminal
+kubectl get pods -n percona-mongodb -w
+
+# In another terminal, delete the primary
+kubectl delete pod percona-mongodb-rs0-0 -n percona-mongodb
+```
+
+Connect and check the new primary:
+
+```bash
+kubectl exec -it percona-mongodb-rs0-1 -n percona-mongodb -- mongosh
+
+use admin
+db.auth("clusterAdmin", "password")
+rs.status()
+```
+
+A new primary is elected within seconds, and the deleted pod rejoins as a secondary.
+
+### Scaling the Replica Set
+
+#### Scale to More Members
+
+Increase from 3 to 5 members:
+
+```bash
+kubectl patch psmdb percona-mongodb -n percona-mongodb --type merge \
+  -p '{"spec":{"replsets":[{"name":"rs0","size":5}]}}'
+```
+
+Watch new pods being created:
+
+```bash
+kubectl get pods -n percona-mongodb -w
+```
+
+New members automatically sync data and join the replica set.
+
+#### Scale Down
+
+Reduce to 2 members:
+
+```bash
+kubectl patch psmdb percona-mongodb -n percona-mongodb --type merge \
+  -p '{"spec":{"replsets":[{"name":"rs0","size":2}]}}'
+```
+
+### Database Operations
+
+#### Create Database and Collection
+
+```bash
+kubectl exec -it percona-mongodb-rs0-0 -n percona-mongodb -- mongosh
+
+use admin
+db.auth("clusterAdmin", "password")
+
+use myapp
+db.createCollection("users")
+db.users.insertOne({
+  username: "alice",
+  email: "alice@example.com",
+  created: new Date()
+})
+
+db.users.find()
+```
+
+#### Import Data
+
+Create a JSON file locally:
+
+```json
+[
+  {"name": "Alice", "age": 30, "city": "New York"},
+  {"name": "Bob", "age": 25, "city": "San Francisco"},
+  {"name": "Charlie", "age": 35, "city": "Seattle"}
+]
+```
+
+Copy to pod and import:
+
+```bash
+kubectl cp users.json percona-mongodb/percona-mongodb-rs0-0:/tmp/users.json
+
+kubectl exec -it percona-mongodb-rs0-0 -n percona-mongodb -- mongoimport \
+  --db myapp \
+  --collection users \
+  --file /tmp/users.json \
+  --jsonArray \
+  --username userAdmin \
+  --password password \
+  --authenticationDatabase admin
+```
+
+### User Management
+
+Percona MongoDB includes built-in system users with predefined roles:
+
+- **userAdmin** - Database user administration
+- **clusterAdmin** - Cluster-wide administration
+- **clusterMonitor** - Read-only cluster monitoring
+- **backup** - Backup operations
+
+Create an application user:
+
+```javascript
+use admin
+db.auth("userAdmin", "password")
+
+db.createUser({
+  user: "myapp_user",
+  pwd: "secure_password",
+  roles: [
+    { role: "readWrite", db: "myapp" }
+  ]
+})
+```
+
+Test the new user:
+
+```bash
+mongosh -u myapp_user -p secure_password mongodb://localhost:27017/myapp
+```
+
+### Backup Configuration
+
+Percona MongoDB Operator includes built-in backup support using `percona-backup-mongodb:2.11.0`.
+
+Check backup status:
+
+```bash
+kubectl get psmdb percona-mongodb -n percona-mongodb -o yaml | grep -A 20 backup
+```
+
+The backup agent runs as a sidecar container in each replica set pod. Configure backup storage and schedules in the `percona_mongodb.yml` template.
+
+### Deploy Additional Clusters
+
+The repository includes a template YAML file for deploying more Percona MongoDB clusters.
+
+View the template:
+
+```bash
+cat percona_mongodb.yml
+```
+
+Deploy a new cluster:
+
+```bash
+kubectl apply -f percona_mongodb.yml
+```
+
+This creates a separate Percona MongoDB replica set with its own storage and resources.
+
+### Monitoring
+
+The Percona exporter is automatically configured for Grafana integration.
+
+Open Grafana:
+
+http://\<your-host-ip\>:30000
+
+Import the custom dashboard from the repository:
+
+```
+MongoDB_Percona_Grafana.json
+```
+
+Watch real-time metrics:
+
+- Operations per second
+- Connection counts
+- Replication lag
+- Memory usage
+- Cache statistics
+
+### Cleanup
+
+#### Delete Cluster
+
+```bash
+kubectl delete psmdb percona-mongodb -n percona-mongodb
+```
+
+This deletes pods and services but preserves PVCs (data).
+
+#### Delete Everything Including Data
+
+```bash
+kubectl delete psmdb percona-mongodb -n percona-mongodb
+kubectl delete pvc -n percona-mongodb --all
+```
+
+#### Delete Operator
+
+```bash
+kubectl delete namespace percona-mongodb-operator
+```
+
+### Network Policies
+
+Restrict access to Percona MongoDB using Calico network policies:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: percona-mongodb-access
+  namespace: percona-mongodb
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: percona-mongodb
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: myapp
+    ports:
+    - protocol: TCP
+      port: 27017
+```
+
+Apply it:
+
+```bash
+kubectl apply -f percona-mongodb-policy.yaml
+```
+
+Now only pods labeled with `app: myapp` can connect to Percona MongoDB.
 
 ## Getting Started
 
