@@ -7,11 +7,11 @@ description: "MongoDB deployment with Community and Percona Operators"
 
 ## MongoDB Community Operator
 
-After deploying MongoDB using the scripts from <a href="https://github.com/raphideb/kube" target="_blank">github.com/raphideb/kube</a>, you have a fully usable MongoDB replica set managed by the MongoDB Community Operator.
+After deploying MongoDB using the scripts from <a href="https://github.com/raphideb/kube" target="_blank">github.com/raphideb/kube</a>, you have a fully usable MongoDB replica set managed by the MongoDB Community- or Percona Operator.
 
 The deployment includes:
 
-- **MongoDB Community Operator** - Kubernetes-native MongoDB management
+- **MongoDB Community- or Percona Operator** - Kubernetes-native MongoDB management
 - **Replica Set** - Multi-node MongoDB cluster
 - **Sample database** - Pre-configured MongoDB deployment
 - **Grafana integration** - Custom monitoring dashboard with Percona exporter
