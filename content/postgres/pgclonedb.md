@@ -75,13 +75,13 @@ it is opened briefly, edited, and closed again:
 
 ```sql
 -- 1. Unlock the template for editing
-SELECT pgclonedb.open_database('myapp');
+SELECT pgclonedb.open_database('myapp_source');
 
--- 2. Connect to 'myapp' and apply the changes
+-- 2. Connect to 'myapp_source' and apply the changes
 --    (load data, create schemas, create application roles, run migrations, ...)
 
 -- 3. Lock the template back into clonable state
-SELECT pgclonedb.close_database('myapp');
+SELECT pgclonedb.close_database('myapp_source');
 ```
 
 After step 3, the template is ready to be cloned at any time — and it should
@@ -104,7 +104,7 @@ on demand with a single call:
 ```sql
 SELECT pgclonedb.create_database(
     dbname   := 'myapp_dev',
-    template := 'myapp'
+    template := 'myapp_source'
 );
 ```
 
@@ -144,7 +144,7 @@ allows connections, the way back into the standard state is simply to close
 it again:
 
 ```sql
-SELECT pgclonedb.close_database('myapp');
+SELECT pgclonedb.close_database('myapp_source');
 ```
 
 ## Removing a clone
@@ -339,16 +339,16 @@ clean-up of the clone:
 
 ```sql
 -- one-off: prepare or update the template
-SELECT pgclonedb.open_database('myapp');
--- ... connect to 'myapp' and load data, create schemas, create roles, etc. ...
-SELECT pgclonedb.close_database('myapp');
+SELECT pgclonedb.open_database('myapp_source');
+-- ... connect to 'myapp_source' and load data, create schemas, create roles, etc. ...
+SELECT pgclonedb.close_database('myapp_source');
 
 -- any time afterwards: produce a clone from the closed template
-SELECT pgclonedb.create_database('myapp_test', template := 'myapp');
+SELECT pgclonedb.create_database('myapp_dev', 'myapp_source');
 
 -- inspect recent activity
 SELECT * FROM pgclonedb.get_audit_log(max_rows := 5);
 
 -- clean up the clone when no longer needed
-SELECT pgclonedb.drop_database('myapp_test', force := true);
+SELECT pgclonedb.drop_database('myapp_dev');
 ```
