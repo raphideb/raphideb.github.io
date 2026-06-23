@@ -15,6 +15,13 @@
       <description>&lt;h2 id=&#34;the-postgresql-benchmark-utility&#34;&gt;The PostgreSQL benchmark utility&lt;/h2&gt;&#xA;&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/postgres/pgbench.jpg&#34; alt=&#34;elephant&#34; width=&#34;25%&#34; height=&#34;25%&#34;/&gt;&#xA;&lt;br&gt;&lt;br&gt;&#xA;&lt;p&gt;Including a benchmark utility with a database product demonstrates a strong commitment to performance and transparency. For PostgreSQL, the built-in tool is pgbench, which allows users to test various aspects of the database system. Not only that, it can also run benchmarks on any set of tables with any script that you created yourself, making it the perfect tool to benchmark a specific application workload.&#xA;&lt;p&gt;The official documentation is here: &lt;a href=&#34;https://www.postgresql.org/docs/current/pgbench.html&#34;&gt;https://www.postgresql.org/docs/current/pgbench.html&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
+      <title>pgclonedb</title>
+      <link>http://localhost:1313/postgres/pgclonedb/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/postgres/pgclonedb/</guid>
+      <description>&lt;img class=&#34;floatimg&#34; src=&#34;http://localhost:1313/postgres/pgclonedb.png&#34; alt=&#34;elephant&#34; width=&#34;400&#34;/&gt;&#xA;&lt;br&gt;&lt;br&gt;&#xA;&lt;p&gt;&#xA;This guide is written for users of the pgclonedb extension. &#xA;&lt;p&gt;Installation, role onboarding, and full API documentation are in the&#xA;project README: &lt;a href=&#34;https://github.com/raphideb/pgclonedb/blob/main/README.md&#34;&gt;https://github.com/raphideb/pgclonedb/blob/main/README.md&lt;/a&gt;&lt;/p&gt;&#xA;&lt;/p&gt;&#xA;&lt;div style=&#34;clear: both;&#34;&gt;&lt;/div&gt;&#xA;&lt;h2 id=&#34;what-pgclonedb-does&#34;&gt;What pgclonedb does&lt;/h2&gt;&#xA;&lt;p&gt;The extension exposes a small, safe set of database administration tasks&#xA;through the schema &lt;code&gt;pgclonedb&lt;/code&gt;. Cloning a database, opening or closing it for&#xA;template use, managing schemas inside it, and (when enabled by the superuser)&#xA;managing roles and passwords are all available via&#xA;&lt;code&gt;SELECT pgclonedb.&amp;lt;function&amp;gt;(...)&lt;/code&gt; calls.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>pgstat_snap</title>
       <link>http://localhost:1313/postgres/pgstat_snap/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

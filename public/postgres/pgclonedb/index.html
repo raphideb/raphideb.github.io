@@ -1,0 +1,525 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="en" class="no-js">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+
+
+<link rel="shortcut icon" href="/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
+
+<title>pgclonedb | crashdump</title>
+<meta name="description" content="End-user guide for the pgclonedb PostgreSQL extension">
+<meta property="og:url" content="http://localhost:1313/postgres/pgclonedb/">
+  <meta property="og:site_name" content="crashdump">
+  <meta property="og:title" content="pgclonedb">
+  <meta property="og:description" content="End-user guide for the pgclonedb PostgreSQL extension">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="postgres">
+
+  <meta itemprop="name" content="pgclonedb">
+  <meta itemprop="description" content="End-user guide for the pgclonedb PostgreSQL extension">
+  <meta itemprop="wordCount" content="1753">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="pgclonedb">
+  <meta name="twitter:description" content="End-user guide for the pgclonedb PostgreSQL extension">
+<link href="/scss/main.css" rel="stylesheet">
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous"></script>
+<link rel="canonical" href="http://localhost:1313/postgres/pgclonedb/">
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
+
+  </head>
+  <body class="td-page">
+    <header>
+      <nav class="td-navbar js-navbar-scroll" data-bs-theme="dark">
+<div class="container-fluid flex-column flex-md-row">
+  <a class="navbar-brand" href="/"><span class="navbar-brand__logo navbar-logo"><svg width="60" height="0" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-size="64" font-type="bold" fill="#fff">ok#</text></svg></span><span class="navbar-brand__name">crashdump</span></a>
+  <div class="td-navbar-nav-scroll ms-md-auto" id="main_navbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.postgresql.org/docs/" target="_blank" rel="noopener"><span>Postgres documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://docs.oracle.com/en/database/oracle/oracle-database/index.html" target="_blank" rel="noopener"><span>Oracle documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://kubernetes.io/docs/" target="_blank" rel="noopener"><span>Kubernetes documentation</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://claude.ai/" target="_blank" rel="noopener"><span>Claude</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://www.perplexity.ai/" target="_blank" rel="noopener"><span>Perplexity</span></a>
+      </li>
+      <li class="td-light-dark-menu nav-item dropdown">
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+  <symbol id="check2" viewBox="0 0 16 16">
+    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+  </symbol>
+  <symbol id="circle-half" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+  </symbol>
+  <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+    <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+    <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+  </symbol>
+  <symbol id="sun-fill" viewBox="0 0 16 16">
+    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+  </symbol>
+</svg>
+
+<button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
+        id="bd-theme"
+        type="button"
+        aria-expanded="false"
+        data-bs-toggle="dropdown"
+        data-bs-display="static"
+        aria-label="Toggle theme (auto)">
+  <svg class="bi my-1 theme-icon-active"><use href="#circle-half"></use></svg>
+</button>
+<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#sun-fill"></use></svg>
+      Light
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+      <svg class="bi me-2 opacity-50"><use href="#moon-stars-fill"></use></svg>
+      Dark
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
+      <svg class="bi me-2 opacity-50"><use href="#circle-half"></use></svg>
+      Auto
+      <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+    </button>
+  </li>
+</ul>
+
+      </li>
+      </ul>
+  </div>
+  <div class="d-none d-lg-block">
+    
+  </div>
+</div>
+</nav>
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            <div id="td-sidebar-menu" class="td-sidebar__inner">
+  <form class="td-sidebar__search d-flex align-items-center">
+    
+    <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ms-3 fas fa-bars" type="button" data-bs-toggle="collapse" data-bs-target="#td-section-nav" aria-controls="td-section-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    </button>
+  </form>
+  <nav class="td-sidebar-nav collapse" id="td-section-nav">
+    <ul class="td-sidebar-nav__section pe-md-3 ul-0">
+      <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m--li">
+  <a href="/" title="hi there!" class="align-left ps-0 td-sidebar-link td-sidebar-link__section tree-root" id="m-"><span class="">Home</span></a>
+  <ul class="ul-1">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id="m-postgres-li">
+  <a href="/postgres/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-postgres"><span class="">PostgreSQL</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgbench-li">
+  <a href="/postgres/pgbench/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgbench"><span class="">pgbench</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id="m-postgrespgclonedb-li">
+  <a href="/postgres/pgclonedb/" class="align-left ps-0 active td-sidebar-link td-sidebar-link__page" id="m-postgrespgclonedb"><span class="td-sidebar-nav-active-item">pgclonedb</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-postgrespgstat_snap-li">
+  <a href="/postgres/pgstat_snap/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-postgrespgstat_snap"><span class="">pgstat_snap</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-oracle-li">
+  <a href="/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-oracle"><span class="">Oracle</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleash-li">
+  <a href="/oracle/ash/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleash"><span class="">Active Session History</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-oracleashtop-li">
+  <a href="/oracle/ashtop/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleashtop"><span class="">ashtop</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-kubernetes-li">
+  <a href="/kubernetes/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-kubernetes"><span class="">Kubernetes</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetescluster-li">
+  <a href="/kubernetes/cluster/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetescluster"><span class="">Cluster Management</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetespostgres-li">
+  <a href="/kubernetes/postgres/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetespostgres"><span class="">PostgreSQL on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesmongodb-li">
+  <a href="/kubernetes/mongodb/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesmongodb"><span class="">MongoDB on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesoracle-li">
+  <a href="/kubernetes/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesoracle"><span class="">Oracle on Kubernetes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesopensearch-li">
+  <a href="/kubernetes/opensearch/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesopensearch"><span class="">OpenSearch on Kubernetes</span></a>
+</li>
+  </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-stuff-li">
+  <a href="/stuff/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-stuff"><span class="">Other stuff</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-stuffstuff-li">
+  <a href="/stuff/stuff/" title="other stuff" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-stuffstuff"><span class="">Other stuff</span></a>
+</li>
+  </ul>
+</li>
+  </ul>
+</li>
+    </ul>
+  </nav>
+</div>
+
+          </aside>
+          <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+            <div class="td-page-meta ms-2 pb-1 pt-2 mb-0">
+<a href="https://github.com/raphideb/raphideb.github.io/tree/main/content/postgres/pgclonedb.md" class="td-page-meta--view td-page-meta__view" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines fa-fw"></i> View page source</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/edit/main/content/postgres/pgclonedb.md" class="td-page-meta--edit td-page-meta__edit" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Edit this page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/new/main/content/postgres?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" class="td-page-meta--child td-page-meta__child" target="_blank" rel="noopener"><i class="fa-solid fa-pen-to-square fa-fw"></i> Create child page</a>
+  <a href="https://github.com/raphideb/raphideb.github.io/issues/new?title=pgclonedb" class="td-page-meta--issue td-page-meta__issue" target="_blank" rel="noopener"><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
+  
+</div>
+
+            <div class="td-toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-pgclonedb-does">What pgclonedb does</a></li>
+    <li><a href="#getting-started">Getting started</a></li>
+    <li><a href="#the-basic-workflow-prepare-and-clone-a-database">The basic workflow: prepare and clone a database</a>
+      <ul>
+        <li><a href="#preparing-or-updating-the-template">Preparing or updating the template</a></li>
+        <li><a href="#cloning-from-the-template">Cloning from the template</a></li>
+        <li><a href="#recovering-an-accidentally-opened-template">Recovering an accidentally opened template</a></li>
+      </ul>
+    </li>
+    <li><a href="#removing-a-clone">Removing a clone</a></li>
+    <li><a href="#working-with-schemas">Working with schemas</a>
+      <ul>
+        <li><a href="#creating-a-schema">Creating a schema</a></li>
+        <li><a href="#dropping-a-schema">Dropping a schema</a></li>
+      </ul>
+    </li>
+    <li><a href="#working-with-roles">Working with roles</a>
+      <ul>
+        <li><a href="#creating-a-role">Creating a role</a></li>
+        <li><a href="#resetting-a-password">Resetting a password</a></li>
+        <li><a href="#granting-and-revoking-role-membership">Granting and revoking role membership</a></li>
+        <li><a href="#dropping-a-role">Dropping a role</a></li>
+      </ul>
+    </li>
+    <li><a href="#reviewing-the-audit-log">Reviewing the audit log</a></li>
+    <li><a href="#quick-reference-pgclonedbhelp">Quick reference: pgclonedb.help()</a></li>
+    <li><a href="#when-something-does-not-work">When something does not work</a></li>
+    <li><a href="#end-to-end-cheat-sheet">End-to-end cheat sheet</a></li>
+  </ul>
+</nav>
+      </div>
+    
+            
+
+          </aside>
+          <main class="col-12 col-md-9 col-xl-8 ps-md-5" role="main">
+            
+  
+
+            <nav aria-label="breadcrumb" class="td-breadcrumbs">
+  <ol class="breadcrumb">
+  <li class="breadcrumb-item">
+    <a href="/postgres/">PostgreSQL</a></li>
+  <li class="breadcrumb-item active" aria-current="page">
+    pgclonedb</li>
+  </ol>
+</nav>
+<div class="td-content">
+	<h1>pgclonedb</h1>
+	<div class="lead">End-user guide for the pgclonedb PostgreSQL extension</div>
+	<header class="article-meta">
+		
+<p class="reading-time"><i class="fa-solid fa-clock" aria-hidden="true"></i>&nbsp; 9 minute read &nbsp;</p>
+</header>
+	<img class="floatimg" src="/postgres/pgclonedb.png" alt="elephant" width="400"/>
+<br><br>
+<p>
+This guide is written for users of the pgclonedb extension. 
+<p>Installation, role onboarding, and full API documentation are in the
+project README: <a href="https://github.com/raphideb/pgclonedb/blob/main/README.md">https://github.com/raphideb/pgclonedb/blob/main/README.md</a></p>
+</p>
+<div style="clear: both;"></div>
+<h2 id="what-pgclonedb-does">What pgclonedb does</h2>
+<p>The extension exposes a small, safe set of database administration tasks
+through the schema <code>pgclonedb</code>. Cloning a database, opening or closing it for
+template use, managing schemas inside it, and (when enabled by the superuser)
+managing roles and passwords are all available via
+<code>SELECT pgclonedb.&lt;function&gt;(...)</code> calls.</p>
+<p>Access is enforced by a naming convention. When the connected role is, for
+example, <code>myapp_db_admin</code>, only databases named <code>myapp</code> or starting with
+<code>myapp_</code> (such as <code>myapp_dev</code>, <code>myapp_v2</code>, <code>myapp_cicd_test</code>) are in scope.
+Any attempt to reach databases of a different application is rejected with an
+out-of-scope error.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>The first step is to connect to the cluster as the application admin role
+provided by the superuser. The connect string, role name, password are normally
+handed over during onboarding and follow the pattern <code>postgresql://&lt;app&gt;_db_admin:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/postgres</code></p>
+<p>A quick way to verify access and to see which functions are currently
+available is the help function:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">help</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><p>The output lists every function, its parameters, a usage example, and whether
+the function is currently <code>enabled</code> or <code>DISABLED</code>. It also reminds of the
+basic cloning workflow and the scoping rule, and is the recommended starting
+point whenever something is unclear or a function does not behave as expected.</p>
+<h2 id="the-basic-workflow-prepare-and-clone-a-database">The basic workflow: prepare and clone a database</h2>
+<p>The template database is the master copy from which clones are produced. By
+convention it is kept <strong>closed</strong> at all times — locked in template mode, with
+no connections allowed — so that it stays consistent and ready to be cloned
+on demand. Applications never connect to the template directly; they connect
+to clones.</p>
+<p>The template is only opened temporarily by the application admin when its
+contents need to change: loading initial data, applying schema updates,
+creating application roles, importing reference data, and so on. As soon as
+those changes are complete, the template is closed again. Outside of these
+short maintenance windows, the template remains closed.</p>
+<p>This leads to two distinct workflows:</p>
+<ul>
+<li>Preparing or updating the template — occasional, performed only by the
+application admin</li>
+<li>Cloning from the template — performed whenever a fresh working copy is
+needed</li>
+</ul>
+<h3 id="preparing-or-updating-the-template">Preparing or updating the template</h3>
+<p>When the template is first set up, or when its contents need to change later,
+it is opened briefly, edited, and closed again:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- 1. Unlock the template for editing
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">open_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 2. Connect to &#39;myapp&#39; and apply the changes
+</span></span></span><span class="line"><span class="cl"><span class="c1">--    (load data, create schemas, create application roles, run migrations, ...)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 3. Lock the template back into clonable state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>After step 3, the template is ready to be cloned at any time — and it should
+remain in this state until the next planned change. Leaving the template
+open between maintenance windows is discouraged: applications could
+accidentally connect to it, ad-hoc changes could drift the master copy out
+of its known-good state, and any active session would block subsequent clone
+operations.</p>
+<p>By default, <code>close_database</code> terminates active connections to the template.
+When this is not desired (for example to be sure that no maintenance work is
+still in progress), the parameter <code>terminate_backends := false</code> can be
+passed — the call then fails instead of terminating sessions.</p>
+<h3 id="cloning-from-the-template">Cloning from the template</h3>
+<p>Once the template is in its final, closed state, fresh clones can be produced
+on demand with a single call:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">create_database</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">dbname</span><span class="w">   </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">template</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Optional parameters are available for <code>owner</code>, <code>encoding</code>, <code>lc_collate</code>, and
+<code>lc_ctype</code>. When <code>owner</code> is not specified, the new database inherits the
+owner from the template.</p>
+<p><em>Note</em>: locales can only be changed when cloning from template0 or template1.</p>
+<p>Before cloning begins, the extension checks whether there is enough free disk
+space for the copy. By default, at least 10 GB must remain free after cloning.
+This safety margin is managed by a superuser through the <code>configure</code> function:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- Use a 20 GB margin instead of the default 10 GB
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="n">min_free_bytes</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="mi">21474836480</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- Skip the margin, only check that the template fits
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="n">min_free_bytes</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- Disable the disk space check entirely
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="n">min_free_bytes</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- View current configuration
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">show_config</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><p>No <code>open_database</code> / <code>close_database</code> calls are needed around the clone
+operation — the template is already in the correct state and stays that way
+after cloning. The clone itself is opened automatically and is ready for
+applications to connect to.</p>
+<h3 id="recovering-an-accidentally-opened-template">Recovering an accidentally opened template</h3>
+<p>When the template was opened (for example for a quick inspection) and now
+allows connections, the way back into the standard state is simply to close
+it again:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h2 id="removing-a-clone">Removing a clone</h2>
+<p>Clones that are no longer needed can be dropped:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">drop_database</span><span class="p">(</span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">force</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>The <code>force</code> flag terminates any remaining connections to the target database
+before dropping it. It defaults to <code>true</code>, so <code>SELECT pgclonedb.drop_database('myapp_dev');</code> already terminates connections. Pass
+<code>force := false</code> to make the call fail instead when active sessions are still
+present.</p>
+<p>To drop a Source/template database that was closed with <code>pgclonedb.close_database</code>, open it first with <code>pgclonedb.open_database</code>.</p>
+<h2 id="working-with-schemas">Working with schemas</h2>
+<p>When a cloned database needs additional schemas — for example to separate
+test data, analytics, or per-feature staging areas — the schema functions can
+be used. Because schemas live inside a database, the database name needs to be
+passed as well.</p>
+<h3 id="creating-a-schema">Creating a schema</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">create_schema</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">dbname</span><span class="w">      </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">schema_name</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;app_data&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">owner</span><span class="w">       </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp_app&#39;</span><span class="w">   </span><span class="c1">-- optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>The <code>owner</code> parameter is optional and defaults to the calling role.</p>
+<h3 id="dropping-a-schema">Dropping a schema</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">drop_schema</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">dbname</span><span class="w">      </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">schema_name</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;app_data&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">cascade</span><span class="w">     </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Without <code>cascade</code>, the call fails when the schema still contains objects.
+The system schemas <code>pg_catalog</code>, <code>information_schema</code>, and <code>public</code> are
+protected and cannot be dropped.</p>
+<h2 id="working-with-roles">Working with roles</h2>
+<p>Role management is useful for creating dedicated application accounts (for
+example a read-only reporting role) inside the cluster. Role names are not
+restricted by the <code>&lt;app&gt;_</code> prefix — any name is allowed — but roles are
+shared across the entire cluster, so the chosen name needs to be unique and
+reasonably descriptive.</p>
+<h3 id="creating-a-role">Creating a role</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">create_role</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">rolename</span><span class="w">   </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;app_readonly&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">password</span><span class="w">    </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;S3cure!&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">login</span><span class="w">       </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w">             </span><span class="c1">-- default
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="k">createdb</span><span class="w">    </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="p">,</span><span class="w">            </span><span class="c1">-- default (true is rejected)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">createrole</span><span class="w">  </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="p">,</span><span class="w">            </span><span class="c1">-- default (true is rejected)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">conn_limit</span><span class="w">  </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w">               </span><span class="c1">-- default (unlimited)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="n">valid_until</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2026-12-31&#39;</span><span class="p">::</span><span class="n">timestamptz</span><span class="w">   </span><span class="c1">-- optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Superuser roles cannot be created through this interface, and roles ending in
+<code>_db_admin</code> are reserved for the superuser to create. The <code>createdb</code> and
+<code>createrole</code> attributes cannot be enabled here either - passing
+<code>createdb := true</code> or <code>createrole := true</code> raises an error. If a role really
+needs one of those privileges, ask the cluster superuser to grant it.</p>
+<p>Note that roles are <strong>cluster-wide</strong>: a role you create is visible to, and (when
+the role functions are enabled) manageable by, every other application admin on
+the cluster. Choose descriptive, collision-free names and treat role management
+as a shared-cluster operation.</p>
+<h3 id="resetting-a-password">Resetting a password</h3>
+<p>When a password has been forgotten or needs rotating:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">reset_password</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">rolename</span><span class="w">    </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;app_readonly&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">new_password</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;N3wS3cure!&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">valid_until</span><span class="w">  </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2027-06-30&#39;</span><span class="p">::</span><span class="n">timestamptz</span><span class="w">   </span><span class="c1">-- optional
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Passwords of superuser roles, and of other applications&rsquo; <code>*_db_admin</code> roles,
+cannot be reset through this interface.</p>
+<p>A note on password handling: the new password is sent to the server in an
+<code>ALTER ROLE ... PASSWORD '...'</code> statement. If the cluster is configured to log
+DDL or modifying statements (<code>log_statement = 'ddl'</code> or <code>'mod'</code>), the plaintext
+password can end up in the server log. If this matters for your environment,
+ask the cluster superuser how password operations are logged before using this
+function.</p>
+<h3 id="granting-and-revoking-role-membership">Granting and revoking role membership</h3>
+<p>To compose permissions, one role can be granted into another:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">grant_role</span><span class="p">(</span><span class="s1">&#39;app_readonly&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;app_writer&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">revoke_role</span><span class="p">(</span><span class="s1">&#39;app_readonly&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;app_writer&#39;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>The role being granted or revoked cannot be a privileged or reserved role:
+PostgreSQL predefined roles (<code>pg_*</code>), roles with <code>SUPERUSER</code>, <code>CREATEROLE</code>,
+<code>CREATEDB</code>, or <code>BYPASSRLS</code>, the <code>pgclonedb_user</code> group, and any <code>*_db_admin</code>
+role are all blocked by design. This applies equally to <code>grant_role</code> and
+<code>revoke_role</code>.</p>
+<h3 id="dropping-a-role">Dropping a role</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">drop_role</span><span class="p">(</span><span class="s1">&#39;app_readonly&#39;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>System roles (<code>postgres</code>, <code>pgclonedb_user</code>), other applications'
+<code>*_db_admin</code> roles, and superuser roles are protected and cannot be dropped.</p>
+<h2 id="reviewing-the-audit-log">Reviewing the audit log</h2>
+<p>Every operation performed through the extension is recorded. Each application
+admin can review the entries that belong to their own role:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">get_audit_log</span><span class="p">(</span><span class="n">max_rows</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Filtering by operation is also possible:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">get_audit_log</span><span class="p">(</span><span class="n">filter_operation</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;create_database&#39;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>The audit log is a useful first stop when verifying that a previous operation
+succeeded, when reconstructing what happened during a specific time window, or
+when preparing a question for the cluster superuser.</p>
+<h2 id="quick-reference-pgclonedbhelp">Quick reference: pgclonedb.help()</h2>
+<p>The most compact way to see what is currently available, including the
+enabled/disabled status of each function, is the <code>help</code> function:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">help</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><p>The returned text lists all functions with their parameters and an example
+call, the basic cloning workflow, and the scope rule. Each function name is
+annotated with <code>[enabled]</code> or <code>[DISABLED]</code> based on the current cluster
+configuration. This is the recommended starting point whenever a function
+does not behave as expected, or when checking which operations are currently
+allowed.</p>
+<h2 id="when-something-does-not-work">When something does not work</h2>
+<p>When a function call fails with an error such as <code>function is currently disabled</code> or <code>out of scope</code>, the reasons are typically one of the following:</p>
+<ul>
+<li>The function is disabled by default in this cluster (for example
+<code>create_role</code>, <code>drop_role</code>, <code>reset_password</code>, <code>grant_role</code>, <code>revoke_role</code>,
+<code>create_schema</code>, <code>drop_schema</code>) and needs to be enabled by the superuser
+before use.</li>
+<li>The targeted database, template, or schema is not within the scope of the
+connected <code>&lt;app&gt;_db_admin</code> role.</li>
+<li>The operation touches a protected object — a system database, a system
+role, another application&rsquo;s admin role, or a superuser role.</li>
+<li>The peer-authentication setup that the extension relies on internally is
+not available on the cluster.</li>
+</ul>
+<p>In all of these cases, <strong>the cluster superuser is the right contact</strong>.
+Reaching out with the exact error message, the SQL statement that produced
+it, and (when relevant) a recent excerpt from <code>pgclonedb.get_audit_log()</code>
+makes diagnosis fastest.</p>
+<h2 id="end-to-end-cheat-sheet">End-to-end cheat sheet</h2>
+<p>A minimal example covering a one-off template preparation, a clone produced
+later from the (already closed) template, a quick activity check, and the
+clean-up of the clone:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- one-off: prepare or update the template
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">open_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- ... connect to &#39;myapp&#39; and load data, create schemas, create roles, etc. ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- any time afterwards: produce a clone from the closed template
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">create_database</span><span class="p">(</span><span class="s1">&#39;myapp_test&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">template</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- inspect recent activity
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">get_audit_log</span><span class="p">(</span><span class="n">max_rows</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- clean up the clone when no longer needed
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">drop_database</span><span class="p">(</span><span class="s1">&#39;myapp_test&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">force</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div>
+	
+
+</div>
+
+
+          </main>
+        </div>
+      </div>
+      <footer class="td-footer row d-print-none">
+  <div class="container-fluid">
+    <div class="row mx-md-2">
+      <div class="td-footer__left col-6 col-sm-4 order-sm-1">
+        
+      </div><div class="td-footer__right col-6 col-sm-4 order-sm-3">
+        
+      </div><div class="td-footer__center col-12 col-sm-4 py-2 order-sm-2">
+        
+      </div>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <script src="/js/main.js"></script>
+<script defer src="/js/click-to-copy.js" crossorigin="anonymous"></script>
+<script src='/js/tabpane-persist.js'></script>
+
+  </body>
+</html>

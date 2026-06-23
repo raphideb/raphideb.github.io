@@ -28,7 +28,7 @@
     <priority>0.5</priority>
   </url><url>
     <loc>http://localhost:1313/kubernetes/mongodb/</loc>
-    <lastmod>2026-02-02T11:29:10+01:00</lastmod>
+    <lastmod>2026-02-02T15:36:13+01:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -39,6 +39,10 @@
   </url><url>
     <loc>http://localhost:1313/kubernetes/opensearch/</loc>
     <lastmod>2026-02-02T11:29:10+01:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/postgres/pgclonedb/</loc>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
