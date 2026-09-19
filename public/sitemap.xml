@@ -13,7 +13,7 @@
     <priority>0.5</priority>
   </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2025-11-14T17:09:36+01:00</lastmod>
+    <lastmod>2026-06-23T14:37:07+02:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -43,6 +43,7 @@
     <priority>0.5</priority>
   </url><url>
     <loc>http://localhost:1313/postgres/pgclonedb/</loc>
+    <lastmod>2026-06-23T14:50:55+02:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
@@ -66,18 +67,16 @@
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
+    <loc>http://localhost:1313/astronomy/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>http://localhost:1313/kubernetes/</loc>
     <lastmod>2025-11-30T18:12:03+01:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>http://localhost:1313/stuff/</loc>
-    <lastmod>2025-07-09T16:16:50+02:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>http://localhost:1313/stuff/stuff/</loc>
-    <lastmod>2025-07-09T16:16:50+02:00</lastmod>
+    <loc>http://localhost:1313/astronomy/blinkfits/</loc>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url><url>

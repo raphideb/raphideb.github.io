@@ -26,10 +26,12 @@
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="postgres">
+    <meta property="article:modified_time" content="2026-06-23T14:50:55+02:00">
 
   <meta itemprop="name" content="pgclonedb">
   <meta itemprop="description" content="End-user guide for the pgclonedb PostgreSQL extension">
-  <meta itemprop="wordCount" content="1753">
+  <meta itemprop="dateModified" content="2026-06-23T14:50:55+02:00">
+  <meta itemprop="wordCount" content="1748">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="pgclonedb">
   <meta name="twitter:description" content="End-user guide for the pgclonedb PostgreSQL extension">
@@ -158,6 +160,13 @@
   <a href="/oracle/ashtop/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-oracleashtop"><span class="">ashtop</span></a>
 </li>
   </ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-astronomy-li">
+  <a href="/astronomy/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-astronomy"><span class="">Astronomy</span></a>
+  <ul class="ul-2 foldable">
+    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-astronomyblinkfits-li">
+  <a href="/astronomy/blinkfits/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-astronomyblinkfits"><span class="">Astronomy</span></a>
+</li>
+  </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-kubernetes-li">
   <a href="/kubernetes/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-kubernetes"><span class="">Kubernetes</span></a>
   <ul class="ul-2 foldable">
@@ -171,13 +180,6 @@
   <a href="/kubernetes/oracle/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesoracle"><span class="">Oracle on Kubernetes</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-kubernetesopensearch-li">
   <a href="/kubernetes/opensearch/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-kubernetesopensearch"><span class="">OpenSearch on Kubernetes</span></a>
-</li>
-  </ul>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id="m-stuff-li">
-  <a href="/stuff/" class="align-left ps-0 td-sidebar-link td-sidebar-link__section" id="m-stuff"><span class="">Other stuff</span></a>
-  <ul class="ul-2 foldable">
-    <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-stuffstuff-li">
-  <a href="/stuff/stuff/" title="other stuff" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-stuffstuff"><span class="">Other stuff</span></a>
 </li>
   </ul>
 </li>
@@ -306,13 +308,13 @@ needed</li>
 <p>When the template is first set up, or when its contents need to change later,
 it is opened briefly, edited, and closed again:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- 1. Unlock the template for editing
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">open_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">open_database</span><span class="p">(</span><span class="s1">&#39;myapp_source&#39;</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 2. Connect to &#39;myapp&#39; and apply the changes
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 2. Connect to &#39;myapp_source&#39; and apply the changes
 </span></span></span><span class="line"><span class="cl"><span class="c1">--    (load data, create schemas, create application roles, run migrations, ...)
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- 3. Lock the template back into clonable state
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp_source&#39;</span><span class="p">);</span><span class="w">
 </span></span></span></code></pre></div><p>After step 3, the template is ready to be cloned at any time — and it should
 remain in this state until the next planned change. Leaving the template
 open between maintenance windows is discouraged: applications could
@@ -328,7 +330,7 @@ passed — the call then fails instead of terminating sessions.</p>
 on demand with a single call:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">create_database</span><span class="p">(</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">dbname</span><span class="w">   </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">,</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">template</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">template</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp_source&#39;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
 </span></span></span></code></pre></div><p>Optional parameters are available for <code>owner</code>, <code>encoding</code>, <code>lc_collate</code>, and
 <code>lc_ctype</code>. When <code>owner</code> is not specified, the new database inherits the
@@ -356,7 +358,7 @@ applications to connect to.</p>
 <p>When the template was opened (for example for a quick inspection) and now
 allows connections, the way back into the standard state is simply to close
 it again:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp_source&#39;</span><span class="p">);</span><span class="w">
 </span></span></span></code></pre></div><h2 id="removing-a-clone">Removing a clone</h2>
 <p>Clones that are no longer needed can be dropped:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">drop_database</span><span class="p">(</span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">force</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span><span class="w">
@@ -481,20 +483,24 @@ makes diagnosis fastest.</p>
 later from the (already closed) template, a quick activity check, and the
 clean-up of the clone:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="c1">-- one-off: prepare or update the template
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">open_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- ... connect to &#39;myapp&#39; and load data, create schemas, create roles, etc. ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">open_database</span><span class="p">(</span><span class="s1">&#39;myapp_source&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- ... connect to &#39;myapp_source&#39; and load data, create schemas, create roles, etc. ...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">close_database</span><span class="p">(</span><span class="s1">&#39;myapp_source&#39;</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- any time afterwards: produce a clone from the closed template
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">create_database</span><span class="p">(</span><span class="s1">&#39;myapp_test&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">template</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;myapp&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">create_database</span><span class="p">(</span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;myapp_source&#39;</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- inspect recent activity
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">get_audit_log</span><span class="p">(</span><span class="n">max_rows</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">-- clean up the clone when no longer needed
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">drop_database</span><span class="p">(</span><span class="s1">&#39;myapp_test&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">force</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pgclonedb</span><span class="p">.</span><span class="n">drop_database</span><span class="p">(</span><span class="s1">&#39;myapp_dev&#39;</span><span class="p">);</span><span class="w">
 </span></span></span></code></pre></div>
 	
+<div class="text-muted pt-3 border-top">
+  Last modified: June 23, 2026
+</div>
+
 
 </div>
 
