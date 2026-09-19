@@ -19,8 +19,20 @@ type: "docs"
   --sky: #050607;
   --star: #E6E8EB;
   --sky-mark: #F0A53E;
-  background: #FFFFFF;
+  --btn: var(--accent);
   color: var(--text);
+}
+/* Docsy sets data-bs-theme on <html> when switching to dark (also for auto). */
+html[data-bs-theme="dark"] .bf {
+  --panel: #2B3035;
+  --raised: #343A40;
+  --border: #495057;
+  --text: #DEE2E6;
+  --dim: #A7B0BA;
+  --accent: #6EA8FE;
+  --mark: #F0A53E;
+  --code: #1A1D20;
+  --btn: #1F6FEB;
 }
 .bf a { color: var(--accent); }
 .bf code, .bf kbd, .bf .mono { font-family: ui-monospace, "Cascadia Mono", "Cascadia Code", Consolas, "SF Mono", Menlo, monospace; }
@@ -49,7 +61,7 @@ type: "docs"
 .bf-download { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
 .bf .btn-dl {
   display: flex; align-items: center; gap: 14px;
-  background: var(--accent); color: var(--accent-text);
+  background: var(--btn); color: var(--accent-text);
   text-decoration: none; border-radius: 8px; padding: 14px 20px;
   font-weight: 600; font-size: 1.08rem;
 }

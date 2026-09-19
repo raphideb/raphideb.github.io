@@ -94,7 +94,3 @@ path = "github.com/google/docsy"
     weight = 27
     url = "https://claude.ai/"
 
-[[menu.main]]
-    name = "Perplexity"
-    weight = 30
-    url = "https://www.perplexity.ai/"
