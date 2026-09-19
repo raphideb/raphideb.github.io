@@ -94,3 +94,8 @@ path = "github.com/google/docsy"
     weight = 27
     url = "https://claude.ai/"
 
+[[menu.main]]
+    name = "Cloudy Nights"
+    weight = 29
+    url = "https://www.cloudynights.com/"
+
