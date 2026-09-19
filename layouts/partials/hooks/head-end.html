@@ -1,2 +1,20 @@
 <link rel="canonical" href="{{ .Permalink }}">
 <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script><!-- End Cloudflare Web Analytics -->
+{{ if eq .Section "astronomy" -}}
+<script>
+  // Astronomy pages are dark by default and remember their own light/dark choice,
+  // independent of the rest of the site. Applied here to avoid a light flash on load.
+  (() => {
+    const root = document.documentElement
+    root.dataset.themeKey = 'td-color-theme-astronomy'
+    root.dataset.themeDefault = 'dark'
+    let theme = null
+    try { theme = localStorage.getItem(root.dataset.themeKey) } catch (e) {}
+    theme = theme || 'dark'
+    if (theme === 'auto') {
+      theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+    root.setAttribute('data-bs-theme', theme)
+  })()
+</script>
+{{ end -}}

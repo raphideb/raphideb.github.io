@@ -1,0 +1,236 @@
+{{- /*
+  Image gallery for a page bundle subfolder.
+  Usage: {{< gallery dir="planets" >}}
+  Thumbnails link to a web-sized version (max 2400px) shown in a lightbox,
+  the lightbox links to the untouched original.
+  Captions come from the bundle's front matter "resources" title,
+  otherwise from the file name (m31-andromeda.jpg becomes "M31 andromeda").
+  Capture info is read from the resource params date, telescope, camera
+  and frames. Each is optional, unset fields are left out.
+  Images are ordered by date, newest first.
+*/ -}}
+{{- $dir := .Get "dir" | default (.Get 0) -}}
+{{- $images := where (.Page.Resources.Match (printf "%s/*" $dir)) "ResourceType" "image" -}}
+{{- /* Newest first by the date param. Dates are normalized to strings so quoted and
+  unquoted YAML dates compare alike, undated images sort to the end. */ -}}
+{{- $sorted := slice -}}
+{{- range $images -}}
+  {{- $key := .Params.date -}}
+  {{- if eq (printf "%T" $key) "time.Time" -}}
+    {{- $key = $key.Format "2006-01-02" -}}
+  {{- end -}}
+  {{- $sorted = $sorted | append (dict "key" (string (default "" $key)) "res" .) -}}
+{{- end -}}
+{{- $images = slice -}}
+{{- range sort $sorted "key" "desc" -}}
+  {{- $images = $images | append .res -}}
+{{- end -}}
+
+{{- if not (.Page.Store.Get "galleryAssets") -}}
+{{- .Page.Store.Set "galleryAssets" true -}}
+<style>
+.astro-gallery {
+  --ag-border: #DDE1E6;
+  --ag-dim: #5A636E;
+  --ag-sky: #050607;
+  --ag-accent: #1F6FEB;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 16px 0 40px;
+}
+html[data-bs-theme="dark"] .astro-gallery {
+  --ag-border: #495057;
+  --ag-dim: #A7B0BA;
+  --ag-accent: #6EA8FE;
+}
+.astro-gallery figure { margin: 0; }
+.astro-gallery a {
+  display: block;
+  aspect-ratio: 1;
+  background: var(--ag-sky);
+  border: 1px solid var(--ag-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.astro-gallery a:hover, .astro-gallery a:focus-visible { border-color: var(--ag-accent); }
+.astro-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform .2s ease;
+}
+.astro-gallery a:hover img { transform: scale(1.03); }
+.astro-gallery figcaption { margin-top: 6px; font-size: .9rem; }
+.astro-gallery figcaption small { display: block; color: var(--ag-dim); font-size: .8rem; }
+.astro-gallery-empty { color: var(--ag-dim, #5A636E); font-style: italic; }
+
+.astro-lightbox {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #000;
+  color: #E6E8EB;
+}
+.astro-lightbox::backdrop { background: #000; }
+.astro-lightbox[open] { display: flex; flex-direction: column; }
+.astro-lightbox .lb-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 56px;
+}
+.astro-lightbox .lb-stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.astro-lightbox .lb-bar {
+  display: flex;
+  gap: 8px 24px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  padding: 10px 16px 14px;
+  font-size: .95rem;
+}
+.astro-lightbox .lb-title { font-weight: 600; }
+.astro-lightbox .lb-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  flex: 1;
+  margin: 0;
+  font-size: .85rem;
+}
+.astro-lightbox .lb-info div { display: flex; gap: 6px; }
+.astro-lightbox .lb-info dt { color: #A7B0BA; font-weight: 400; }
+.astro-lightbox .lb-info dd { margin: 0; }
+.astro-lightbox .lb-orig { margin-left: auto; }
+.astro-lightbox a { color: #6EA8FE; white-space: nowrap; }
+.astro-lightbox button {
+  position: absolute;
+  background: rgba(255,255,255,.08);
+  color: #E6E8EB;
+  border: 0;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.astro-lightbox button:hover { background: rgba(255,255,255,.2); }
+.astro-lightbox .lb-close { top: 12px; right: 12px; }
+.astro-lightbox .lb-prev { left: 8px; top: 50%; transform: translateY(-50%); }
+.astro-lightbox .lb-next { right: 8px; top: 50%; transform: translateY(-50%); }
+@media (max-width: 576px) {
+  .astro-gallery { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .astro-lightbox .lb-stage { padding: 8px; }
+  .astro-lightbox .lb-prev, .astro-lightbox .lb-next { top: auto; bottom: 56px; transform: none; }
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var dlg = document.createElement("dialog");
+  dlg.className = "astro-lightbox";
+  dlg.innerHTML =
+    '<div class="lb-stage"><img alt=""></div>' +
+    '<div class="lb-bar"><span class="lb-title"></span><dl class="lb-info"></dl>' +
+    '<a class="lb-orig" target="_blank" rel="noopener">Full resolution</a></div>' +
+    '<button class="lb-close" aria-label="Close">&times;</button>' +
+    '<button class="lb-prev" aria-label="Previous">&lsaquo;</button>' +
+    '<button class="lb-next" aria-label="Next">&rsaquo;</button>';
+  document.body.appendChild(dlg);
+
+  var img = dlg.querySelector("img");
+  var items = [];
+  var index = 0;
+
+  function show(i) {
+    index = (i + items.length) % items.length;
+    var a = items[index];
+    img.src = a.getAttribute("href");
+    img.alt = a.dataset.caption;
+    dlg.querySelector(".lb-title").textContent = a.dataset.caption;
+    var info = dlg.querySelector(".lb-info");
+    info.textContent = "";
+    [["date", "Date"], ["telescope", "Telescope"], ["camera", "Camera"], ["frames", "Frames"]].forEach(function (f) {
+      var value = a.dataset[f[0]];
+      if (!value) return;
+      var row = document.createElement("div");
+      var dt = document.createElement("dt");
+      var dd = document.createElement("dd");
+      dt.textContent = f[1];
+      dd.textContent = value;
+      row.append(dt, dd);
+      info.appendChild(row);
+    });
+    dlg.querySelector(".lb-orig").href = a.dataset.full;
+    var multi = items.length > 1;
+    dlg.querySelector(".lb-prev").hidden = !multi;
+    dlg.querySelector(".lb-next").hidden = !multi;
+  }
+
+  document.querySelectorAll(".astro-gallery a").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      items = Array.prototype.slice.call(a.closest(".astro-gallery").querySelectorAll("a"));
+      show(items.indexOf(a));
+      dlg.showModal();
+    });
+  });
+
+  dlg.querySelector(".lb-close").addEventListener("click", function () { dlg.close(); });
+  dlg.querySelector(".lb-prev").addEventListener("click", function () { show(index - 1); });
+  dlg.querySelector(".lb-next").addEventListener("click", function () { show(index + 1); });
+  dlg.querySelector(".lb-stage").addEventListener("click", function (e) {
+    if (e.target !== img) dlg.close();
+  });
+  dlg.addEventListener("close", function () { img.removeAttribute("src"); });
+  document.addEventListener("keydown", function (e) {
+    if (!dlg.open || items.length < 2) return;
+    if (e.key === "ArrowLeft") show(index - 1);
+    if (e.key === "ArrowRight") show(index + 1);
+  });
+});
+</script>
+{{- end }}
+
+{{ with $images -}}
+<div class="astro-gallery">
+  {{- range . }}
+    {{- $caption := .Title -}}
+    {{- if eq $caption .Name -}}
+      {{- $caption = path.BaseName .Name | replaceRE "[-_]+" " " | humanize -}}
+    {{- end -}}
+    {{- $thumb := .Process "fit 640x640 webp q80" -}}
+    {{- /* Downscale big images and convert formats browsers can't show (e.g. TIFF). */ -}}
+    {{- $large := . -}}
+    {{- if or (gt .Width 2400) (gt .Height 2400) (not (in (slice "jpeg" "png" "webp" "gif") .MediaType.SubType)) -}}
+      {{- $large = .Process "fit 2400x2400 jpg q90" -}}
+    {{- end -}}
+    {{- /* An unquoted YAML date arrives as a time value, anything else is shown as written. */ -}}
+    {{- $date := .Params.date -}}
+    {{- if eq (printf "%T" $date) "time.Time" -}}
+      {{- $date = $date.Format "2006-01-02" -}}
+    {{- end -}}
+    {{- $short := slice -}}
+    {{- with $date }}{{ $short = $short | append (string .) }}{{ end -}}
+    {{- with .Params.frames }}{{ $short = $short | append (string .) }}{{ end }}
+  <figure>
+    <a href="{{ $large.RelPermalink }}" data-full="{{ .RelPermalink }}" data-caption="{{ $caption }}"
+      {{- with $date }} data-date="{{ . }}"{{ end }}
+      {{- with .Params.telescope }} data-telescope="{{ . }}"{{ end }}
+      {{- with .Params.camera }} data-camera="{{ . }}"{{ end }}
+      {{- with .Params.frames }} data-frames="{{ . }}"{{ end }}>
+      <img src="{{ $thumb.RelPermalink }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" alt="{{ $caption }}" loading="lazy">
+    </a>
+    <figcaption>{{ $caption }}{{ with $short }}<small>{{ delimit . " · " }}</small>{{ end }}</figcaption>
+  </figure>
+  {{- end }}
+</div>
+{{- else -}}
+<p class="astro-gallery-empty">No images yet.</p>
+{{- end }}

@@ -41,6 +41,22 @@
   crossorigin="anonymous"></script>
 <link rel="canonical" href="http://localhost:1313/astronomy/">
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "5b4e4a5f8b6345c48201921608109089"}'></script>
+<script>
+  
+  
+  (() => {
+    const root = document.documentElement
+    root.dataset.themeKey = 'td-color-theme-astronomy'
+    root.dataset.themeDefault = 'dark'
+    let theme = null
+    try { theme = localStorage.getItem(root.dataset.themeKey) } catch (e) {}
+    theme = theme || 'dark'
+    if (theme === 'auto') {
+      theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    }
+    root.setAttribute('data-bs-theme', theme)
+  })()
+</script>
 
   </head>
   <body class="td-section">
@@ -176,6 +192,8 @@
   <ul class="ul-2 foldable">
     <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-astronomyblinkfits-li">
   <a href="/astronomy/blinkfits/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-astronomyblinkfits"><span class="">BlinkFits</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id="m-astronomyimages-li">
+  <a href="/astronomy/images/" class="align-left ps-0 td-sidebar-link td-sidebar-link__page" id="m-astronomyimages"><span class="">Images</span></a>
 </li>
   </ul>
 </li>
@@ -226,6 +244,12 @@
                     <a href="/astronomy/blinkfits/">BlinkFits</a>
                 </h5>
                 <p>A free, lightweight Windows blink comparator for FITS subs: spot asteroids, novae, satellite trails and bad frames.</p>
+            </div>
+        <div class="entry">
+                <h5>
+                    <a href="/astronomy/images/">Images</a>
+                </h5>
+                <p>Planets and deep-sky objects from my backyard.</p>
             </div>
         </div>
 

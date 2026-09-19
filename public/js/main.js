@@ -6550,7 +6550,9 @@ document.addEventListener('DOMContentLoaded', function () {
 (() => {
   'use strict'
 
-  const themeKey = 'td-color-theme'
+  // A page can use its own storage key and default theme (see hooks/head-end.html).
+  const themeKey = document.documentElement.dataset.themeKey || 'td-color-theme'
+  const defaultTheme = document.documentElement.dataset.themeDefault
   const getStoredTheme = () => localStorage.getItem(themeKey)
   const setStoredTheme = theme => localStorage.setItem(themeKey, theme)
 
@@ -6558,6 +6560,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const storedTheme = getStoredTheme()
     if (storedTheme) {
       return storedTheme
+    }
+
+    if (defaultTheme) {
+      return defaultTheme
     }
 
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
