@@ -1,0 +1,88 @@
+{{/* Override of Docsy v0.15.0 _partials/sidebar.html.
+
+    Docsy <=0.13 rooted the sidebar at the whole site tree when the home page is
+    `type: docs` (as ours is), so every page showed the full menu. From 0.14 the
+    sidebar_root feature defaults $sidebarRoot to .FirstSection and then
+    unconditionally overwrites $navRoot with it in sidebar-tree.html, which scopes
+    the menu to the current section only. Still the case in 0.17.
+
+    Only change below: seed $sidebarRoot with the same expression Docsy uses for
+    $navRoot, so the full tree comes back. */ -}}
+{{/* Notes:
+
+- Sidebars are generated for "blog", "docs", and possibly other page types.
+- The "active" toggle here may delay rendering, so we only cache this side
+  bar menu for bigger sites.
+
+*/ -}}
+
+{{ $sidebarCacheLimit := .Site.Params.ui.sidebar_cache_limit | default 2000 -}}
+{{ $cacheSidebar := ge (len .Site.Pages) $sidebarCacheLimit -}}
+
+{{/* Determine sidebar root and ID (if enabled) */ -}}
+{{ $sidebarRoot := cond (and (ne .Params.toc_root true) (eq .Site.Home.Type "docs")) .Site.Home .FirstSection -}}
+{{ $navRoot := cond (and (ne .Params.toc_root true) (eq .Site.Home.Type "docs")) .Site.Home .FirstSection -}}
+{{ if .Site.Params.ui.sidebar_root_enabled -}}
+  {{ if and .IsSection (eq .Params.sidebar_root_for "self") -}}
+    {{ $sidebarRoot = . -}}
+  {{ else -}}
+    {{/* Check ancestors for sidebar_root_for (any value) */ -}}
+    {{ range .Ancestors -}}
+      {{ if not .IsSection -}}
+        {{ continue -}}
+      {{ end -}}
+      {{ $rootFor := .Params.sidebar_root_for -}}
+      {{ if not $rootFor -}}
+        {{ continue -}}
+      {{ end -}}
+      {{ if not (or (eq $rootFor "self") (eq $rootFor "children")) -}}
+        {{ warnf "%s: sidebar_root_for should be 'self' or 'children'. Invalid value: '%s'." .Path $rootFor -}}
+        {{ continue -}}
+      {{ end -}}
+      {{ $sidebarRoot = . -}}
+      {{ break -}}
+    {{ end -}}
+  {{ end -}}
+
+  {{/* Warn if sidebar_root_for is set to self for a top-level section */ -}}
+  {{ $rootKind := $sidebarRoot.Params.sidebar_root_for -}}
+  {{ if and (eq $rootKind "self") (eq $sidebarRoot $navRoot) -}}
+    {{ $msg := slice
+        "Setting sidebar_root_for to `self` for a section that is already a root is redundant."
+        "The `self` mode is intended for nested sections proper."
+        "Did you mean to use `children` instead?"
+    -}}
+    {{ $filename := .Path -}}
+    {{ with $sidebarRoot.File -}}
+      {{ $filename = .Filename -}}
+    {{ end -}}
+    {{ warnf "%s: %s for page '%s'." $sidebarRoot.File.Filename (delimit $msg " ") .Path -}}
+  {{ end -}}
+{{ end -}}
+
+{{ $sidebarRootID := $sidebarRoot.RelPermalink -}}
+{{ $args := dict
+    "context" .
+    "cacheSidebar" $cacheSidebar
+    "sidebarRoot" $sidebarRoot
+    "sidebarRootID" $sidebarRootID
+-}}
+{{ if $cacheSidebar -}}
+  {{ $mid := printf "m-%s" (.RelPermalink | anchorize) }}
+  <script>
+    $(function() {
+    $("#td-section-nav a").removeClass("active");
+    $("#td-section-nav #{{ $mid }}").addClass("active");
+    $("#td-section-nav #{{ $mid }}-li span").addClass("td-sidebar-nav-active-item");
+    $("#td-section-nav #{{ $mid }}").parents("li").addClass("active-path");
+    $("#td-section-nav li.active-path").addClass("show");
+    $("#td-section-nav li.active-path").children("input").prop('checked', true);
+    $("#td-section-nav #{{ $mid }}-li").siblings("li").addClass("show");
+    $("#td-section-nav #{{ $mid }}-li").children("ul").children("li").addClass("show");
+    $("#td-sidebar-menu").toggleClass("d-none");
+    });
+  </script>
+  {{ partialCached "sidebar-tree.html" $args $sidebarRootID }}
+{{ else -}}
+  {{ partial "sidebar-tree.html" $args }}
+{{- end }}

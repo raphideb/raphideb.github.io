@@ -1,0 +1,15 @@
+/*
+Project SCSS variable overrides. Imported by Docsy from td/_main.scss right after
+Bootstrap's functions and before Docsy's own _variables.scss, so anything set here
+wins over Docsy's `!default` values.
+*/
+
+// Docsy <=0.13 hardcoded the navbar background to its default $primary. 0.14 made it
+// configurable and changed the default to the body background - pin the old colour.
+$td-navbar-bg-color: #30638e;
+
+// Docsy <=0.13 shipped Open Sans from Google Fonts by default; 0.14 flipped
+// `$td-enable-google-fonts` to false, which drops the site onto the system font
+// stack. That makes "crashdump" in the navbar brand (and all body text) sit
+// tighter than on the published site - turn the web font back on.
+$td-enable-google-fonts: true;

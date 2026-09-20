@@ -1,0 +1,26 @@
+{{/* Shim over Docsy v0.15.0: only change is `.Site.Language.LanguageDirection` ->
+    `.Site.Language.Direction` (deprecated in Hugo 0.158, fixed upstream in Docsy
+    0.16.0). Delete this file when moving to Docsy >=0.16. */ -}}
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+    {{- with .Site.Language.Direction }} dir="{{ . }}" {{- end -}}
+    {{ with .Site.Language.Lang }} lang="{{ . }}" {{- end }} {{/**/ -}}
+    class="no-js"
+    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body class="td-{{ .Kind }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+    <header>
+      {{ partial "navbar.html" . }}
+    </header>
+    <div class="container-fluid td-default td-outer">
+      <main role="main" class="td-main">
+        {{ block "main" . }}{{ end }}
+      </main>
+      {{ partial "footer.html" . }}
+    </div>
+    {{ partialCached "scripts.html" . }}
+  </body>
+</html>

@@ -31,7 +31,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.147.9
+      HUGO_VERSION: 0.166.0
     steps:
       - name: Install Hugo CLI
         run: |
@@ -42,7 +42,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          # Full history: hugo.toml sets enableGitInfo = true for lastmod dates.
           fetch-depth: 0
       - name: Install PostCSS 
         run: npm install postcss postcss-cli autoprefixer
@@ -58,6 +58,7 @@ jobs:
         run: |
           hugo \
             --minify \
+            --cleanDestinationDir \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

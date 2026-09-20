@@ -1,0 +1,7 @@
+# Hugo build output — GitHub Pages deploys the Actions artifact, not this tree
+/public/
+/resources/_gen/
+/.hugo_build.lock
+
+# Only ever installed transiently by CI for PostCSS
+node_modules/
