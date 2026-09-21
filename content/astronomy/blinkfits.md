@@ -171,6 +171,13 @@ html[data-bs-theme="dark"] .bf {
 </div>
 </div>
 
+<div class="note">
+<p><strong>Windows Defender virus warning.</strong> If Windows flags this download as having a virus, your Windows Defender definitions need updating. Open <code>cmd</code> as Administrator (Windows menu → <code>cmd</code> → right click → <em>Run as administrator</em>), then run:</p>
+<p><code>cd C:\Program Files\Windows Defender</code></p>
+<p><code>MpCmdRun.exe -removedefinitions -dynamicsignatures</code></p>
+<p><code>MpCmdRun.exe -SignatureUpdate</code></p>
+</div>
+
 <div class="bf-news">
 <p class="head">New version 1.1 released!<span class="date">21 September 2026</span></p>
 <dl>
