@@ -144,9 +144,9 @@ html[data-bs-theme="dark"] .bf {
 <p class="hint">Need an older version? <a href="https://github.com/raphideb/blinkfits_release/releases">All releases are on GitHub</a>.</p>
 <p class="hint">Extract the zip, then run <code>blinkfits.exe</code>. No installer needed.</p>
 <div class="sha">
-<div class="sha-label"><span>Check it in PowerShell, in the extracted folder</span><span id="bf-copied" aria-live="polite"></span></div>
-<div class="sha-box"><code id="bf-check">(Get-FileHash .\blinkfits.exe).Hash -eq (Get-Content .\blinkfits.exe.sha256).Split()[0]</code><button class="copy" id="bf-copy" type="button">Copy</button></div>
-<p class="hint"><code>True</code> means the exe matches the SHA-256 in <code>blinkfits.exe.sha256</code>, which comes in the zip.</p>
+<div class="sha-label"><span>SHA-256 of <code>blinkfits.exe</code>, version 1.1</span><span id="bf-copied" aria-live="polite"></span></div>
+<div class="sha-box"><code id="bf-check">f4feabfff7dfa7863716215ce9c8ba78deff053261f516b5b074f78ee8fcd040</code><button class="copy" id="bf-copy" type="button">Copy</button></div>
+<p class="hint">Check the extracted exe against it in PowerShell: <code>Get-FileHash .\blinkfits.exe -Algorithm SHA256</code></p>
 <p class="hint">Windows warns when you start it? <a href="#download-help">Here is what to do</a>.</p>
 </div>
 <ul class="facts">
@@ -169,13 +169,6 @@ html[data-bs-theme="dark"] .bf {
 </div>
 <p class="blink-caption">Every star stays put, the one that jumps is <b>something interesting</b>.</p>
 </div>
-</div>
-
-<div class="note">
-<p><strong>Windows Defender virus warning.</strong> If Windows flags this download as having a virus, your Windows Defender definitions need updating. Open <code>cmd</code> as Administrator (Windows menu → <code>cmd</code> → right click → <em>Run as administrator</em>), then run:</p>
-<p><code>cd C:\Program Files\Windows Defender</code></p>
-<p><code>MpCmdRun.exe -removedefinitions -dynamicsignatures</code></p>
-<p><code>MpCmdRun.exe -SignatureUpdate</code></p>
 </div>
 
 <div class="bf-news">
@@ -298,7 +291,7 @@ html[data-bs-theme="dark"] .bf {
 <p class="sub">BlinkFits is a hobby project and the exe is not code signed. Windows treats new, unsigned programs with caution until enough people have run them.</p>
 
 <div class="note">
-<p><strong>Check the file.</strong> The zip contains <code>blinkfits.exe.sha256</code> with the SHA-256 of the exe. After extracting, run the PowerShell check above, or run <code>certutil -hashfile blinkfits.exe SHA256</code> in a command prompt and compare the result with that file. If they match, the exe arrived intact.</p>
+<p><strong>Check the file.</strong> The SHA-256 of the exe is printed in the download box above. After extracting, run <code>Get-FileHash .\blinkfits.exe -Algorithm SHA256</code> in PowerShell, or <code>certutil -hashfile blinkfits.exe SHA256</code> in a command prompt, and compare the result with it. If they match, the exe arrived intact.</p>
 <p><strong>Windows SmartScreen</strong> (“Windows protected your PC”): click <em>More info</em>, then <em>Run anyway</em>.</p>
 </div>
 
@@ -329,7 +322,7 @@ html[data-bs-theme="dark"] .bf {
 
 <script>
 (function () {
-  // Copy the checksum command.
+  // Copy the checksum.
   var copy = document.getElementById("bf-copy"), hash = document.getElementById("bf-check"), said = document.getElementById("bf-copied");
   copy.addEventListener("click", function () {
     var text = hash.textContent.trim();
