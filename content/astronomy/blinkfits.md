@@ -96,6 +96,14 @@ html[data-bs-theme="dark"] .bf {
 .bf .ghost { opacity: 0; }
 .bf .show-ghost .ghost { opacity: 1; }
 
+.bf-news { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 12px; padding: 20px 24px; margin: 0 0 40px; }
+.bf-news .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 14px; font-size: 1.02rem; font-weight: 600; }
+.bf-news .date { font-size: .85rem; font-weight: 400; color: var(--dim); }
+.bf-news dl { margin: 0; }
+.bf-news dt { font-size: .95rem; font-weight: 600; margin: 0; }
+.bf-news dd { margin: 2px 0 12px; color: var(--dim); font-size: .93rem; }
+.bf-news dd:last-child { margin-bottom: 0; }
+
 .bf .shot { margin: 0 0 40px; }
 .bf .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 10px; }
 .bf .shot figcaption { font-size: .88rem; color: var(--dim); margin-top: 12px; }
@@ -124,8 +132,8 @@ html[data-bs-theme="dark"] .bf {
 
 <div class="bf-hero">
 <div>
-<div class="bf-brand"><img src="/astronomy/blinkfits-icon.png" alt="" width="32" height="32"><span>Blink<span class="fits">Fits</span> <span class="ver">1.0</span></span></div>
-<p class="eyebrow">Blink comparator for FITS</p>
+<div class="bf-brand"><img src="/astronomy/blinkfits-icon.png" alt="" width="32" height="32"><span>Blink<span class="fits">Fits</span> <span class="ver">1.1</span></span></div>
+<p class="eyebrow">Freeware FITS viewer and blinker</p>
 <p class="headline">Blink your subs.<br>Spot what moved.</p>
 <p class="lead">BlinkFits flips back and forth between frames, with zoom, pan and stretch held perfectly still. Asteroids, novae, variable stars, satellite trails and subs worth throwing away jump out at you.</p>
 <div class="bf-download">
@@ -159,23 +167,41 @@ html[data-bs-theme="dark"] .bf {
 </svg>
 <div class="frame-bar mono"><span class="name" id="bf-demo-name">frame_00041.fits</span><span id="bf-demo-count">41 / 218</span></div>
 </div>
-<p class="blink-caption">Every star stays put. The one that jumps is your <b>minor planet</b>.</p>
+<p class="blink-caption">Every star stays put, the one that jumps is <b>something interesting</b>.</p>
 </div>
+</div>
+
+<div class="bf-news">
+<p class="head">New version 1.1 released!<span class="date">21 September 2026</span></p>
+<dl>
+<dt>Select multiple images</dt>
+<dd>Selected images can be taged, rotated or blinked through</dd>
+<dd><kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd></dd>
+<dd><kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> select to start / end of a folder</dd>
+<dd><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> select to start / end of the whole list</dd>
+<dd><kbd>Ctrl</kbd> + <kbd>A</kbd> select everything</dd>
+<dd><kbd>Ctrl</kbd> + <kbd>click</kbd> to select individual frames</dd>
+<dt>Blink just the selection</dt>
+<dd>With two or more frames selected, the automatic blink walks only those, so you can compare only the subs you care about.</dd>
+<dt>Rotate images</dt>
+<dd><kbd>R</kbd> turns the selected frames 180°, on screen only. 
+<dd>On the first frame after a meridian flip, simply press <kbd>Shift</kbd> + <kbd>End</kbd>, followed by <kbd>R</kbd> to have all frames oriented the same.</dd>
+<dt>Every key in Help</dt>
+<dd>The keyboard reference now sits at the top of the Help page as a table of keys and what they do.</dd>
+</dl>
 </div>
 
 <figure class="shot">
 <img src="/astronomy/blinkfits-screenshot.jpg" width="1600" height="1157" loading="lazy" alt="BlinkFits with 210 raw frames of NGC 7331 loaded: file list with Move marked to folder on the left, the debayered frame in the middle, stretch, zoom, auto blink, marking suffix and language settings on the right, seven frames marked with the _bad suffix">
-<figcaption>210 raw subs of NGC 7331, debayered from the header's Bayer pattern and shown with the asinh stretch. Marked frames are renamed with the _bad suffix and shown in orange.</figcaption>
+<figcaption>All subs debayered from the header's Bayer pattern and shown with the Auto STF stretch. Marked frames are renamed with the _bad suffix and shown in orange. Rotated images have a 180° smybol in the list.</figcaption>
 </figure>
 
-## Made for a night's worth of subs {#features}
-
-<p class="sub">Load a folder, press the arrow keys, and see what changed. Everything else stays out of the way.</p>
+## Check your subs and filter them out {#features}
 
 <div class="grid">
 <div class="card hl">
 <h3>The view never moves</h3>
-<p>Zoom, pan and stretch belong to the viewer, not the frame. Switch images and only the sky changes, which is the whole point of blinking.</p>
+<p>Zoom, pan and stretch belong to the viewer, not the frame. Switch images and only the sky changes, the images keep the selected view and stretch</p>
 </div>
 <div class="card">
 <h3>Six stretches</h3>
@@ -187,15 +213,19 @@ html[data-bs-theme="dark"] .bf {
 </div>
 <div class="card hl">
 <h3>Mark the keepers (or the rejects)</h3>
-<p>One key renames the file on disk with your suffix: <code>frame.fits</code> becomes <code>frame_tag.fits</code>. It still shows next session, and in Explorer.</p>
+<p>One key renames the file on disk with your suffix: <code>frame.fits</code> becomes <code>frame_tag.fits</code>. It still shows next session and in Explorer. Select multiple frames to mark them in one go.</p>
 </div>
 <div class="card">
 <h3>One shot colour</h3>
 <p>Debayer raw OSC frames from <code>BAYERPAT</code> in the header, or pick RGGB, BGGR, GRBG or GBRG. Each channel is stretched on its own for a neutral sky.</p>
 </div>
 <div class="card">
+<h3>Past the meridian flip</h3>
+<p>Select the frames taken after the flip and <kbd>R</kbd> turns them 180°, so the whole night blinks as one set. Only the display is turned, the file is never written and a debayered frame keeps its colours.</p>
+</div>
+<div class="card">
 <h3>FITS header</h3>
-<p>Show the header cards in place of the image. Keep blinking and the header follows, frame by frame: exposure, gain, temperature, time.</p>
+<p>Show the header cards in place of the image. Keep blinking and the header follows, frame by frame: exposure, gain, temperature, time and whatever else is in your header.</p>
 </div>
 <div class="card">
 <h3>Several folders</h3>
@@ -223,13 +253,18 @@ html[data-bs-theme="dark"] .bf {
 | <kbd>←</kbd> <kbd>→</kbd> &nbsp;or&nbsp; <kbd>A</kbd> <kbd>D</kbd> | Previous / next image; during auto blink, turn it round |
 | <kbd>Space</kbd> | Start / stop auto blink |
 | <kbd>Home</kbd> <kbd>End</kbd> | First / last image |
-| <kbd>M</kbd> | Mark or unmark the current image |
+| <kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> | Select multiple images |
+| <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select images to the start / end of the folder |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select images to the start / end of the list |
+| <kbd>Ctrl</kbd> + <kbd>A</kbd> | Select every image |
+| <kbd>M</kbd> | Mark or unmark the current image, or the whole selection |
+| <kbd>R</kbd> | Turn the current image, or the whole selection, by 180° |
 | <kbd>S</kbd> | Next stretch method |
 | <kbd>1</kbd> … <kbd>6</kbd> | Zoom 5, 10, 25, 50, 75, 100 % |
 | <kbd>F</kbd> or <kbd>0</kbd> | Fit to window |
 | <kbd>N</kbd> | Night vision: the interface in dim red, the image unchanged |
 | <kbd>F1</kbd> | Help |
-| <kbd>Esc</kbd> | Close the FITS header, Help or About |
+| <kbd>Esc</kbd> | Close the FITS header, Help or About, or clear the selection |
 
 </div>
 <div>
