@@ -29,11 +29,11 @@ resources:
       date: "2022-09-09"
       telescope: "Celestron Evolution 9.25"
 # moon
-  - src: "planets/moon_alpine.png"
-    title: "Moon with Valley Alpine"
+  - src: "planets/moon_plato.png"
+    title: "Moon with Valley Alpine and Plato"
     params:
-      date: "2022-02-11"
-      telescope: "Celestron Evolution 6"
+      date: "2026-09-22"
+      telescope: "Celestron Evolution 9.25"
   - src: "planets/moon_craters.jpg"
     title: "Moon with craters Aristoteles and Posidonius"
     params:
@@ -57,6 +57,13 @@ resources:
       camera: "ASI585MC"
       frames: "613 × 8s"
 # Other
+  - src: "deepsky/m57.png"
+    title: "M57 - Ring Nebula"
+    params:
+      date: "2026-09-22"
+      telescope: "Celestron Evolution 9.25"
+      camera: "ASI585MC"
+      frames: "577 × 5s"
   - src: "deepsky/m15.png"
     title: "M15 - Great Pegasus Cluster"
     params:
