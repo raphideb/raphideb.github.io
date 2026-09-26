@@ -57,6 +57,20 @@ resources:
       camera: "ASI585MC"
       frames: "613 × 8s"
 # Other
+  - src: "deepsky/ngc6992.png"
+    title: "NGC 6992 - Eastern Veil Nebula"
+    params:
+      date: "2026-09-26"
+      telescope: "Seestar S50pro"
+      camera: "ZWO"
+      frames: "496 × 20s"
+  - src: "deepsky/ic1805.png"
+    title: "IC 1805 - Heart Nebula"
+    params:
+      date: "2026-09-25"
+      telescope: "Seestar S50pro"
+      camera: "ZWO"
+      frames: "195 × 20s"
   - src: "deepsky/m57.png"
     title: "M57 - Ring Nebula"
     params:
