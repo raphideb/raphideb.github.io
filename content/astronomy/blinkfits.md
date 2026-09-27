@@ -145,7 +145,7 @@ html[data-bs-theme="dark"] .bf {
 
 <div class="bf-hero">
 <div>
-<div class="bf-brand"><img src="/astronomy/blinkfits-icon.png" alt="" width="32" height="32"><span>Blink<span class="fits">Fits</span> <span class="ver">1.1</span></span></div>
+<div class="bf-brand"><img src="/astronomy/blinkfits-icon.png" alt="" width="32" height="32"><span>Blink<span class="fits">Fits</span> <span class="ver">1.2</span></span></div>
 <p class="eyebrow">Lightweight FITS viewer for Windows</p>
 <p class="headline">Find bad frames, stack only the good ones.</p>
 <p class="lead">BlinkFits can auto-detect and mark frames with satellite trails, soft stars or passing clouds. Blink through your frames with zoom, pan and stretch held perfectly still. Throw bad subs out before you stack and get only the best data.</p>
@@ -157,8 +157,8 @@ html[data-bs-theme="dark"] .bf {
 <p class="hint">Extract the zip, then run <code>blinkfits.exe</code>. No installer needed.</p>
 <p class="hint">Need an older version? <a href="https://github.com/raphideb/blinkfits_release/releases">All releases are on GitHub</a>.</p>
 <div class="sha">
-<div class="sha-label"><span>SHA-256 of <code>blinkfits.exe</code>, version 1.1</span><span id="bf-copied" aria-live="polite"></span></div>
-<div class="sha-box"><code id="bf-check">f4feabfff7dfa7863716215ce9c8ba78deff053261f516b5b074f78ee8fcd040</code><button class="copy" id="bf-copy" type="button">Copy</button></div>
+<div class="sha-label"><span>SHA-256 of <code>blinkfits.exe</code>, version 1.2</span><span id="bf-copied" aria-live="polite"></span></div>
+<div class="sha-box"><code id="bf-check">1bdd30edc5f8292f92c4a349fd6a2cf5cd96482cf625ea13f469b1e9261308e0</code><button class="copy" id="bf-copy" type="button">Copy</button></div>
 <p class="hint">How to check the exe against it, and what to do when Windows warns you: <a href="#download-help">see below</a>.</p>
 </div>
 <ul class="facts">
@@ -191,30 +191,28 @@ html[data-bs-theme="dark"] .bf {
 </div>
 
 <div class="bf-news">
-<p class="head">New version 1.1 released!<span class="date">21 September 2026</span></p>
+<p class="head">New version 1.2 released!<span class="date">27 September 2026</span></p>
 <dl>
-<dt>Select multiple images</dt>
-<dd>You can now mark, rotate or blink through several images at once. There are several ways to select them:
-<ul>
-<li><kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> extends the selection up or down.</li>
-<li><kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> selects up to the first or last image of the folder.</li>
-<li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> selects up to the first or last image of the whole list.</li>
-<li><kbd>Ctrl</kbd> + <kbd>A</kbd> selects everything.</li>
-<li><kbd>Ctrl</kbd> + click adds or removes a single frame.</li>
-</ul>
-</dd>
-<dt>Blink just the selection</dt>
-<dd>With two or more frames selected, auto blink walks only those. That way you compare just the subs you care about.</dd>
-<dt>Rotate images</dt>
-<dd><kbd>R</kbd> turns the selected frames by 180°, on screen only. After a meridian flip, go to the first frame taken after it, press <kbd>Shift</kbd> + <kbd>End</kbd> and then <kbd>R</kbd>. Now all frames face the same way.</dd>
-<dt>Every key in Help</dt>
-<dd>The keyboard reference now sits at the top of the Help page, as a table of keys and what they do.</dd>
+<dt>Find satellite trails</dt>
+<dd><b>Find trails</b> looks through every image for the straight lines that satellites and planes leave behind, and tags those files with <code>_trail</code>.</dd>
+<dt>Find blurry frames</dt>
+<dd><b>Find blur</b> compares the stars in every image with those in the sharpest frame. Frames whose stars are larger than <b>Allowed blur deviation</b> permits are tagged with <code>_blur</code>.</dd>
+<dt>Check what was found</dt>
+<dd><b>Show trails</b>, <b>Show blur</b> and <b>Show marked</b> limit the list and blinking to those images, so you can check each one before you move it away.</dd>
+<dt>Zoom with the mouse wheel</dt>
+<dd>The mouse wheel over the image zooms in and out around the pointer.</dd>
+<dt>Magnify frames up to 10x</dt>
+<dd>The new <b>Magnify</b> slider carries on where <b>Zoom</b> stops at 100 percent, so you can look at single stars pixel by pixel.</dd>
+<dt>Moving is quicker</dt>
+<dd>Press <kbd>X</kbd> to open <b>Move marked to folder</b>. The dialog starts in the folder you used last, and images tagged <code>_trail</code> or <code>_blur</code> move along with your marked ones.</dd>
+<dt>Help rewrite</dt>
+<dd>The help section has been completely restructured and now has a table of contents.</dd>
 </dl>
 </div>
 
 <figure class="shot">
-<img src="/astronomy/blinkfits-screenshot.jpg" width="1600" height="1157" loading="lazy" alt="BlinkFits with 210 raw frames of NGC 7331 loaded: file list with Move marked to folder on the left, the debayered frame in the middle, stretch, zoom, auto blink, marking suffix and language settings on the right, seven frames marked with the _bad suffix">
-<figcaption>BlinkFits with 210 raw frames of NGC 7331. Every sub is debayered from the Bayer pattern in its header and shown with the Auto (STF) stretch. Seven frames are marked with the _bad suffix, so they are shown in orange. Rotated images carry a 180° symbol in the list.</figcaption>
+<img src="/astronomy/blinkfits-screenshot.jpg" width="1600" height="865" loading="lazy" alt="BlinkFits with 267 raw frames of IC 434 loaded and Show trails on: the list on the left holds only the 17 frames tagged _trail, the middle shows frame 6 of 17 with a satellite trail running across its lower right, and the right panel shows the Find bad images section with Trails: 17 · Blur: 3">
+<figcaption>BlinkFits with 267 raw frames of IC 434. Find trails has tagged 17 of them, and Show trails narrows the list and blinking to just those frames. In frame 6 the satellite trail is easy to see, so you can check each find before you move it out of the stack.</figcaption>
 </figure>
 
 ## From raw subs to a clean stack {#workflow}
@@ -228,7 +226,7 @@ A night's work goes like this:
 1. Press **Add folder** and add the folders of the night.
 2. Press **Find trails** and **Find blur**. They tag the obvious rejects for you.
 3. Blink through the rest. Press <kbd>M</kbd> on anything the filters missed, such as a passing cloud.
-4. Press <kbd>X</kbd>. Every marked and tagged frame moves into a folder of its own.
+4. Press <kbd>X</kbd> and pick a folder. Every marked and tagged frame moves there.
 5. Stack what is left.
 
 </div>
@@ -241,7 +239,7 @@ A night's work goes like this:
 <p>With hundreds of subs, going through them one by one takes a long time. Two filters do the first pass:</p>
 <ul>
 <li><b>Find trails</b> tags frames crossed by a satellite or an aircraft.</li>
-<li><b>Find blur</b> tags frames whose stars are bloated or gone, compared with the sharpest frame. You set how much deviation you allow.</li>
+<li><b>Find blur</b> tags frames whose stars are bloated or gone, compared with the sharpest frame. With <b>Allowed blur deviation</b> you set how much larger the stars may be.</li>
 </ul>
 <p>A tag renames the file: <code>frame.fits</code> becomes <code>frame_trail.fits</code> or <code>frame_blur.fits</code>. <b>Show trails</b> and <b>Show blur</b> blink through just those frames, so you can check every find.</p>
 <p>If a filter got one wrong, press <kbd>M</kbd> on it and the tag comes off.</p>
@@ -258,9 +256,7 @@ A night's work goes like this:
 </div>
 <div class="card">
 <h3>The view never moves</h3>
-<p>Zoom, pan and stretch belong to the viewer, not to the frame. When you switch images, only the sky changes. That is what makes a trail or a soft frame jump out.</p>
-<p>The mouse wheel zooms around the pointer, from 5 % up to 10×. That way you can check a trail or a star pixel by pixel.</p>
-</div>
+<p>Zoom, pan and stretch belong to the viewer, not to the frame. When you switch images, only the sky changes. That is what makes a trail or a soft frame jump out.</p></div>
 <div class="card">
 <h3>Auto blink</h3>
 <p>Auto blink runs through the frames on its own, at 0.1 s to 60 s per frame, and wraps round at both ends. You steer it like this:</p>
@@ -291,7 +287,8 @@ A night's work goes like this:
 </div>
 <div class="card">
 <h3>Zoom in</h3>
-<p>Zoom in and magnify a frame up to 1000% if you want to compare frames at a pixel level. Use a slider or the mousewheel to control zoom levels.</p>
+<p><b>Zoom</b> shows a frame at 5 to 100 percent, and <b>Magnify</b> carries on up to 10×, so you can compare frames pixel by pixel.</p>
+<p>The mouse wheel runs through every step and zooms around the pointer.</p>
 </div>
 <div class="card">
 <h3>Several folders</h3>
