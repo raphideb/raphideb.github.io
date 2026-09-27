@@ -57,6 +57,20 @@ resources:
       camera: "ASI585MC"
       frames: "613 × 8s"
 # Other
+  - src: "deepsky/ic434.png"
+    title: "IC 434 - Horsehead Nebula"
+    params:
+      date: "2026-09-27"
+      telescope: "Seestar S50pro"
+      camera: "ZWO"
+      frames: "196 × 20s"
+  - src: "deepsky/ngc281.png"
+    title: "NGC 281 - Pacman Nebula"
+    params:
+      date: "2026-09-27"
+      telescope: "Seestar S50pro"
+      camera: "ZWO"
+      frames: "300 × 20s"
   - src: "deepsky/ngc6992.png"
     title: "NGC 6992 - Eastern Veil Nebula"
     params:
