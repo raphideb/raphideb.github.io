@@ -1,7 +1,7 @@
 ---
 title: "BlinkFits"
 linkTitle: "BlinkFits"
-description: "A free, lightweight Windows blink comparator for FITS subs: spot asteroids, novae, satellite trails and bad frames."
+description: "A free, lightweight FITS viewer for Windows. Compare frames and automatically find satellite trails or blurry captures."
 type: "docs"
 ---
 
@@ -86,15 +86,20 @@ html[data-bs-theme="dark"] .bf {
 .bf .frame { position: relative; background: var(--sky); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; aspect-ratio: 16 / 10; }
 .bf .frame svg { display: block; width: 100%; height: 100%; }
 .bf .frame-bar {
-  position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: space-between;
+  position: absolute; left: 0; right: 0; top: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px;
   padding: 8px 12px; font-size: .78rem; color: #9098A0; background: rgba(10, 11, 13, .75);
 }
 .bf .frame-bar .name { color: #E6E8EB; }
+.bf .frame.bad .frame-bar .name { color: var(--sky-mark); }
+.bf .frame .tag {
+  display: none; margin-right: 10px; padding: 0 6px; border: 1px solid var(--sky-mark); border-radius: 3px;
+  color: var(--sky-mark); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase;
+}
+.bf .frame.bad .tag { display: inline-block; }
+.bf .frame .trail { opacity: 0; }
+.bf .frame.is-trail .trail { opacity: 1; }
 .bf .blink-caption { font-size: .88rem; color: var(--dim); margin: 12px 0 0; }
 .bf .blink-caption b { color: var(--mark); font-weight: 600; }
-.bf .state-b .obj-a, .bf .state-a .obj-b { opacity: 0; }
-.bf .ghost { opacity: 0; }
-.bf .show-ghost .ghost { opacity: 1; }
 
 .bf-news { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 12px; padding: 20px 24px; margin: 0 0 40px; }
 .bf-news .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 14px; font-size: 1.02rem; font-weight: 600; }
@@ -103,25 +108,33 @@ html[data-bs-theme="dark"] .bf {
 .bf-news dt { font-size: .95rem; font-weight: 600; margin: 0; }
 .bf-news dd { margin: 2px 0 12px; color: var(--dim); font-size: .93rem; }
 .bf-news dd:last-child { margin-bottom: 0; }
+.bf-news ul { margin: 6px 0 0; padding-left: 1.2em; }
+.bf-news li { margin: 2px 0; }
 
 .bf .shot { margin: 0 0 40px; }
 .bf .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--border); border-radius: 10px; }
 .bf .shot figcaption { font-size: .88rem; color: var(--dim); margin-top: 12px; }
+
+.bf .steps { max-width: 44em; margin-bottom: 40px; }
 
 .bf .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 40px; }
 .bf .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
 .bf .card h3 { margin: 0 0 6px; font-size: 1.02rem; display: flex; align-items: center; gap: 10px; }
 .bf .card h3::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
 .bf .card.hl h3::before { background: var(--mark); }
-.bf .card p { margin: 0; color: var(--dim); font-size: .95rem; }
+.bf .card p, .bf .card ul { margin: 0 0 8px; color: var(--dim); font-size: .95rem; }
+.bf .card ul { padding-left: 1.2em; }
+.bf .card li { margin: 2px 0; }
+.bf .card > :last-child { margin-bottom: 0; }
 
 .bf .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-bottom: 40px; }
 .bf .two table { width: 100%; font-size: .95rem; }
 .bf .two td:first-child { white-space: nowrap; padding-right: 20px; }
 
 .bf .note { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--mark); border-radius: 8px; padding: 18px 20px; margin-bottom: 40px; }
-.bf .note p { margin: 0 0 10px; color: var(--dim); }
-.bf .note p:last-child { margin: 0; }
+.bf .note p, .bf .note ul, .bf .note ol { margin: 0 0 10px; color: var(--dim); }
+.bf .note ul, .bf .note ol { padding-left: 1.4em; }
+.bf .note > :last-child { margin: 0; }
 .bf .note strong { color: var(--text); }
 
 .bf .credits { border-top: 1px solid var(--border); padding-top: 24px; font-size: .88rem; color: var(--dim); }
@@ -133,21 +146,20 @@ html[data-bs-theme="dark"] .bf {
 <div class="bf-hero">
 <div>
 <div class="bf-brand"><img src="/astronomy/blinkfits-icon.png" alt="" width="32" height="32"><span>Blink<span class="fits">Fits</span> <span class="ver">1.1</span></span></div>
-<p class="eyebrow">Freeware FITS viewer and blinker</p>
-<p class="headline">Blink your subs.<br>Spot what moved.</p>
-<p class="lead">BlinkFits flips back and forth between frames, with zoom, pan and stretch held perfectly still. Asteroids, novae, variable stars, satellite trails and subs worth throwing away jump out at you.</p>
+<p class="eyebrow">Lightweight FITS viewer for Windows</p>
+<p class="headline">Find bad frames, stack only the good ones.</p>
+<p class="lead">BlinkFits can auto-detect and mark frames with satellite trails, soft stars or passing clouds. Blink through your frames with zoom, pan and stretch held perfectly still. Throw bad subs out before you stack and get only the best data.</p>
 <div class="bf-download">
 <a class="btn-dl" href="https://github.com/raphideb/blinkfits_release/releases/latest/download/blinkfits.zip">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m6 10 6 6 6-6"/><path d="M4 20h16"/></svg>
 <span>Download latest version for Windows<small>blinkfits.zip</small></span>
 </a>
-<p class="hint">Need an older version? <a href="https://github.com/raphideb/blinkfits_release/releases">All releases are on GitHub</a>.</p>
 <p class="hint">Extract the zip, then run <code>blinkfits.exe</code>. No installer needed.</p>
+<p class="hint">Need an older version? <a href="https://github.com/raphideb/blinkfits_release/releases">All releases are on GitHub</a>.</p>
 <div class="sha">
 <div class="sha-label"><span>SHA-256 of <code>blinkfits.exe</code>, version 1.1</span><span id="bf-copied" aria-live="polite"></span></div>
 <div class="sha-box"><code id="bf-check">f4feabfff7dfa7863716215ce9c8ba78deff053261f516b5b074f78ee8fcd040</code><button class="copy" id="bf-copy" type="button">Copy</button></div>
-<p class="hint">Check the extracted exe against it in PowerShell: <code>Get-FileHash .\blinkfits.exe -Algorithm SHA256</code></p>
-<p class="hint">Windows warns when you start it? <a href="#download-help">Here is what to do</a>.</p>
+<p class="hint">How to check the exe against it, and what to do when Windows warns you: <a href="#download-help">see below</a>.</p>
 </div>
 <ul class="facts">
 <li>Free</li>
@@ -157,17 +169,24 @@ html[data-bs-theme="dark"] .bf {
 </ul>
 </div>
 </div>
-<div class="blink" role="img" aria-label="Animated example: two frames of a star field blinked against each other, one object moves">
+<div class="blink" role="img" aria-label="Animated example: BlinkFits blinks through five frames of a star field. One frame has a satellite trail and one has blurred stars. Both are tagged and renamed.">
 <div class="frame" id="bf-demo">
 <svg viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-<g id="bf-stars"></g>
-<circle class="ghost" cx="262" cy="222" r="7" fill="none" stroke="var(--sky-mark)" stroke-width="1.6" opacity=".6"/>
-<circle class="obj-a" cx="262" cy="222" r="3.2" fill="var(--star)"/>
-<circle class="obj-b" cx="318" cy="236" r="3.2" fill="var(--star)"/>
+<defs>
+<filter id="bf-soft" x="-10%" y="-10%" width="120%" height="120%">
+<feGaussianBlur stdDeviation="2.6"/>
+<feComponentTransfer><feFuncA type="linear" slope="2.4"/></feComponentTransfer>
+</filter>
+</defs>
+<g id="bf-field"><g id="bf-stars"></g></g>
+<g class="trail">
+<line x1="-20" y1="96" x2="660" y2="318" stroke="var(--star)" stroke-width="6" opacity=".12"/>
+<line x1="-20" y1="96" x2="660" y2="318" stroke="var(--star)" stroke-width="1.5" opacity=".9"/>
+</g>
 </svg>
-<div class="frame-bar mono"><span class="name" id="bf-demo-name">frame_00041.fits</span><span id="bf-demo-count">41 / 218</span></div>
+<div class="frame-bar mono"><span class="name" id="bf-demo-name">frame_00041.fits</span><span><span class="tag" id="bf-demo-tag"></span><span id="bf-demo-count">41 / 218</span></span></div>
 </div>
-<p class="blink-caption">Every star stays put, the one that jumps is <b>something interesting</b>.</p>
+<p class="blink-caption">The view never moves, so a trail or a soft frame jumps out at once. <b>BlinkFits finds them for you</b> and tags the files.</p>
 </div>
 </div>
 
@@ -175,65 +194,112 @@ html[data-bs-theme="dark"] .bf {
 <p class="head">New version 1.1 released!<span class="date">21 September 2026</span></p>
 <dl>
 <dt>Select multiple images</dt>
-<dd>Selected images can be taged, rotated or blinked through</dd>
-<dd><kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd></dd>
-<dd><kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> select to start / end of a folder</dd>
-<dd><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> select to start / end of the whole list</dd>
-<dd><kbd>Ctrl</kbd> + <kbd>A</kbd> select everything</dd>
-<dd><kbd>Ctrl</kbd> + <kbd>click</kbd> to select individual frames</dd>
+<dd>You can now mark, rotate or blink through several images at once. There are several ways to select them:
+<ul>
+<li><kbd>Shift</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd> extends the selection up or down.</li>
+<li><kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> selects up to the first or last image of the folder.</li>
+<li><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> / <kbd>End</kbd> selects up to the first or last image of the whole list.</li>
+<li><kbd>Ctrl</kbd> + <kbd>A</kbd> selects everything.</li>
+<li><kbd>Ctrl</kbd> + click adds or removes a single frame.</li>
+</ul>
+</dd>
 <dt>Blink just the selection</dt>
-<dd>With two or more frames selected, the automatic blink walks only those, so you can compare only the subs you care about.</dd>
+<dd>With two or more frames selected, auto blink walks only those. That way you compare just the subs you care about.</dd>
 <dt>Rotate images</dt>
-<dd><kbd>R</kbd> turns the selected frames 180°, on screen only. 
-<dd>On the first frame after a meridian flip, simply press <kbd>Shift</kbd> + <kbd>End</kbd>, followed by <kbd>R</kbd> to have all frames oriented the same.</dd>
+<dd><kbd>R</kbd> turns the selected frames by 180°, on screen only. After a meridian flip, go to the first frame taken after it, press <kbd>Shift</kbd> + <kbd>End</kbd> and then <kbd>R</kbd>. Now all frames face the same way.</dd>
 <dt>Every key in Help</dt>
-<dd>The keyboard reference now sits at the top of the Help page as a table of keys and what they do.</dd>
+<dd>The keyboard reference now sits at the top of the Help page, as a table of keys and what they do.</dd>
 </dl>
 </div>
 
 <figure class="shot">
 <img src="/astronomy/blinkfits-screenshot.jpg" width="1600" height="1157" loading="lazy" alt="BlinkFits with 210 raw frames of NGC 7331 loaded: file list with Move marked to folder on the left, the debayered frame in the middle, stretch, zoom, auto blink, marking suffix and language settings on the right, seven frames marked with the _bad suffix">
-<figcaption>All subs debayered from the header's Bayer pattern and shown with the Auto STF stretch. Marked frames are renamed with the _bad suffix and shown in orange. Rotated images have a 180° smybol in the list.</figcaption>
+<figcaption>BlinkFits with 210 raw frames of NGC 7331. Every sub is debayered from the Bayer pattern in its header and shown with the Auto (STF) stretch. Seven frames are marked with the _bad suffix, so they are shown in orange. Rotated images carry a 180° symbol in the list.</figcaption>
 </figure>
 
-## Check your subs and filter them out {#features}
+## From raw subs to a clean stack {#workflow}
+
+<div class="steps">
+
+A single satellite trail or a handful of soft frames can cost detail in the final image. Pixel rejection in the stacker catches some of it, but not all. BlinkFits lets you look at every sub and take out the bad ones first.
+
+A night's work goes like this:
+
+1. Press **Add folder** and add the folders of the night.
+2. Press **Find trails** and **Find blur**. They tag the obvious rejects for you.
+3. Blink through the rest. Press <kbd>M</kbd> on anything the filters missed, such as a passing cloud.
+4. Press <kbd>X</kbd>. Every marked and tagged frame moves into a folder of its own.
+5. Stack what is left.
+
+</div>
+
+## Check your subs and throw out the bad ones {#features}
 
 <div class="grid">
 <div class="card hl">
-<h3>The view never moves</h3>
-<p>Zoom, pan and stretch belong to the viewer, not the frame. Switch images and only the sky changes, the images keep the selected view and stretch</p>
+<h3>Let it find the bad subs</h3>
+<p>With hundreds of subs, going through them one by one takes a long time. Two filters do the first pass:</p>
+<ul>
+<li><b>Find trails</b> tags frames crossed by a satellite or an aircraft.</li>
+<li><b>Find blur</b> tags frames whose stars are bloated or gone, compared with the sharpest frame. You set how much deviation you allow.</li>
+</ul>
+<p>A tag renames the file: <code>frame.fits</code> becomes <code>frame_trail.fits</code> or <code>frame_blur.fits</code>. <b>Show trails</b> and <b>Show blur</b> blink through just those frames, so you can check every find.</p>
+<p>If a filter got one wrong, press <kbd>M</kbd> on it and the tag comes off.</p>
+</div>
+<div class="card hl">
+<h3>Mark what the filters missed</h3>
+<p>Some bad frames need your eye, for example a passing cloud or a guiding error. Press <kbd>M</kbd>, and the file is renamed on disk with your suffix: <code>frame.fits</code> becomes <code>frame_bad.fits</code>.</p>
+<p>The mark lives in the file name, so it is still there next session and in Explorer. Select several frames to mark them in one go. <b>Show marked</b> blinks through only the marked frames.</p>
+</div>
+<div class="card hl">
+<h3>Move them out of the stack</h3>
+<p><b>Move marked to folder</b>, or <kbd>X</kbd>, moves every marked and tagged frame into a folder you choose. What stays behind is ready to stack.</p>
+<p>The dialog opens in the folder you used last. Each moved file gets a number, so that frames with the same name from different folders never overwrite each other.</p>
 </div>
 <div class="card">
-<h3>Six stretches</h3>
-<p>Auto (STF) by default, plus levels, asinh, logarithmic, histogram equalisation and unstretched. Sliders react instantly, even on large frames.</p>
+<h3>The view never moves</h3>
+<p>Zoom, pan and stretch belong to the viewer, not to the frame. When you switch images, only the sky changes. That is what makes a trail or a soft frame jump out.</p>
+<p>The mouse wheel zooms around the pointer, from 5 % up to 10×. That way you can check a trail or a star pixel by pixel.</p>
 </div>
 <div class="card">
 <h3>Auto blink</h3>
-<p>From 0.1 s to 60 s per frame, wrapping at both ends. Space or Pause stops and resumes at the same speed, Reverse runs it backwards.</p>
-</div>
-<div class="card hl">
-<h3>Mark the keepers (or the rejects)</h3>
-<p>One key renames the file on disk with your suffix: <code>frame.fits</code> becomes <code>frame_tag.fits</code>. It still shows next session and in Explorer. Select multiple frames to mark them in one go.</p>
+<p>Auto blink runs through the frames on its own, at 0.1 s to 60 s per frame, and wraps round at both ends. You steer it like this:</p>
+<ul>
+<li><kbd>Space</kbd> or <b>Pause</b> stops it, and it resumes at the same speed.</li>
+<li><b>Reverse</b> runs it backwards.</li>
+<li><kbd>←</kbd> and <kbd>→</kbd> turn it round while it runs.</li>
+</ul>
 </div>
 <div class="card">
-<h3>One shot colour</h3>
-<p>Debayer raw OSC frames from <code>BAYERPAT</code> in the header, or pick RGGB, BGGR, GRBG or GBRG. Each channel is stretched on its own for a neutral sky.</p>
+<h3>Six stretches</h3>
+<p>A strong stretch shows faint trails and soft stars that a linear view hides. Auto (STF) is the default. Levels, Asinh, Logarithmic, Histogram equalisation and Unstretched are one click away.</p>
+<p>The sliders react instantly, even on large frames.</p>
 </div>
 <div class="card">
 <h3>Past the meridian flip</h3>
-<p>Select the frames taken after the flip and <kbd>R</kbd> turns them 180°, so the whole night blinks as one set. Only the display is turned, the file is never written and a debayered frame keeps its colours.</p>
+<p>After a meridian flip, the frames are upside down, which makes blinking the whole night hard. Select the frames taken after the flip and press <kbd>R</kbd> to turn them by 180°.</p>
+<p>Only the display is turned. The file is never written, and a debayered frame keeps its colours.</p>
+</div>
+<div class="card">
+<h3>One shot colour</h3>
+<p>Raw OSC frames are debayered from <code>BAYERPAT</code> in the header. You can also pick RGGB, BGGR, GRBG or GBRG yourself. Each channel is stretched on its own, for a neutral sky.</p>
 </div>
 <div class="card">
 <h3>FITS header</h3>
-<p>Show the header cards in place of the image. Keep blinking and the header follows, frame by frame: exposure, gain, temperature, time and whatever else is in your header.</p>
+<p>When one frame looks off, the header often tells you why. <b>FITS header</b> shows the header cards in place of the image.</p>
+<p>Keep blinking and the header follows, frame by frame: exposure, gain, temperature, time and whatever else is in your header.</p>
+</div>
+<div class="card">
+<h3>Zoom in</h3>
+<p>Zoom in and magnify a frame up to 1000% if you want to compare frames at a pixel level. Use a slider or the mousewheel to control zoom levels.</p>
 </div>
 <div class="card">
 <h3>Several folders</h3>
-<p>Add files and folders from different sessions to one list, drop any of them again, or pass paths on the command line.</p>
+<p>Add files and folders from different sessions to one list, and remove any of them again. You can also pass paths on the command line.</p>
 </div>
 <div class="card">
 <h3>Careful with memory</h3>
-<p>16 bit samples, a cache that fits your RAM, and a clear message instead of swapping your machine to a halt.</p>
+<p>BlinkFits keeps 16 bit samples and a cache that fits your RAM. When memory runs short, it shows a clear message instead of swapping your machine to a halt.</p>
 </div>
 <div class="card">
 <h3>15 languages</h3>
@@ -246,25 +312,27 @@ html[data-bs-theme="dark"] .bf {
 
 ## Hands on the keyboard {#keys}
 
-<p class="sub">Blinking is fastest without the mouse.</p>
+<p class="sub">Checking hundreds of subs is fastest without the mouse.</p>
 
 | Key | Action |
 |-----|--------|
-| <kbd>←</kbd> <kbd>→</kbd> &nbsp;or&nbsp; <kbd>A</kbd> <kbd>D</kbd> | Previous / next image; during auto blink, turn it round |
-| <kbd>Space</kbd> | Start / stop auto blink |
-| <kbd>Home</kbd> <kbd>End</kbd> | First / last image |
-| <kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> | Select multiple images |
-| <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select images to the start / end of the folder |
-| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select images to the start / end of the list |
-| <kbd>Ctrl</kbd> + <kbd>A</kbd> | Select every image |
-| <kbd>M</kbd> | Mark or unmark the current image, or the whole selection |
-| <kbd>R</kbd> | Turn the current image, or the whole selection, by 180° |
-| <kbd>S</kbd> | Next stretch method |
-| <kbd>1</kbd> … <kbd>6</kbd> | Zoom 5, 10, 25, 50, 75, 100 % |
-| <kbd>F</kbd> or <kbd>0</kbd> | Fit to window |
-| <kbd>N</kbd> | Night vision: the interface in dim red, the image unchanged |
-| <kbd>F1</kbd> | Help |
-| <kbd>Esc</kbd> | Close the FITS header, Help or About, or clear the selection |
+| <kbd>←</kbd> <kbd>→</kbd> &nbsp;or&nbsp; <kbd>A</kbd> <kbd>D</kbd> | Go to the previous or next image. While auto blink runs, these reverse its direction. |
+| <kbd>Space</kbd> | Start or stop auto blink. |
+| <kbd>Home</kbd> <kbd>End</kbd> | Jump to the first or last image. |
+| <kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> | Extend the selection up or down. |
+| <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select up to the first or last image of the folder. |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select up to the first or last image of the whole list. |
+| <kbd>Ctrl</kbd> + <kbd>A</kbd> | Select all images. |
+| <kbd>M</kbd> | Mark the current image, or every selected one. |
+| <kbd>R</kbd> | Turn the current image, or every selected one, by 180°. |
+| <kbd>X</kbd> | Move marked and tagged images to a folder. |
+| <kbd>S</kbd> | Switch to the next stretch method. |
+| <kbd>1</kbd> … <kbd>6</kbd> | Zoom to 5, 10, 25, 50, 75 or 100 %. |
+| Mouse wheel | Zoom in or out around the pointer, from 5 % to 10×. |
+| <kbd>F</kbd> or <kbd>0</kbd> | Fit the image to the window. |
+| <kbd>N</kbd> | Turn night vision on or off. The interface turns dim red, the image stays as it is. |
+| <kbd>F1</kbd> | Open the help. |
+| <kbd>Esc</kbd> | Close the FITS header, Help or About. Otherwise, clear the selection. |
 
 </div>
 <div>
@@ -281,18 +349,27 @@ html[data-bs-theme="dark"] .bf {
 ### What you need
 
 - **Windows 10 or 11, 64 bit.** Nothing else: one exe, no installer, no runtime, no DLLs.
-- Settings live in `%APPDATA%\blinkfits`. Delete the exe and the folder and it is gone.
+- Settings live in `%APPDATA%\blinkfits`. Delete the exe and that folder, and BlinkFits is gone.
 
 </div>
 </div>
 
-## Windows warns when you start BlinkFits? {#download-help}
+## Checking the download {#download-help}
 
-<p class="sub">BlinkFits is a hobby project and the exe is not code signed. Windows treats new, unsigned programs with caution until enough people have run them.</p>
+<p class="sub">BlinkFits is a hobby project, and the exe is not code signed. Windows treats new, unsigned programs with caution until enough people have run them.</p>
 
 <div class="note">
-<p><strong>Check the file.</strong> The SHA-256 of the exe is printed in the download box above. After extracting, run <code>Get-FileHash .\blinkfits.exe -Algorithm SHA256</code> in PowerShell, or <code>certutil -hashfile blinkfits.exe SHA256</code> in a command prompt, and compare the result with it. If they match, the exe arrived intact.</p>
-<p><strong>Windows SmartScreen</strong> (“Windows protected your PC”): click <em>More info</em>, then <em>Run anyway</em>.</p>
+<p><strong>Check the file.</strong> The download box above shows the SHA-256 checksum of the exe. If your copy has the same checksum, it arrived intact. After extracting, calculate it in one of two ways:</p>
+<ul>
+<li>In PowerShell: <code>Get-FileHash .\blinkfits.exe -Algorithm SHA256</code></li>
+<li>In a command prompt: <code>certutil -hashfile blinkfits.exe SHA256</code></li>
+</ul>
+<p>Then compare the result with the checksum above.</p>
+<p><strong>Windows SmartScreen</strong> may say “Windows protected your PC” when you start it. To run BlinkFits anyway:</p>
+<ol>
+<li>Click <em>More info</em>.</li>
+<li>Click <em>Run anyway</em>.</li>
+</ol>
 </div>
 
 <div class="two">
@@ -300,14 +377,15 @@ html[data-bs-theme="dark"] .bf {
 
 ## Terms of use {#terms}
 
-<p class="sub">BlinkFits may be downloaded and used free of charge by anyone, for any purpose. Redistributing, selling or modifying it, or passing it off as your own work, is not permitted without the author's written permission. It is provided as is, without any warranty.</p>
+<p class="sub">Anyone may download and use BlinkFits free of charge, for any purpose. Redistributing, selling or modifying it, or passing it off as your own work, is not permitted without the author's written permission. It is provided as is, without any warranty.</p>
 
 </div>
 <div>
 
 ## Contact {#contact}
 
-<p class="sub">Questions, bug reports, a FITS file that will not open? Write to <a href="mailto:raphi@crashdump.ch">raphi@crashdump.ch</a>. Please share a link to this page rather than the download, so people always get the current version and its checksum.</p>
+<p class="sub">Questions, bug reports, a FITS file that will not open? Write to <a href="mailto:raphi@crashdump.ch">raphi@crashdump.ch</a>.</p>
+<p class="sub">Please share a link to this page rather than to the download. That way people always get the current version and its checksum.</p>
 <p class="sub"><a href="https://paypal.me/RaphaelDebinski" target="_blank" rel="noopener">Support me with PayPal</a></p>
 
 </div>
@@ -315,7 +393,7 @@ html[data-bs-theme="dark"] .bf {
 
 <div class="credits">
 <p>© 2026 Raphael Debinski. All rights reserved.</p>
-<p>Built with Go, Gio and go-text/typesetting; their open source licenses are shown in the program under About and apply to those components only.</p>
+<p>Built with Go, Gio and go-text/typesetting. Their open source licenses are shown in the program under About and apply to those components only.</p>
 </div>
 
 </div>
@@ -352,22 +430,30 @@ html[data-bs-theme="dark"] .bf {
   out.push('<ellipse cx="470" cy="150" rx="9" ry="3" transform="rotate(-28 470 150)" fill="var(--star)" opacity=".35"/>');
   g.innerHTML = out.join("");
 
-  // Blink between two frames. With reduced motion, show both positions instead.
-  var demo = document.getElementById("bf-demo"), name = document.getElementById("bf-demo-name"), count = document.getElementById("bf-demo-count");
-  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (still) {
-    demo.classList.add("show-ghost", "state-b");
-    return;
+  // Blink through five frames: two of them bad, tagged and renamed the way the filters do it.
+  var demo = document.getElementById("bf-demo"), field = document.getElementById("bf-field");
+  var name = document.getElementById("bf-demo-name"), tag = document.getElementById("bf-demo-tag"), count = document.getElementById("bf-demo-count");
+  var frames = [
+    { n: 41 }, { n: 42, bad: "trail" }, { n: 43 }, { n: 44, bad: "blur" }, { n: 45 }
+  ];
+  function show(f) {
+    var id = "000" + f.n;
+    name.textContent = "frame_" + id + (f.bad ? "_" + f.bad : "") + ".fits";
+    count.textContent = f.n + " / 218";
+    tag.textContent = f.bad || "";
+    demo.classList.toggle("bad", !!f.bad);
+    demo.classList.toggle("is-trail", f.bad === "trail");
+    if (f.bad === "blur") field.setAttribute("filter", "url(#bf-soft)");
+    else field.removeAttribute("filter");
   }
-  var b = false;
-  demo.classList.add("state-a");
+  // With reduced motion, hold the trail frame instead of blinking.
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (still) { show(frames[1]); return; }
+  var at = 0;
+  show(frames[at]);
   setInterval(function () {
-    b = !b;
-    demo.classList.toggle("state-a", !b);
-    demo.classList.toggle("state-b", b);
-    demo.classList.toggle("show-ghost", b);
-    name.textContent = b ? "frame_00042.fits" : "frame_00041.fits";
-    count.textContent = b ? "42 / 218" : "41 / 218";
-  }, 700);
+    at = (at + 1) % frames.length;
+    show(frames[at]);
+  }, 900);
 })();
 </script>
