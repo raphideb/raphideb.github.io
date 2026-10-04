@@ -1,7 +1,7 @@
 ---
 title: "BlinkFits"
 linkTitle: "BlinkFits"
-description: "A free, lightweight FITS viewer for Windows. Compare frames and automatically find satellite trails or blurry captures."
+description: "A free, lightweight FITS viewer for Windows. Compare frames and automatically find satellite trails, blurry captures or passing clouds."
 type: "docs"
 ---
 
@@ -145,7 +145,7 @@ html[data-bs-theme="dark"] .bf {
 
 <div class="bf-hero">
 <div>
-<div class="bf-brand"><img src="/astronomy/blinkfits-icon.png" alt="" width="32" height="32"><span>Blink<span class="fits">Fits</span> <span class="ver">1.2</span></span></div>
+<div class="bf-brand"><img src="/astronomy/blinkfits-icon.png" alt="" width="32" height="32"><span>Blink<span class="fits">Fits</span> <span class="ver">1.3</span></span></div>
 <p class="eyebrow">Lightweight FITS viewer for Windows</p>
 <p class="headline">Find bad frames, stack only the good ones.</p>
 <p class="lead">BlinkFits can auto-detect and mark frames with satellite trails, soft stars or passing clouds. Blink through your frames with zoom, pan and stretch held perfectly still. Throw bad subs out before you stack and get only the best data.</p>
@@ -157,8 +157,8 @@ html[data-bs-theme="dark"] .bf {
 <p class="hint">Extract the zip, then run <code>blinkfits.exe</code>. No installer needed.</p>
 <p class="hint">Need an older version? <a href="https://github.com/raphideb/blinkfits_release/releases">All releases are on GitHub</a>.</p>
 <div class="sha">
-<div class="sha-label"><span>SHA-256 of <code>blinkfits.exe</code>, version 1.2</span><span id="bf-copied" aria-live="polite"></span></div>
-<div class="sha-box"><code id="bf-check">1bdd30edc5f8292f92c4a349fd6a2cf5cd96482cf625ea13f469b1e9261308e0</code><button class="copy" id="bf-copy" type="button">Copy</button></div>
+<div class="sha-label"><span>SHA-256 of <code>blinkfits.exe</code>, version 1.3</span><span id="bf-copied" aria-live="polite"></span></div>
+<div class="sha-box"><code id="bf-check">c383a2e6b1a00365e9312c15429e8639afece3c4582ea3de66ff8e1ef617b32b</code><button class="copy" id="bf-copy" type="button">Copy</button></div>
 <p class="hint">How to check the exe against it, and what to do when Windows warns you: <a href="#download-help">see below</a>.</p>
 </div>
 <ul class="facts">
@@ -191,28 +191,18 @@ html[data-bs-theme="dark"] .bf {
 </div>
 
 <div class="bf-news">
-<p class="head">New version 1.2 released!<span class="date">27 September 2026</span></p>
+<p class="head">New version 1.3 released!<span class="date">4 October 2026</span></p>
 <dl>
-<dt>Find satellite trails</dt>
-<dd><b>Find trails</b> looks through every image for the straight lines that satellites and planes leave behind, and tags those files with <code>_trail</code>.</dd>
-<dt>Find blurry frames</dt>
-<dd><b>Find blur</b> compares the stars in every image with those in the sharpest frame. Frames whose stars are larger than <b>Allowed blur deviation</b> permits are tagged with <code>_blur</code>.</dd>
-<dt>Check what was found</dt>
-<dd><b>Show trails</b>, <b>Show blur</b> and <b>Show marked</b> limit the list and blinking to those images, so you can check each one before you move it away.</dd>
-<dt>Zoom with the mouse wheel</dt>
-<dd>The mouse wheel over the image zooms in and out around the pointer.</dd>
-<dt>Magnify frames up to 10x</dt>
-<dd>The new <b>Magnify</b> slider carries on where <b>Zoom</b> stops at 100 percent, so you can look at single stars pixel by pixel.</dd>
-<dt>Moving is quicker</dt>
-<dd>Press <kbd>X</kbd> to open <b>Move marked to folder</b>. The dialog starts in the folder you used last, and images tagged <code>_trail</code> or <code>_blur</code> move along with your marked ones.</dd>
-<dt>Help rewrite</dt>
-<dd>The help section has been completely restructured and now has a table of contents.</dd>
+<dt>Cloud detection</dt>
+<dd><b>Find blur</b> now also catches frames where a thin cloud drifted past: with <b>Detect clouds</b> checked, it tags every frame whose sky is brighter or more patchy than in the frames taken just before and after it.</dd>
+<dt>Selecting with the keyboard</dt>
+<dd><kbd>Shift</kbd> with <kbd>↑</kbd> or <kbd>↓</kbd> now starts a fresh selection at the current image once you have moved on, and <kbd>Ctrl</kbd> + <kbd>Shift</kbd> with <kbd>↑</kbd> or <kbd>↓</kbd> adds a new range to the selection you already have.</dd>
 </dl>
 </div>
 
 <figure class="shot">
-<img src="/astronomy/blinkfits-screenshot.jpg" width="1600" height="865" loading="lazy" alt="BlinkFits with 267 raw frames of IC 434 loaded and Show trails on: the list on the left holds only the 17 frames tagged _trail, the middle shows frame 6 of 17 with a satellite trail running across its lower right, and the right panel shows the Find bad images section with Trails: 17 · Blur: 3">
-<figcaption>BlinkFits with 267 raw frames of IC 434. Find trails has tagged 17 of them, and Show trails narrows the list and blinking to just those frames. In frame 6 the satellite trail is easy to see, so you can check each find before you move it out of the stack.</figcaption>
+<img src="/astronomy/blinkfits-screenshot.jpg" width="1600" height="865" loading="lazy" alt="BlinkFits with 611 raw frames of M 31 loaded and Show blur on: the list on the left holds only the 267 frames tagged _blur, the middle shows frame 13 of 267, where a thin cloud has washed out the sky around the galaxy, and the right panel shows the Find bad images section with Allowed blur deviation at 50%, Detect clouds checked and Trails: 0 · Blur: 267">
+<figcaption>BlinkFits with 611 frames of M 31 from a night of passing cloud. Find blur has tagged 267 of them. With Detect clouds checked, it tags every frame whose sky is brighter or more patchy than in the frames around it, even when its stars are still sharp. Show blur narrows the list and blinks through those frames, so you can check each one before you move it out of the stack.</figcaption>
 </figure>
 
 ## From raw subs to a clean stack {#workflow}
@@ -225,7 +215,7 @@ A night's work goes like this:
 
 1. Press **Add folder** and add the folders of the night.
 2. Press **Find trails** and **Find blur**. They tag the obvious rejects for you.
-3. Blink through the rest. Press <kbd>M</kbd> on anything the filters missed, such as a passing cloud.
+3. Blink through the rest. Press <kbd>M</kbd> on anything the filters missed, such as a guiding error.
 4. Press <kbd>X</kbd> and pick a folder. Every marked and tagged frame moves there.
 5. Stack what is left.
 
@@ -239,14 +229,14 @@ A night's work goes like this:
 <p>With hundreds of subs, going through them one by one takes a long time. Two filters do the first pass:</p>
 <ul>
 <li><b>Find trails</b> tags frames crossed by a satellite or an aircraft.</li>
-<li><b>Find blur</b> tags frames whose stars are bloated or gone, compared with the sharpest frame. With <b>Allowed blur deviation</b> you set how much larger the stars may be.</li>
+<li><b>Find blur</b> tags frames whose stars are bloated or gone, compared with the sharpest frame. With <b>Allowed blur deviation</b> you set how much larger the stars may be. With <b>Detect clouds</b> checked, it also tags frames whose sky a passing cloud has brightened or made patchy.</li>
 </ul>
 <p>A tag renames the file: <code>frame.fits</code> becomes <code>frame_trail.fits</code> or <code>frame_blur.fits</code>. <b>Show trails</b> and <b>Show blur</b> blink through just those frames, so you can check every find.</p>
 <p>If a filter got one wrong, press <kbd>M</kbd> on it and the tag comes off.</p>
 </div>
 <div class="card hl">
 <h3>Mark what the filters missed</h3>
-<p>Some bad frames need your eye, for example a passing cloud or a guiding error. Press <kbd>M</kbd>, and the file is renamed on disk with your suffix: <code>frame.fits</code> becomes <code>frame_bad.fits</code>.</p>
+<p>Some bad frames need your eye, for example a guiding error. Press <kbd>M</kbd>, and the file is renamed on disk with your suffix: <code>frame.fits</code> becomes <code>frame_bad.fits</code>.</p>
 <p>The mark lives in the file name, so it is still there next session and in Explorer. Select several frames to mark them in one go. <b>Show marked</b> blinks through only the marked frames.</p>
 </div>
 <div class="card hl">
@@ -316,7 +306,8 @@ A night's work goes like this:
 | <kbd>←</kbd> <kbd>→</kbd> &nbsp;or&nbsp; <kbd>A</kbd> <kbd>D</kbd> | Go to the previous or next image. While auto blink runs, these reverse its direction. |
 | <kbd>Space</kbd> | Start or stop auto blink. |
 | <kbd>Home</kbd> <kbd>End</kbd> | Jump to the first or last image. |
-| <kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> | Extend the selection up or down. |
+| <kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> | Start a new selection at the current image and extend it up or down. |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> | Add a new range to the selection. |
 | <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select up to the first or last image of the folder. |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Home</kbd> <kbd>End</kbd> | Select up to the first or last image of the whole list. |
 | <kbd>Ctrl</kbd> + <kbd>A</kbd> | Select all images. |
