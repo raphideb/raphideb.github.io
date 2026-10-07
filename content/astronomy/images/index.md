@@ -57,6 +57,13 @@ resources:
       camera: "ASI585MC"
       frames: "613 × 8s"
 # Other
+  - src: "deepsky/ic1396.png"
+    title: "IC 1396 - Elephant's Trunk Nebula"
+    params:
+      date: "2026-10-05"
+      telescope: "Seestar S50pro"
+      camera: "ZWO"
+      frames: "477 × 20s"
   - src: "deepsky/ic434.png"
     title: "IC 434 - Horsehead Nebula"
     params:
