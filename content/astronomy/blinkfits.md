@@ -1,5 +1,14 @@
 ---
-title: "BlinkFits"
+title: "BlinkFits – Lightweight FITS Viewer"
+seo_json: {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "BlinkFits FITS Viewer",
+  "operatingSystem": "Windows",
+  "applicationCategory": "DeveloperApplication",
+  "description": "BlinkFits is a lightweight, single-binary FITS viewer and blinker designed for astronomy imaging.",
+  "featureList": "FITS viewer, blinking, bad frame detection, automatic stretch algorithms, header inspection, keyboard shortcuts"
+}
 linkTitle: "BlinkFits"
 description: "A free, lightweight FITS viewer for Windows. Compare frames and automatically find satellite trails, blurry captures or passing clouds."
 type: "docs"

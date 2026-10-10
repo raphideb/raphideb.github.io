@@ -17,4 +17,9 @@
     root.setAttribute('data-bs-theme', theme)
   })()
 </script>
+{{ if .Params.seo_json }}
+<script type="application/ld+json">
+{{ .Params.seo_json | jsonify }}
+</script>
+{{ end }}
 {{ end -}}
