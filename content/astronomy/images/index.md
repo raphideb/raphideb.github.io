@@ -42,6 +42,13 @@ resources:
       camera: "ASI585MC"
       frames: "5000 × 1.5ms"
 # galaxies
+  - src: "deepsky/m31.png"
+    title: "M31 - Andromeda Galaxy"
+    params:
+      date: "2026-10-13"
+      telescope: "Seestar S50pro"
+      camera: "ZWO"
+      frames: "438 × 20s"
   - src: "deepsky/ngc7814.png"
     title: "NGC 7814 - Little Sombrero Galaxy"
     params:
@@ -57,6 +64,20 @@ resources:
       camera: "ASI585MC"
       frames: "613 × 8s"
 # Other
+  - src: "deepsky/m45.png"
+    title: "M45 - Pleiades"
+    params:
+      date: "2026-10-13"
+      telescope: "Seestar S50pro"
+      camera: "ZWO"
+      frames: "343 × 20s"
+  - src: "deepsky/m27.png"
+    title: "M27 - Dumbbell Nebula"
+    params:
+      date: "2026-10-13"
+      telescope: "Celestron Evolution 9.25"
+      camera: "ASI533MC"
+      frames: "89 × 60s"
   - src: "deepsky/ic1396.png"
     title: "IC 1396 - Elephant's Trunk Nebula"
     params:
@@ -106,13 +127,6 @@ resources:
       telescope: "Celestron Evolution 9.25"
       camera: "ASI585MC"
       frames: "240 × 5s"
-  - src: "deepsky/m27.png"
-    title: "M27 - Dumbbell Nebula"
-    params:
-      date: "2026-09-12"
-      telescope: "Celestron Evolution 9.25"
-      camera: "ASI585MC"
-      frames: "320 × 5s"
 
 ---
 
