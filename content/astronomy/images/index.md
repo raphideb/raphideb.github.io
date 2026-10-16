@@ -48,7 +48,7 @@ resources:
       date: "2026-10-13"
       telescope: "Seestar S50pro"
       camera: "ZWO"
-      frames: "438 × 20s"
+      frames: "477 × 20s + 418x20s"
   - src: "deepsky/ngc7814.png"
     title: "NGC 7814 - Little Sombrero Galaxy"
     params:
